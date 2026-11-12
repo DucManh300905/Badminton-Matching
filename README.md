@@ -1,6 +1,7 @@
 # Badminton Booking
 
-![CI](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/DucManh300905/Badminton-Matching/actions/workflows/ci.yml/badge.svg?branch=develop)
+
 
 Nền tảng web kết nối người chơi cầu lông vãng lai, có tính năng trích xuất thông tin tự động từ bài đăng tiếng Việt phi cấu trúc.
 
@@ -47,6 +48,10 @@ npm run typecheck   # kiểm tra kiểu TypeScript
 
 ## Quy ước làm việc
 
-- Không push thẳng lên `main`. Tạo nhánh `feature/<mã-WBS>-<mô-tả>`, ví dụ `feature/4.4.2-api-keo`, rồi mở Pull Request.
-- Chỉ merge khi CI xanh. Bật *branch protection* cho `main`: Settings → Branches → Require status checks → chọn các job `Test (Node 22)` và `Test (Node 24)`.
+- `main`: bản ổn định, chỉ nhận merge từ `develop` khi đạt mốc (M1, M2, …).
+- `develop`: nhánh tích hợp, nhánh mặc định của repo.
+- Nhánh tính năng tạo từ `develop`, đặt tên `feature/<mã-WBS>-<mô-tả>`, ví dụ `feature/4.4.2-api-keo`.
+- Mọi thay đổi đi qua Pull Request và chỉ merge khi CI xanh.
+- PR vào `develop` dùng **Squash and merge**; PR `develop` → `main` dùng **Create a merge commit**.
 - Code mới phải có test kèm theo. CI sẽ fail nếu coverage tụt dưới ngưỡng trong [vitest.config.ts](vitest.config.ts).
+
