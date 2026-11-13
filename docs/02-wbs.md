@@ -60,12 +60,12 @@ flowchart TD
 
 | Mã | Gói công việc | Sản phẩm đầu ra | Ưu tiên | Giờ công | Phụ thuộc | TT |
 |---|---|---|:-:|---:|---|:-:|
-| **1** | **QUẢN LÝ DỰ ÁN** | | | **35** | | |
+| **1** | **QUẢN LÝ DỰ ÁN** | | | **36** | | |
 | 1.1.1 | Chốt đề tài chính thức | Tên đề tài, câu hỏi nghiên cứu | M | 4 | – | ✅ |
 | 1.1.2 | Lập Project Charter | [01-project-charter.md](01-project-charter.md) | M | 8 | 1.1.1 | ✅ |
 | 1.2.1 | Lập WBS | Tài liệu này | M | 4 | 1.1.2 | ✅ |
 | 1.2.2 | Lập Gantt chart | [03-gantt.md](03-gantt.md) | M | 3 | 1.2.1 | ✅ |
-| 1.2.3 | Kế hoạch quản lý rủi ro | Sổ rủi ro (risk register) | M | 2 | 1.1.2 | ⬜ |
+| 1.2.3 | Kế hoạch quản lý rủi ro + kế hoạch chất lượng | `docs/RISKS.md`, `docs/QUALITY.md` | M | 3 | 1.1.2 | ⬜ |
 | 1.3.1 | Nhật ký tiến độ hằng tuần | Weekly log (việc đã làm / kế hoạch / vướng mắc) | M | 8 | – | 🔄 |
 | 1.3.2 | Gặp và báo cáo GVHD | Báo cáo 2 tuần/lần | M | 6 | – | ⬜ |
 | **2** | **KHẢO SÁT & PHÂN TÍCH** | | | **46** | | |
@@ -77,31 +77,31 @@ flowchart TD
 | 2.2.3 | Gán nhãn chuẩn (ground truth) + đo độ đồng thuận | Bộ dữ liệu gán nhãn (D3), Cohen's κ | M | 10 | 2.2.2 | ⬜ |
 | 2.3 | Phân tích giải pháp hiện có | Bảng so sánh | S | 3 | – | ⬜ |
 | 2.4.1 | User stories + use case (MoSCoW) | Product backlog | M | 6 | 2.1.3 | ⬜ |
-| 2.4.2 | Tài liệu đặc tả yêu cầu (SRS, bản gọn) | SRS (D4) | M | 5 | 2.4.1 | ⬜ |
+| 2.4.2 | Đặc tả yêu cầu + quy tắc nghiệp vụ (mã BR-xx) | `docs/project.md` (D4) | M | 5 | 2.4.1 | ⬜ |
 | **3** | **THIẾT KẾ** | | | **20** | | |
-| 3.1 | Kiến trúc hệ thống | Sơ đồ kiến trúc | M | 4 | 2.4.1 | ⬜ |
-| 3.2 | Thiết kế CSDL | ERD | M | 4 | 3.1 | ⬜ |
-| 3.3 | Đặc tả API | OpenAPI spec | M | 4 | 3.1 | ⬜ |
+| 3.1 | Kiến trúc hệ thống (modular monolith) | Sơ đồ kiến trúc trong `docs/project.md` | M | 4 | 2.4.1 | ⬜ |
+| 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | ⬜ |
+| 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | ⬜ |
 | 3.4 | Wireframe các màn hình chính | Wireframe (Figma / giấy) | M | 8 | 2.4.1 | ⬜ |
 | **4** | **PHÁT TRIỂN** | | | **93** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | ✅ |
-| 4.1.2 | Cấu hình CI (GitHub Actions) | `.github/workflows/ci.yml` | M | 2 | 4.1.1 | ✅ |
-| 4.1.3 | Môi trường staging + Supabase | URL staging | M | 3 | 3.1 | ⬜ |
+| 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md`, PR template | M | 2 | 4.1.1 | ✅ |
+| 4.1.3 | Khung dự án: `backend/` (Express + MongoDB), `frontend/` (React + Vite) + staging | Ứng dụng chạy được ở local | M | 3 | 3.1 | 🔄 |
 | 4.2 | Lõi nghiệp vụ: kèo, chỗ, trình độ | `src/domain/` | M | 8 | 4.1.1 | 🔄 |
 | 4.3.1 | Bộ trích xuất dựa trên luật (baseline) | `src/parser/` | M | 12 | 4.1.1, 2.2.3 | 🔄 |
 | 4.3.2 | Bộ trích xuất bằng LLM | Module LLM | M | 8 | 4.3.1 | ⬜ |
 | 4.3.3 | Bộ trích xuất hybrid | Module hybrid | M | 5 | 4.3.2 | ⬜ |
-| 4.4.1 | Xác thực (Supabase Auth: email, Google) | Đăng nhập hoạt động | M | 4 | 4.1.3 | ⬜ |
-| 4.4.2 | API kèo + tham gia/rời | API posts | M | 10 | 4.2, 4.4.1 | ⬜ |
-| 4.4.3 | Tìm kiếm theo vị trí / giờ / trình độ | API search (PostGIS) | M | 8 | 4.4.2 | ⬜ |
-| 4.5.1 | Màn hình đăng kèo + dán-tự-điền | UI đăng kèo | M | 12 | 3.4, 4.3.1 | ⬜ |
-| 4.5.2 | Danh sách kèo + bộ lọc | UI tìm kèo | M | 10 | 3.4, 4.4.3 | ⬜ |
+| 4.4.1 | Xác thực (email + mật khẩu, JWT) | Đăng nhập hoạt động | M | 4 | 4.1.3 | 🔄 |
+| 4.4.2 | API kèo + tham gia/rời | API posts | M | 10 | 4.2, 4.4.1 | 🔄 |
+| 4.4.3 | Tìm kiếm theo khu vực / ngày / trình độ | API search | M | 8 | 4.4.2 | 🔄 |
+| 4.5.1 | Màn hình đăng kèo + dán-tự-điền | UI đăng kèo | M | 12 | 3.4, 4.3.1 | 🔄 |
+| 4.5.2 | Danh sách kèo + bộ lọc | UI tìm kèo | M | 10 | 3.4, 4.4.3 | 🔄 |
 | 4.5.3 | Trang cá nhân | UI profile | S | 5 | 4.4.1 | ⬜ |
 | 4.6 | Thông báo qua email | Module notify | S | 4 | 4.4.2 | ⬜ |
 | 4.7 | Đánh giá uy tín sau kèo | API + UI rating | C | *(6)* | 4.4.2 | ⬜ |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **35** | | |
-| 5.1 | Unit test (liên tục, coverage ≥ 80%) | `tests/`, báo cáo coverage | M | 12 | 4.1.2 | 🔄 |
-| 5.2 | Integration / API test | Bộ test API | M | 6 | 4.4.2 | ⬜ |
+| 5.1 | Unit test (liên tục, coverage ≥ 80%) | `backend/tests/` (Jest), test frontend (Vitest) | M | 12 | 4.1.2 | 🔄 |
+| 5.2 | Integration / API test | Jest + Supertest + MongoDB trong RAM | M | 6 | 4.4.2 | 🔄 |
 | 5.3 | E2E test cho 3 luồng chính (đăng, tìm, tham gia) | Bộ test Playwright | S | 5 | 4.5.2 | ⬜ |
 | 5.4 | Đánh giá bộ trích xuất (RQ1) | Bảng P/R/F1 | M | 6 | 2.2.3, 4.3.3 | ⬜ |
 | 5.5 | Usability test A/B (RQ2) | Kết quả kiểm định Wilcoxon | M | 6 | 4.5.1 | ⬜ |
@@ -113,15 +113,15 @@ flowchart TD
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 24 | 5.4, 6.3 | ⬜ |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | ⬜ |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | ⬜ |
-| | **TỔNG (không tính mục Could)** | | | **281** | | |
+| | **TỔNG (không tính mục Could)** | | | **282** | | |
 
 ## 3. Tổng hợp khối lượng
 
 | | Giờ công |
 |---|---:|
-| Tổng kế hoạch (Must + Should) | 281 |
+| Tổng kế hoạch (Must + Should) | 282 |
 | Đã hoàn thành đến 13/11 (1.1, 1.2.1–1.2.2, 4.1.1–4.1.2, một phần 4.2 / 4.3.1 / 5.1) | ~35 |
-| Còn lại | ~246 |
+| Còn lại | ~247 |
 | Số tuần còn lại (14/11/2026 → 29/01/2027) | 11 |
 | **Trung bình cần làm** | **~22 giờ/tuần** |
 | Có thể cắt nếu chậm (mục *Should*: 2.3, 4.5.3, 4.6, 5.3) | −17 |
@@ -134,6 +134,6 @@ Nếu thực tế chỉ có khoảng 15 giờ/tuần thì kế hoạch này khô
 
 **4.3 Bộ trích xuất.** Nhận văn bản bài đăng, trả về dữ liệu có cấu trúc để điền form. Ba biến thể: (1) dựa trên luật (regex + từ điển, chạy offline, không tốn chi phí); (2) LLM; (3) hybrid, dùng luật trước và chỉ gọi LLM cho các trường luật không trích được. **Tiêu chí chấp nhận:** đạt chỉ tiêu F1 trong Charter trên tập kiểm tra giữ kín.
 
-**5.1 Unit test.** Mọi logic nghiệp vụ và bộ trích xuất phải có unit test. CI chạy typecheck + test + coverage trên mỗi lần push và Pull Request. Không merge vào `main` khi CI đỏ. Ngưỡng coverage cấu hình trong `vitest.config.ts`: lines/functions/statements ≥ 80%, branches ≥ 70%.
+**5.1 Unit test.** Mọi logic nghiệp vụ và bộ trích xuất phải có unit test. CI chạy typecheck + test + coverage trên mỗi lần push và Pull Request. Không merge vào `main` khi CI đỏ. Backend dùng Jest + Supertest với MongoDB chạy trong RAM (dạng replica set để test được transaction); frontend dùng Vitest. Ngưỡng coverage backend: lines/functions/statements ≥ 80%, branches ≥ 70%.
 
 **6.2 Pilot.** 2 tuần tại Hà Nội, phối hợp với ít nhất 1 chủ sân hoặc admin group. Ghi log ẩn danh: số kèo đăng, tỉ lệ kèo đủ người, thời gian từ lúc đăng đến lúc đủ người. Kết thúc bằng khảo sát SUS.
