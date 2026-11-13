@@ -65,7 +65,7 @@ flowchart TD
 | 1.1.2 | Lập Project Charter | [01-project-charter.md](01-project-charter.md) | M | 8 | 1.1.1 | Xong |
 | 1.2.1 | Lập WBS | Tài liệu này | M | 4 | 1.1.2 | Xong |
 | 1.2.2 | Lập Gantt chart | [03-gantt.md](03-gantt.md) | M | 3 | 1.2.1 | Xong |
-| 1.2.3 | Kế hoạch quản lý rủi ro + kế hoạch chất lượng | `docs/RISKS.md`, `docs/QUALITY.md` | M | 3 | 1.1.2 | Chưa |
+| 1.2.3 | Kế hoạch quản lý rủi ro + kế hoạch chất lượng | `docs/RISKS.md`, `docs/QUALITY.md` | M | 3 | 1.1.2 | Xong |
 | 1.3.1 | Nhật ký tiến độ hằng tuần | Weekly log (việc đã làm / kế hoạch / vướng mắc) | M | 8 | – | Đang làm |
 | 1.3.2 | Gặp và báo cáo GVHD | Báo cáo 2 tuần/lần | M | 6 | – | Chưa |
 | **2** | **KHẢO SÁT & PHÂN TÍCH** | | | **46** | | |
@@ -77,11 +77,11 @@ flowchart TD
 | 2.2.3 | Gán nhãn chuẩn (ground truth) + đo độ đồng thuận | Bộ dữ liệu gán nhãn (D3), Cohen's κ | M | 10 | 2.2.2 | Chưa |
 | 2.3 | Phân tích giải pháp hiện có | Bảng so sánh | S | 3 | – | Chưa |
 | 2.4.1 | User stories + use case (MoSCoW) | Product backlog | M | 6 | 2.1.3 | Chưa |
-| 2.4.2 | Đặc tả yêu cầu + quy tắc nghiệp vụ (mã BR-xx) | `docs/project.md` (D4) | M | 5 | 2.4.1 | Chưa |
+| 2.4.2 | Đặc tả yêu cầu + quy tắc nghiệp vụ (mã BR-xx) | `docs/project.md` (D4) | M | 5 | 2.4.1 | Đang làm |
 | **3** | **THIẾT KẾ** | | | **20** | | |
-| 3.1 | Kiến trúc hệ thống (modular monolith) | Sơ đồ kiến trúc trong `docs/project.md` | M | 4 | 2.4.1 | Chưa |
-| 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Chưa |
-| 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Chưa |
+| 3.1 | Kiến trúc hệ thống (modular monolith) | Sơ đồ kiến trúc trong `docs/project.md` | M | 4 | 2.4.1 | Xong |
+| 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Xong |
+| 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Xong |
 | 3.4 | Wireframe các màn hình chính | Wireframe (Figma / giấy) | M | 8 | 2.4.1 | Chưa |
 | **4** | **PHÁT TRIỂN** | | | **93** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
@@ -96,7 +96,7 @@ flowchart TD
 | 4.4.3 | Tìm kiếm theo khu vực / ngày / trình độ | API search | M | 8 | 4.4.2 | Đang làm |
 | 4.5.1 | Màn hình đăng kèo + dán-tự-điền | UI đăng kèo | M | 12 | 3.4, 4.3.1 | Đang làm |
 | 4.5.2 | Danh sách kèo + bộ lọc | UI tìm kèo | M | 10 | 3.4, 4.4.3 | Đang làm |
-| 4.5.3 | Trang cá nhân | UI profile | S | 5 | 4.4.1 | Chưa |
+| 4.5.3 | Trang cá nhân | UI profile | S | 5 | 4.4.1 | Xong |
 | 4.6 | Thông báo qua email | Module notify | S | 4 | 4.4.2 | Chưa |
 | 4.7 | Đánh giá uy tín sau kèo | API + UI rating | C | *(6)* | 4.4.2 | Chưa |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **35** | | |
