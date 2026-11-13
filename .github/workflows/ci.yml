@@ -1,6 +1,6 @@
 name: CI
 
-# Chạy mỗi khi push lên bất kỳ nhánh nào và mỗi khi mở/cập nhật Pull Request.
+# Chạy mỗi khi push lên BẤT KỲ nhánh nào và mỗi khi mở/cập nhật Pull Request.
 on:
   push:
     branches: ['**']
@@ -16,38 +16,76 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Test (Node ${{ matrix.node }})
+  backend-test:
+    name: backend-test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [22, 24]
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version-file: .nvmrc
           cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      # mongodb-memory-server tải binary MongoDB ở lần chạy đầu, cache lại cho các lần sau
+      - name: Cache MongoDB binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests + coverage
-        run: npm run coverage
+      - name: Run backend tests (coverage)
+        run: npm run test:coverage
 
       - name: Upload coverage report
-        if: matrix.node == 24 && always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: coverage/
+          name: backend-coverage
+          path: backend/coverage/
           retention-days: 14
+
+  # Lint + kiểm tra kiểu + test + build frontend (bắt lỗi kiểu khi API đổi)
+  frontend-build:
+    name: frontend-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests
+        run: npm test
+
+      - name: Type-check and build
+        run: npm run build
