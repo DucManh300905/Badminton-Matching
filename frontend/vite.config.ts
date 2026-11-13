@@ -1,11 +1,10 @@
 import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 // defineConfig của Vitest = của Vite + khóa `test`
 import { defineConfig } from 'vitest/config';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   server: { port: 5173 },
   test: {
     environment: 'jsdom',

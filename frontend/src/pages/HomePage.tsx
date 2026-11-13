@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
+import PageHeader from '../components/PageHeader';
 import PostCard from '../components/PostCard';
 import { Alert, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostFilter, PostSummary } from '../types';
 import { HANOI_AREAS } from '../utils/constants';
+import { toDateInput } from '../utils/format';
 
 export default function HomePage() {
   const { user } = useAuth();
+  const [today] = useState(() => toDateInput(new Date()));
   // Bộ lọc nằm trên URL (?district=...&date=...) → chia sẻ link hoặc F5 vẫn giữ nguyên
   const [params, setParams] = useSearchParams();
   const district = params.get('district') ?? '';
@@ -46,81 +49,75 @@ export default function HomePage() {
     setParams(next, { replace: true });
   }
 
+  const isToday = date === today;
+
   return (
-    <div className="space-y-5">
-      <section className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kèo sắp diễn ra</h1>
-          <p className="text-sm text-slate-500">Tìm kèo còn chỗ, bấm vào để xem chi tiết và tham gia.</p>
-        </div>
-        <Link to="/keo/moi" className="btn-primary">
-          + Đăng kèo
-        </Link>
-      </section>
+    <>
+      <PageHeader
+        title={isToday ? 'Kèo hôm nay' : 'Tìm kèo cầu lông'}
+        subtitle={user ? `Chào ${user.displayName}, hôm nay đánh cầu không?` : 'Tìm đồng đội, ghép kèo nhanh chóng'}
+      />
 
-      <section className="card grid gap-3 p-4 sm:grid-cols-3" aria-label="Bộ lọc">
-        <div>
-          <label htmlFor="f-district" className="label">
-            Khu vực
-          </label>
-          <select
-            id="f-district"
-            className="input"
-            value={district}
-            onChange={(e) => update('district', e.target.value)}
-          >
-            <option value="">Tất cả</option>
-            {HANOI_AREAS.map((d) => (
-              <option key={d}>{d}</option>
+      <div className="page-body stack">
+        <section className="card" aria-label="Bộ lọc">
+          <div className="filters">
+            <div>
+              <label htmlFor="f-district" className="label">
+                Khu vực
+              </label>
+              <select
+                id="f-district"
+                className="input"
+                value={district}
+                onChange={(e) => update('district', e.target.value)}
+              >
+                <option value="">Tất cả</option>
+                {HANOI_AREAS.map((d) => (
+                  <option key={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="f-date" className="label">
+                Ngày
+              </label>
+              <input
+                id="f-date"
+                type="date"
+                className="input"
+                value={date}
+                onChange={(e) => update('date', e.target.value)}
+              />
+            </div>
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={myLevel}
+                disabled={!user}
+                onChange={(e) => update('myLevel', e.target.checked ? '1' : '')}
+              />
+              <span>Chỉ hiện kèo hợp trình độ của tôi {!user && <span className="hint">(cần đăng nhập)</span>}</span>
+            </label>
+          </div>
+        </section>
+
+        {error && <Alert>{error}</Alert>}
+        {loading && <Spinner />}
+        {posts && posts.length === 0 && (
+          <div className="card empty">
+            Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+          </div>
+        )}
+        {posts && posts.length > 0 && (
+          <ul className="post-list">
+            {posts.map((p) => (
+              <li key={p.id}>
+                <PostCard post={p} />
+              </li>
             ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="f-date" className="label">
-            Ngày
-          </label>
-          <input
-            id="f-date"
-            type="date"
-            className="input"
-            value={date}
-            onChange={(e) => update('date', e.target.value)}
-          />
-        </div>
-        <div className="flex items-end">
-          <label className="flex cursor-pointer items-center gap-2 py-2 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              className="size-4 accent-emerald-600"
-              checked={myLevel}
-              disabled={!user}
-              onChange={(e) => update('myLevel', e.target.checked ? '1' : '')}
-            />
-            Hợp trình độ của tôi
-            {!user && <span className="text-xs text-slate-400">(cần đăng nhập)</span>}
-          </label>
-        </div>
-      </section>
-
-      {error && <Alert>{error}</Alert>}
-      {loading && <Spinner />}
-      {posts && posts.length === 0 && (
-        <div className="card p-8 text-center text-sm text-slate-500">
-          Chưa có kèo nào phù hợp.{' '}
-          <Link to="/keo/moi" className="font-semibold text-emerald-700 hover:underline">
-            Đăng kèo đầu tiên
-          </Link>
-        </div>
-      )}
-      {posts && posts.length > 0 && (
-        <ul className="space-y-3">
-          {posts.map((p) => (
-            <li key={p.id}>
-              <PostCard post={p} />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+          </ul>
+        )}
+      </div>
+    </>
   );
 }

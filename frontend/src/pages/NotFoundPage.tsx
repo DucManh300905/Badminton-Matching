@@ -1,13 +1,21 @@
 import { Link } from 'react-router';
+import PageHeader from '../components/PageHeader';
 
 export default function NotFoundPage() {
   return (
-    <div className="py-16 text-center">
-      <p className="text-5xl">🏸</p>
-      <h1 className="mt-4 text-xl font-bold">Không tìm thấy trang</h1>
-      <Link to="/" className="mt-4 inline-block text-emerald-700 hover:underline">
-        Về trang chủ
-      </Link>
-    </div>
+    <>
+      <PageHeader title="Không tìm thấy trang" compact />
+      <div className="page-body">
+        <div className="card not-found">
+          <p className="not-found__code">404</p>
+          <p className="hint">Đường dẫn không tồn tại hoặc đã bị đổi.</p>
+          <p>
+            <Link to="/" className="btn btn--link">
+              Về trang chủ
+            </Link>
+          </p>
+        </div>
+      </div>
+    </>
   );
 }

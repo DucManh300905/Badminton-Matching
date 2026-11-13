@@ -4,6 +4,7 @@ const { authenticate } = require('../../middlewares/auth.middleware');
 const { validate } = require('../../middlewares/validate.middleware');
 const { getMe, updateMe } = require('./user.controller');
 const { displayNameRule, genderRule, levelRule } = require('./user.rules');
+const { listMyPosts } = require('../post/post.controller');
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.put(
     validate,
     updateMe
 );
+router.get('/me/posts', listMyPosts);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-// Kiểm tra nhanh API đang chạy thật (server + MongoDB trên máy), in ✔ / ✘ từng bước.
+// Kiểm tra nhanh API đang chạy thật (server + MongoDB trên máy), in [ĐẠT] / [LỖI] từng bước.
 // Cần: server đang chạy (npm run dev) và đã có dữ liệu mẫu (npm run seed:demo).
 // Chạy: npm run smoke
 // Tài khoản / kèo tạo ra trong lúc kiểm tra được xóa ở cuối.
@@ -16,7 +16,7 @@ let failed = 0;
 const check = (ok, label, detail = '') => {
     if (ok) passed += 1;
     else failed += 1;
-    console.log(`${ok ? '✔' : '✘'} ${label}${detail ? ` — ${detail}` : ''}`);
+    console.log(`${ok ? '[ĐẠT]' : '[LỖI]'} ${label}${detail ? ` — ${detail}` : ''}`);
 };
 
 const call = async (method, path, body, token) => {
@@ -35,7 +35,7 @@ const run = async () => {
 
     const health = await call('GET', '/health').catch(() => null);
     if (!health) {
-        console.log('✘ Không kết nối được server. Hãy chạy "npm run dev" ở một terminal khác trước.');
+        console.log('[LỖI] Không kết nối được server. Hãy chạy "npm run dev" ở một terminal khác trước.');
         process.exitCode = 1;
         return;
     }
@@ -44,7 +44,7 @@ const run = async () => {
     const thu = await login('thu');
     const hung = await login('hung');
     if (!thu || !hung) {
-        console.log('✘ Không đăng nhập được tài khoản mẫu. Hãy chạy "npm run seed:demo" trước.');
+        console.log('[LỖI] Không đăng nhập được tài khoản mẫu. Hãy chạy "npm run seed:demo" trước.');
         process.exitCode = 1;
         return;
     }
@@ -139,12 +139,12 @@ const cleanup = async () => {
 run()
     .catch((error) => {
         failed += 1;
-        console.log(`✘ Lỗi không mong đợi: ${error.message}`);
+        console.log(`[LỖI] Lỗi không mong đợi: ${error.message}`);
     })
     .finally(async () => {
         await cleanup().catch(() => {});
         if (passed + failed > 0) {
-            console.log(`\n${failed === 0 ? '✔ TẤT CẢ ĐẠT' : '✘ CÓ BƯỚC LỖI'}: ${passed} đạt, ${failed} lỗi (đã dọn dữ liệu thử)`);
+            console.log(`\n${failed === 0 ? 'TẤT CẢ ĐẠT' : 'CÓ BƯỚC LỖI'}: ${passed} đạt, ${failed} lỗi (đã dọn dữ liệu thử)`);
         }
         if (failed > 0) process.exitCode = 1;
     });

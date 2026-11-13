@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from './format';
+import { formatLevelRange, formatPrice, formatSlots, formatTimeRange, initials } from './format';
 
 describe('format', () => {
   it('formatPrice', () => {
@@ -21,5 +21,16 @@ describe('format', () => {
   it('formatSlots bỏ qua loại chỗ bằng 0', () => {
     expect(formatSlots({ male: 2, female: 0, any: 1 })).toBe('2 nam · 1 bất kỳ');
     expect(formatSlots({ male: 0, female: 0, any: 0 })).toBe('');
+  });
+});
+
+describe('initials', () => {
+  it.each([
+    ['An Đức Mạnh', 'M'],
+    ['  thu  ', 'T'],
+    ['đạt', 'Đ'],
+    ['', '?'],
+  ])('%p → %p', (name, expected) => {
+    expect(initials(name)).toBe(expected);
   });
 });

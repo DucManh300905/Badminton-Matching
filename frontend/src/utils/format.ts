@@ -37,6 +37,15 @@ export function toDateInput(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+/**
+ * Chữ cái đại diện cho ảnh đại diện. Tên Việt gọi theo chữ cuối:
+ * "An Đức Mạnh" → "M"; "minh" → "M"; "" → "?"
+ */
+export function initials(name: string): string {
+  const last = name.trim().split(/\s+/).pop() ?? '';
+  return last ? last.charAt(0).toLocaleUpperCase('vi-VN') : '?';
+}
+
 /** { hour: 19, minute: 0 } → "19:00" */
 export function toTimeInput(t: { hour: number; minute: number }): string {
   return `${pad(t.hour)}:${pad(t.minute)}`;

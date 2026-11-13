@@ -11,6 +11,8 @@ interface AuthState {
   /** Thông báo khi phiên đăng nhập hết hạn giữa chừng */
   notice: string | null;
   clearNotice: () => void;
+  /** true ngay sau khi người dùng TỰ bấm đăng xuất → trang cần đăng nhập chuyển về trang chủ, không sang trang Đăng nhập */
+  justLoggedOut: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => void;
@@ -25,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Có token thì phải hỏi server trước khi biết đã đăng nhập hay chưa
   const [loading, setLoading] = useState(() => !!tokenStore.get());
   const [notice, setNotice] = useState<string | null>(null);
+  const [justLoggedOut, setJustLoggedOut] = useState(false);
 
   useEffect(() => {
     if (!tokenStore.get()) return;
@@ -52,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenStore.set(result.token);
     setUser(result.user);
     setNotice(null);
+    setJustLoggedOut(false);
   }, []);
 
   const register = useCallback(async (input: RegisterInput) => {
@@ -59,19 +63,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenStore.set(result.token);
     setUser(result.user);
     setNotice(null);
+    setJustLoggedOut(false);
   }, []);
 
   // JWT không lưu phía server → đăng xuất = xóa token ở trình duyệt
   const logout = useCallback(() => {
     tokenStore.clear();
     setUser(null);
+    setJustLoggedOut(true);
   }, []);
 
   const clearNotice = useCallback(() => setNotice(null), []);
 
   const value = useMemo(
-    () => ({ user, loading, notice, clearNotice, login, register, logout, setUser }),
-    [user, loading, notice, clearNotice, login, register, logout],
+    () => ({ user, loading, notice, clearNotice, justLoggedOut, login, register, logout, setUser }),
+    [user, loading, notice, clearNotice, justLoggedOut, login, register, logout],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

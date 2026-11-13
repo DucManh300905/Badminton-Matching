@@ -2,35 +2,56 @@ import { Link } from 'react-router';
 import type { PostSummary } from '../types';
 import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from '../utils/format';
 
-export default function PostCard({ post }: { post: PostSummary }) {
-  const isFull = post.status === 'full';
-  const remaining = formatSlots(post.remaining);
+interface Props {
+  post: PostSummary;
+  /** Truyền vào để đánh dấu kèo đã diễn ra (trang "Kèo của tôi") */
+  now?: number;
+}
+
+/** Nhãn trạng thái: Đã hủy · Đã diễn ra · Đủ người · Còn … */
+function statusBadge(post: PostSummary, now?: number): { text: string; tone: 'open' | 'full' | 'closed' } {
+  if (post.status === 'closed') return { text: 'Đã hủy', tone: 'closed' };
+  if (now !== undefined && new Date(post.startsAt).getTime() <= now) return { text: 'Đã diễn ra', tone: 'full' };
+  if (post.status === 'full') return { text: 'Đủ người', tone: 'full' };
+  // Nhãn chỉ ghi tổng cho gọn; chi tiết nam / nữ nằm ở hàng thông tin bên dưới
+  const left = post.remaining.male + post.remaining.female + post.remaining.any;
+  return { text: `Còn ${left} chỗ`, tone: 'open' };
+}
+
+export default function PostCard({ post, now }: Props) {
+  const badge = statusBadge(post, now);
+  const needed = badge.tone === 'open' ? formatSlots(post.remaining) : '';
 
   return (
     <Link
       to={`/keo/${post.id}`}
-      className="card block p-4 transition hover:border-emerald-300 hover:shadow-md"
+      className={`post-card${badge.tone === 'open' ? '' : ' post-card--dim'}`}
       aria-label={`Kèo ${post.courtName}`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-emerald-700">{formatTimeRange(post.startsAt, post.endsAt)}</p>
-          <h3 className="mt-1 truncate text-base font-semibold text-slate-900">{post.courtName}</h3>
-          <p className="text-sm text-slate-500">📍 {post.district}</p>
+      <div className="post-card__top">
+        <div>
+          <p className="post-card__time">{formatTimeRange(post.startsAt, post.endsAt)}</p>
+          <h3 className="post-card__title">{post.courtName}</h3>
+          <p className="post-card__area">{post.district}</p>
         </div>
-        <span
-          className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
-            isFull ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-700'
-          }`}
-        >
-          {isFull ? 'Đủ người' : `Còn ${remaining}`}
-        </span>
+        <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
-        <span>🎯 {formatLevelRange(post.levelMin, post.levelMax)}</span>
-        <span>💰 {formatPrice(post.pricePerPerson)}/người</span>
-        <span>👤 {post.author.displayName}</span>
+      <div className="post-card__meta">
+        {needed && (
+          <span>
+            Cần: <strong>{needed}</strong>
+          </span>
+        )}
+        <span>
+          Trình độ: <strong>{formatLevelRange(post.levelMin, post.levelMax)}</strong>
+        </span>
+        <span>
+          Chi phí: <strong>{formatPrice(post.pricePerPerson)}/người</strong>
+        </span>
+        <span>
+          Chủ kèo: <strong>{post.author.displayName}</strong>
+        </span>
       </div>
     </Link>
   );

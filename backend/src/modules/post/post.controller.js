@@ -10,6 +10,16 @@ const listPosts = asyncHandler(async (req, res) => {
     res.json({ success: true, data: posts.map(toPostSummary) });
 });
 
+// GET /api/users/me/posts — kèo tôi đã đăng và đã tham gia
+const listMyPosts = asyncHandler(async (req, res) => {
+    const { authored, joined } = await postService.listMyPosts(req.user.userId);
+
+    res.json({
+        success: true,
+        data: { authored: authored.map(toPostSummary), joined: joined.map(toPostSummary) }
+    });
+});
+
 // GET /api/posts/:id — không cần đăng nhập
 const getPost = asyncHandler(async (req, res) => {
     const post = await postService.getPost(req.params.id);
@@ -47,6 +57,7 @@ const cancelPost = asyncHandler(async (req, res) => {
 
 module.exports = {
     listPosts,
+    listMyPosts,
     getPost,
     createPost,
     joinPost,

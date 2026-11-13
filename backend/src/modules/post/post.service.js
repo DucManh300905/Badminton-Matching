@@ -51,6 +51,23 @@ const listPosts = async ({ district, date, level }, now) => {
     return Post.find(query).sort({ startsAt: 1, _id: 1 }).limit(LIST_LIMIT).populate('author', AUTHOR_FIELDS);
 };
 
+const MY_POSTS_LIMIT = 50;
+
+/**
+ * Kèo của một người: đã đăng và đã tham gia — gồm cả kèo đã qua / đã hủy, mới nhất trước.
+ * @param {string} userId
+ */
+const listMyPosts = async (userId) => {
+    const recentFirst = (query) =>
+        Post.find(query).sort({ startsAt: -1, _id: -1 }).limit(MY_POSTS_LIMIT).populate('author', AUTHOR_FIELDS);
+
+    const [authored, joined] = await Promise.all([
+        recentFirst({ author: userId }),
+        recentFirst({ 'participants.user': userId })
+    ]);
+    return { authored, joined };
+};
+
 /** @param {string} id */
 const getPost = async (id) => {
     const post = await findDetail(id);
@@ -133,7 +150,9 @@ const cancelPost = (postId, userId, now) => updateParticipants(postId, (post) =>
 
 module.exports = {
     LIST_LIMIT,
+    MY_POSTS_LIMIT,
     listPosts,
+    listMyPosts,
     getPost,
     createPost,
     joinPost,
