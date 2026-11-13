@@ -1,10 +1,10 @@
-import { Link } from 'react-router'
-import type { PostSummary } from '../api/types'
-import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from '../lib/format'
+import { Link } from 'react-router';
+import type { PostSummary } from '../types';
+import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from '../utils/format';
 
-export function PostCard({ post }: { post: PostSummary }) {
-  const isFull = post.status === 'full'
-  const remaining = formatSlots(post.remaining)
+export default function PostCard({ post }: { post: PostSummary }) {
+  const isFull = post.status === 'full';
+  const remaining = formatSlots(post.remaining);
 
   return (
     <Link
@@ -33,5 +33,5 @@ export function PostCard({ post }: { post: PostSummary }) {
         <span>👤 {post.author.displayName}</span>
       </div>
     </Link>
-  )
+  );
 }

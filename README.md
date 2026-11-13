@@ -19,7 +19,7 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 | Phần | Công nghệ |
 |---|---|
 | Backend | Node.js 24 LTS · Express 5 (CommonJS) · MongoDB + Mongoose · JWT · express-validator · helmet · express-rate-limit |
-| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios |
+| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios (gọi API qua `VITE_API_URL`, JWT lưu `localStorage`) |
 | Kiểm thử | Jest + Supertest + MongoDB chạy trong RAM (backend) · Vitest + React Testing Library (frontend) |
 | CI | GitHub Actions: `backend-test`, `frontend-build` |
 
@@ -35,11 +35,16 @@ Badminton-Matching/
 │  │  ├─ middlewares/       auth, error, validate, rateLimit
 │  │  ├─ modules/           Mỗi chức năng một thư mục: routes / controller / service / model
 │  │  │  ├─ auth/  user/    Đăng ký, đăng nhập, hồ sơ
-│  │  │  ├─ post/           Kèo: model + quy tắc nghiệp vụ (post.rules.js)
+│  │  │  ├─ post/           Kèo: model, quy tắc nghiệp vụ (post.rules.js), service, routes
 │  │  │  └─ parser/         Bộ trích xuất bài đăng dựa trên luật
 │  │  └─ utils/             AppError, asyncHandler, giờ VN, chính sách mật khẩu, dữ liệu mẫu
 │  └─ tests/                Mỗi module một thư mục test
 ├─ frontend/                React + TypeScript (package.json riêng)
+│  └─ src/
+│     ├─ api/               client.ts (axios + JWT + dịch mã lỗi) và mỗi tài nguyên một file
+│     ├─ components/  context/  pages/
+│     ├─ utils/             Hằng số, định dạng, chuyển đổi form
+│     └─ types.ts           Kiểu dữ liệu dùng chung
 └─ docs/
 ```
 
@@ -58,9 +63,12 @@ npm run dev                 # http://localhost:8080/api/health
 
 ```bash
 cd frontend
+cp .env.example .env        # VITE_API_URL=http://localhost:8080/api (không có .env thì dùng địa chỉ này)
 npm install
 npm run dev                 # http://localhost:5173
 ```
+
+Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal khác) rồi mở http://localhost:5173.
 
 ### Kiểm thử
 
@@ -68,6 +76,7 @@ npm run dev                 # http://localhost:5173
 |---|---|
 | `cd backend && npm test` | Test backend (MongoDB chạy trong RAM, không cần cài) |
 | `cd backend && npm run test:coverage` | Kèm báo cáo coverage (`backend/coverage/index.html`) |
+| `cd backend && npm run smoke` | Kiểm tra nhanh API **đang chạy thật** (cần `npm run dev` + `npm run seed:demo`), tự dọn dữ liệu thử |
 | `cd frontend && npm test` | Test frontend |
 | `cd frontend && npm run lint && npm run build` | Kiểm tra code và build frontend |
 
@@ -77,8 +86,9 @@ npm run dev                 # http://localhost:5173
 |---|---|
 | Quy tắc nghiệp vụ của kèo, bộ trích xuất bài đăng | ✅ Có test |
 | Đăng ký, đăng nhập, đổi mật khẩu, hồ sơ (`/api/auth`, `/api/users`) | ✅ |
-| API kèo: danh sách, chi tiết, tạo, tham gia / rời (`/api/posts`), `/api/parse` | 🔄 Đang làm |
-| Frontend nối với API mới | 🔄 Đang làm |
+| API kèo: danh sách có lọc, chi tiết, tạo, tham gia / rời (transaction), hủy (`/api/posts`), dán bài → tự điền (`/api/parse`) | ✅ |
+| Frontend: danh sách + lọc, đăng kèo + dán-tự-điền, chi tiết, tham gia / rời / hủy, đăng nhập JWT | ✅ |
+| Giao diện CSS thuần (bỏ Tailwind) | 🔄 Đang làm |
 
 ## Định dạng API
 

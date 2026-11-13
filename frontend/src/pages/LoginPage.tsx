@@ -1,30 +1,30 @@
-import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
-import { toApiError } from '../api/client'
-import { Alert } from '../components/ui'
-import { useAuth } from '../context/AuthContext'
+import { useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { toApiError } from '../api/client';
+import { Alert } from '../components/ui';
+import { useAuth } from '../context/AuthContext';
 
-export function LoginPage() {
-  const { login } = useAuth()
-  const navigate = useNavigate()
-  const from = (useLocation().state as { from?: string } | null)?.from ?? '/'
+export default function LoginPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const from = (useLocation().state as { from?: string } | null)?.from ?? '/';
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setSubmitting(true)
-    setError(null)
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
     try {
-      await login(email, password)
-      navigate(from, { replace: true })
+      await login(email, password);
+      navigate(from, { replace: true });
     } catch (err) {
-      setError(toApiError(err).message)
+      setError(toApiError(err).message);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
@@ -37,7 +37,15 @@ export function LoginPage() {
           <label htmlFor="email" className="label">
             Email
           </label>
-          <input id="email" type="email" required autoComplete="email" className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            className="input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         <div>
           <label htmlFor="password" className="label">
@@ -64,5 +72,5 @@ export function LoginPage() {
         </p>
       </form>
     </div>
-  )
+  );
 }

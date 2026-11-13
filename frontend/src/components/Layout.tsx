@@ -1,18 +1,19 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router'
-import { useAuth } from '../context/AuthContext'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import { Alert } from './ui';
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition ${
     isActive ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100'
-  }`
+  }`;
 
-export function Layout() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+export default function Layout() {
+  const { user, logout, notice, clearNotice } = useAuth();
+  const navigate = useNavigate();
 
-  async function handleLogout() {
-    await logout()
-    navigate('/')
+  function handleLogout() {
+    logout();
+    navigate('/');
   }
 
   return (
@@ -50,6 +51,16 @@ export function Layout() {
       </header>
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
+        {notice && (
+          <div className="mb-4">
+            <Alert tone="info">
+              {notice}{' '}
+              <Link to="/dang-nhap" onClick={clearNotice} className="font-semibold underline">
+                Đăng nhập lại
+              </Link>
+            </Alert>
+          </div>
+        )}
         <Outlet />
       </main>
 
@@ -57,5 +68,5 @@ export function Layout() {
         Badminton Matching · Đồ án An Đức Mạnh
       </footer>
     </div>
-  )
+  );
 }

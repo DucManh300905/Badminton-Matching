@@ -1,15 +1,15 @@
-import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
-import { toApiError } from '../api/client'
-import type { RegisterInput } from '../api/types'
-import { Alert, FieldError } from '../components/ui'
-import { useAuth } from '../context/AuthContext'
-import { GENDER_LABELS, LEVEL_LABELS, SKILL_LEVELS, type Gender, type SkillLevel } from '../lib/constants'
+import { useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router';
+import { toApiError } from '../api/client';
+import { Alert, FieldError } from '../components/ui';
+import { useAuth } from '../context/AuthContext';
+import type { RegisterInput } from '../types';
+import { GENDER_LABELS, LEVEL_LABELS, SKILL_LEVELS, type Gender, type SkillLevel } from '../utils/constants';
 
-export function RegisterPage() {
-  const { register } = useAuth()
-  const navigate = useNavigate()
-  const from = (useLocation().state as { from?: string } | null)?.from ?? '/'
+export default function RegisterPage() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const from = (useLocation().state as { from?: string } | null)?.from ?? '/';
 
   const [form, setForm] = useState<RegisterInput>({
     email: '',
@@ -17,27 +17,28 @@ export function RegisterPage() {
     displayName: '',
     gender: 'male',
     level: 'TB',
-  })
-  const [error, setError] = useState<string | null>(null)
-  const [fields, setFields] = useState<Record<string, string>>({})
-  const [submitting, setSubmitting] = useState(false)
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [fields, setFields] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
-  const set = <K extends keyof RegisterInput>(key: K, value: RegisterInput[K]) => setForm((f) => ({ ...f, [key]: value }))
+  const set = <K extends keyof RegisterInput>(key: K, value: RegisterInput[K]) =>
+    setForm((f) => ({ ...f, [key]: value }));
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setSubmitting(true)
-    setError(null)
-    setFields({})
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    setFields({});
     try {
-      await register(form)
-      navigate(from, { replace: true })
+      await register(form);
+      navigate(from, { replace: true });
     } catch (err) {
-      const info = toApiError(err)
-      setError(info.message)
-      setFields(info.fields)
+      const info = toApiError(err);
+      setError(info.message);
+      setFields(info.fields);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
@@ -50,14 +51,28 @@ export function RegisterPage() {
           <label htmlFor="displayName" className="label">
             Tên hiển thị
           </label>
-          <input id="displayName" required className="input" value={form.displayName} onChange={(e) => set('displayName', e.target.value)} />
+          <input
+            id="displayName"
+            required
+            className="input"
+            value={form.displayName}
+            onChange={(e) => set('displayName', e.target.value)}
+          />
           <FieldError message={fields.displayName} />
         </div>
         <div>
           <label htmlFor="email" className="label">
             Email
           </label>
-          <input id="email" type="email" required autoComplete="email" className="input" value={form.email} onChange={(e) => set('email', e.target.value)} />
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            className="input"
+            value={form.email}
+            onChange={(e) => set('email', e.target.value)}
+          />
           <FieldError message={fields.email} />
         </div>
         <div>
@@ -81,7 +96,12 @@ export function RegisterPage() {
             <label htmlFor="gender" className="label">
               Giới tính
             </label>
-            <select id="gender" className="input" value={form.gender} onChange={(e) => set('gender', e.target.value as Gender)}>
+            <select
+              id="gender"
+              className="input"
+              value={form.gender}
+              onChange={(e) => set('gender', e.target.value as Gender)}
+            >
               {Object.entries(GENDER_LABELS).map(([v, l]) => (
                 <option key={v} value={v}>
                   {l}
@@ -93,7 +113,12 @@ export function RegisterPage() {
             <label htmlFor="level" className="label">
               Trình độ
             </label>
-            <select id="level" className="input" value={form.level} onChange={(e) => set('level', e.target.value as SkillLevel)}>
+            <select
+              id="level"
+              className="input"
+              value={form.level}
+              onChange={(e) => set('level', e.target.value as SkillLevel)}
+            >
               {SKILL_LEVELS.map((l) => (
                 <option key={l} value={l}>
                   {LEVEL_LABELS[l]}
@@ -116,5 +141,5 @@ export function RegisterPage() {
         </p>
       </form>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from 'react';
 
 export function Spinner({ label = 'Đang tải…' }: { label?: string }) {
   return (
@@ -6,7 +6,7 @@ export function Spinner({ label = 'Đang tải…' }: { label?: string }) {
       <span className="size-5 animate-spin rounded-full border-2 border-slate-300 border-t-emerald-600" />
       {label}
     </div>
-  )
+  );
 }
 
 export function Alert({ children, tone = 'error' }: { children: ReactNode; tone?: 'error' | 'info' | 'success' }) {
@@ -14,15 +14,15 @@ export function Alert({ children, tone = 'error' }: { children: ReactNode; tone?
     error: 'border-red-200 bg-red-50 text-red-700',
     info: 'border-sky-200 bg-sky-50 text-sky-800',
     success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  }[tone]
+  }[tone];
   return (
     <div role={tone === 'error' ? 'alert' : 'status'} className={`rounded-lg border px-4 py-3 text-sm ${styles}`}>
       {children}
     </div>
-  )
+  );
 }
 
 export function FieldError({ message }: { message?: string }) {
-  if (!message) return null
-  return <p className="mt-1 text-xs text-red-600">{message}</p>
+  if (!message) return null;
+  return <p className="mt-1 text-xs text-red-600">{message}</p>;
 }

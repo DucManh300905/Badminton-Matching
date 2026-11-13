@@ -1,50 +1,55 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
-import { postsApi, toApiError } from '../api/client'
-import type { PostDetail } from '../api/types'
-import { Alert, Spinner } from '../components/ui'
-import { useAuth } from '../context/AuthContext'
-import { GENDER_LABELS, LEVEL_LABELS } from '../lib/constants'
-import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from '../lib/format'
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router';
+import { toApiError } from '../api/client';
+import { postsApi } from '../api/posts';
+import { Alert, Spinner } from '../components/ui';
+import { useAuth } from '../context/AuthContext';
+import type { PostDetail } from '../types';
+import { GENDER_LABELS, LEVEL_LABELS } from '../utils/constants';
+import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from '../utils/format';
 
-const SLOT_LABELS = { male: 'chỗ nam', female: 'chỗ nữ', any: 'chỗ chung' } as const
+const SLOT_LABELS = { male: 'chỗ nam', female: 'chỗ nữ', any: 'chỗ chung' } as const;
+const STATUS_LABELS = { full: 'Đủ người', closed: 'Đã hủy' } as const;
 
-export function PostDetailPage() {
-  const { id = '' } = useParams()
-  const { user } = useAuth()
-  const [post, setPost] = useState<PostDetail | null>(null)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [actionError, setActionError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
-  // Thời điểm mở trang, dùng để biết kèo đã bắt đầu chưa.
-  const [openedAt] = useState(() => Date.now())
+type Action = 'join' | 'leave' | 'cancel';
+
+export default function PostDetailPage() {
+  const { id = '' } = useParams();
+  const { user } = useAuth();
+  const [post, setPost] = useState<PostDetail | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  // Thời điểm mở trang, dùng để biết kèo đã bắt đầu chưa
+  const [openedAt] = useState(() => Date.now());
 
   useEffect(() => {
     postsApi
       .get(id)
       .then(setPost)
-      .catch((e) => setLoadError(toApiError(e).message))
-  }, [id])
+      .catch((e) => setLoadError(toApiError(e).message));
+  }, [id]);
 
-  async function act(action: 'join' | 'leave') {
-    setBusy(true)
-    setActionError(null)
+  async function act(action: Action) {
+    if (action === 'cancel' && !window.confirm('Hủy kèo này? Người đã tham gia sẽ thấy kèo bị hủy.')) return;
+    setBusy(true);
+    setActionError(null);
     try {
-      setPost(await postsApi[action](id))
+      setPost(await postsApi[action](id));
     } catch (e) {
-      setActionError(toApiError(e).message)
+      setActionError(toApiError(e).message);
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
   }
 
-  if (loadError) return <Alert>{loadError}</Alert>
-  if (!post) return <Spinner />
+  if (loadError) return <Alert>{loadError}</Alert>;
+  if (!post) return <Spinner />;
 
-  const isAuthor = user?.id === post.author.id
-  const hasJoined = !!user && post.participants.some((p) => p.id === user.id)
-  const remaining = formatSlots(post.remaining)
-  const started = new Date(post.startsAt).getTime() <= openedAt
+  const isAuthor = user?.id === post.author.id;
+  const hasJoined = !!user && post.participants.some((p) => p.id === user.id);
+  const started = new Date(post.startsAt).getTime() <= openedAt;
+  const total = post.slots.male + post.slots.female + post.slots.any;
 
   return (
     <div className="space-y-5">
@@ -67,7 +72,7 @@ export function PostDetailPage() {
               post.status === 'open' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
             }`}
           >
-            {post.status === 'open' ? `Còn ${remaining}` : post.status === 'full' ? 'Đủ người' : 'Đã đóng'}
+            {post.status === 'open' ? `Còn ${formatSlots(post.remaining)}` : STATUS_LABELS[post.status]}
           </span>
         </header>
 
@@ -86,11 +91,13 @@ export function PostDetailPage() {
           </div>
         </dl>
 
-        {post.note && <p className="rounded-lg bg-slate-50 p-3 text-sm whitespace-pre-line text-slate-700">{post.note}</p>}
+        {post.note && (
+          <p className="rounded-lg bg-slate-50 p-3 text-sm whitespace-pre-line text-slate-700">{post.note}</p>
+        )}
 
         <section>
           <h2 className="mb-2 font-semibold text-slate-900">
-            Người tham gia ({post.participants.length}/{post.slots.male + post.slots.female + post.slots.any})
+            Người tham gia ({post.participants.length}/{total})
           </h2>
           {post.participants.length === 0 ? (
             <p className="text-sm text-slate-500">Chưa có ai. Hãy là người đầu tiên!</p>
@@ -100,7 +107,8 @@ export function PostDetailPage() {
                 <li key={p.id} className="flex items-center justify-between px-3 py-2 text-sm">
                   <span className="font-medium">{p.displayName}</span>
                   <span className="text-slate-500">
-                    {GENDER_LABELS[p.gender]} · {LEVEL_LABELS[p.level]} · {SLOT_LABELS[p.slot]}
+                    {p.gender ? GENDER_LABELS[p.gender] : '—'} · {p.level ? LEVEL_LABELS[p.level] : '—'} ·{' '}
+                    {SLOT_LABELS[p.slot]}
                   </span>
                 </li>
               ))}
@@ -111,25 +119,37 @@ export function PostDetailPage() {
         {actionError && <Alert>{actionError}</Alert>}
 
         <footer className="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
-          {!user ? (
+          {post.status === 'closed' ? (
+            <p className="text-sm text-slate-500">Chủ kèo đã hủy kèo này.</p>
+          ) : started ? (
+            <p className="text-sm text-slate-500">Kèo đã bắt đầu.</p>
+          ) : !user ? (
             <Link to="/dang-nhap" state={{ from: `/keo/${post.id}` }} className="btn-primary">
               Đăng nhập để tham gia
             </Link>
           ) : isAuthor ? (
-            <p className="text-sm text-slate-500">Đây là kèo của bạn.</p>
-          ) : started ? (
-            <p className="text-sm text-slate-500">Kèo đã bắt đầu.</p>
+            <>
+              <p className="text-sm text-slate-500">Đây là kèo của bạn.</p>
+              <button type="button" className="btn-danger ml-auto" disabled={busy} onClick={() => act('cancel')}>
+                Hủy kèo
+              </button>
+            </>
           ) : hasJoined ? (
             <button type="button" className="btn-danger" disabled={busy} onClick={() => act('leave')}>
               Rời kèo
             </button>
           ) : (
-            <button type="button" className="btn-primary" disabled={busy || post.status !== 'open'} onClick={() => act('join')}>
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={busy || post.status !== 'open'}
+              onClick={() => act('join')}
+            >
               {post.status === 'open' ? 'Tham gia kèo' : 'Đã đủ người'}
             </button>
           )}
         </footer>
       </article>
     </div>
-  )
+  );
 }
