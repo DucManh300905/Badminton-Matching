@@ -1,47 +1,35 @@
-import { BrowserRouter, Link, Route, Routes } from 'react-router'
-import { Layout } from './components/Layout'
-import { RequireAuth } from './components/RequireAuth'
-import { AuthProvider } from './context/AuthContext'
-import { HomePage } from './pages/HomePage'
-import { LoginPage } from './pages/LoginPage'
-import { PostDetailPage } from './pages/PostDetailPage'
-import { PostNewPage } from './pages/PostNewPage'
-import { RegisterPage } from './pages/RegisterPage'
+import type { ReactNode } from 'react';
+import { Route, Routes } from 'react-router';
+import Layout from './components/Layout';
+import RequireAuth from './components/RequireAuth';
+import AccountPage from './pages/AccountPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import MyPostsPage from './pages/MyPostsPage';
+import NotFoundPage from './pages/NotFoundPage';
+import PostDetailPage from './pages/PostDetailPage';
+import PostNewPage from './pages/PostNewPage';
+import ProfilePage from './pages/ProfilePage';
+import RegisterPage from './pages/RegisterPage';
 
-function NotFoundPage() {
-  return (
-    <div className="py-16 text-center">
-      <p className="text-5xl">🏸</p>
-      <h1 className="mt-4 text-xl font-bold">Không tìm thấy trang</h1>
-      <Link to="/" className="mt-4 inline-block text-emerald-700 hover:underline">
-        Về trang chủ
-      </Link>
-    </div>
-  )
-}
+const authed = (page: ReactNode) => <RequireAuth>{page}</RequireAuth>;
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route
-              path="keo/moi"
-              element={
-                <RequireAuth>
-                  <PostNewPage />
-                </RequireAuth>
-              }
-            />
-            <Route path="keo/:id" element={<PostDetailPage />} />
-            <Route path="dang-nhap" element={<LoginPage />} />
-            <Route path="dang-ky" element={<RegisterPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  )
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route path="keo/moi" element={authed(<PostNewPage />)} />
+        <Route path="keo/:id" element={<PostDetailPage />} />
+        <Route path="keo-cua-toi" element={authed(<MyPostsPage />)} />
+        <Route path="tai-khoan" element={authed(<AccountPage />)} />
+        <Route path="tai-khoan/ho-so" element={authed(<ProfilePage />)} />
+        <Route path="tai-khoan/doi-mat-khau" element={authed(<ChangePasswordPage />)} />
+        <Route path="dang-nhap" element={<LoginPage />} />
+        <Route path="dang-ky" element={<RegisterPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
+  );
 }

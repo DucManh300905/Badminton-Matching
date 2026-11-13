@@ -1,5 +1,6 @@
 const AppError = require('../../src/utils/AppError');
 const {
+    cancelPost,
     createPost,
     joinPost,
     leavePost,
@@ -164,5 +165,33 @@ describe('leavePost', () => {
 
     test('không cho rời kèo đã đóng', () => {
         expectJoinError(() => leavePost({ ...joined, status: 'closed' }, 'a', NOW), 'POST_NOT_OPEN');
+    });
+});
+
+describe('cancelPost', () => {
+    const post = createPost('p1', input(), NOW);
+
+    test('BR-13 chủ kèo hủy kèo trước giờ bắt đầu → closed', () => {
+        expect(cancelPost(post, 'author', NOW).status).toBe('closed');
+    });
+
+    test('BR-13 người khác hủy → 403 NOT_AUTHOR', () => {
+        try {
+            cancelPost(post, 'nguoi-khac', NOW);
+            throw new Error('Expected AppError');
+        } catch (e) {
+            expect(e).toBeInstanceOf(AppError);
+            expect(e).toMatchObject({ status: 403, code: 'NOT_AUTHOR' });
+        }
+    });
+
+    test('BR-13 không hủy được sau giờ bắt đầu, hoặc kèo đã hủy', () => {
+        expectJoinError(() => cancelPost(post, 'author', START), 'POST_STARTED');
+        expectJoinError(() => cancelPost({ ...post, status: 'closed' }, 'author', NOW), 'POST_NOT_OPEN');
+    });
+
+    test('BR-06 kèo đã hủy không ai tham gia được nữa', () => {
+        const closed = cancelPost(post, 'author', NOW);
+        expectJoinError(() => joinPost(closed, player('a'), NOW), 'POST_NOT_OPEN');
     });
 });
