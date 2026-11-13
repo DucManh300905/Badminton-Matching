@@ -7,6 +7,8 @@ Phiên bản 1.1 – 13/11/2026 · Thời gian: **12 tuần, 09/11/2026 → 29/0
 > Vì chỉ có một người làm, các công việc được xếp **gần như nối tiếp nhau**. Những thanh kéo dài (họp, unit test, thu thập khảo sát) là việc làm xen kẽ với cường độ thấp.
 > Màu đỏ (`crit`) là các công việc trên **đường găng**.
 
+Bản Excel (thanh tiến độ tự tô theo ngày và trạng thái, có sheet Tổng hợp, in vừa khổ A4 ngang): [diagrams/gantt.xlsx](diagrams/gantt.xlsx). Khi đổi lịch, cập nhật cả file Excel và sơ đồ dưới đây cho khớp.
+
 ```mermaid
 gantt
     title Badminton Booking - Kế hoạch 12 tuần (An Đức Mạnh)
@@ -49,7 +51,7 @@ gantt
     4.4.1 Xác thực                       :crit,   t441, 2026-12-10, 2d
     4.4.2 API kèo và tham gia            :crit,   t442, 2026-12-11, 7d
     4.5.1 UI đăng kèo và dán-tự-điền     :crit,   t451, 2026-12-16, 7d
-    4.4.3 Tìm kiếm theo vị trí           :crit,   t443, 2026-12-21, 6d
+    4.4.3 Tìm kiếm khu vực, ngày, trình độ :crit,   t443, 2026-12-21, 6d
     4.3.2 Trích xuất bằng LLM            :        t432, 2026-12-23, 6d
     4.5.2 UI danh sách và bộ lọc         :crit,   t452, 2026-12-26, 8d
     4.3.3 Trích xuất hybrid              :        t433, 2026-12-29, 3d

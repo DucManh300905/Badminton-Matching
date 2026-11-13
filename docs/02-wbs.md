@@ -8,53 +8,9 @@ Phiên bản 1.1 – 13/11/2026 · Phương pháp: phân rã theo **giai đoạn
 
 ## 1. Sơ đồ tổng quan (cấp 1–2)
 
-```mermaid
-flowchart TD
-    P["Badminton Booking<br/>Đồ án KHKT - An Đức Mạnh"]
-    P --> A["1. Quản lý dự án"]
-    P --> B["2. Khảo sát & phân tích"]
-    P --> C["3. Thiết kế"]
-    P --> D["4. Phát triển"]
-    P --> E["5. Kiểm thử & đánh giá"]
-    P --> F["6. Triển khai & pilot"]
-    P --> G["7. Kết thúc"]
+![Sơ đồ tổng quan WBS cấp 1–2](diagrams/wbs-tong-quan.png)
 
-    A --> A1["1.1 Khởi tạo"]
-    A --> A2["1.2 Lập kế hoạch"]
-    A --> A3["1.3 Theo dõi & kiểm soát"]
-
-    B --> B1["2.1 Khảo sát người chơi"]
-    B --> B2["2.2 Bộ dữ liệu bài đăng"]
-    B --> B3["2.3 Phân tích giải pháp hiện có"]
-    B --> B4["2.4 Đặc tả yêu cầu"]
-
-    C --> C1["3.1 Kiến trúc"]
-    C --> C2["3.2 CSDL"]
-    C --> C3["3.3 API"]
-    C --> C4["3.4 Wireframe"]
-
-    D --> D1["4.1 Hạ tầng"]
-    D --> D2["4.2 Lõi nghiệp vụ"]
-    D --> D3["4.3 Bộ trích xuất"]
-    D --> D4["4.4 Backend API"]
-    D --> D5["4.5 Frontend"]
-    D --> D6["4.6 Thông báo email"]
-    D --> D7["4.7 Uy tín (Could)"]
-
-    E --> E1["5.1 Unit test"]
-    E --> E2["5.2 Integration test"]
-    E --> E3["5.3 E2E test"]
-    E --> E4["5.4 Đánh giá trích xuất"]
-    E --> E5["5.5 Usability test"]
-
-    F --> F1["6.1 Deploy"]
-    F --> F2["6.2 Pilot 2 tuần"]
-    F --> F3["6.3 Phân tích số liệu"]
-
-    G --> G1["7.1 Báo cáo"]
-    G --> G2["7.2 Slide & demo"]
-    G --> G3["7.3 Bảo vệ"]
-```
+Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagrams/wbs-tong-quan.drawio) (mở bằng https://app.diagrams.net hoặc extension Draw.io Integration trong VS Code). Sửa xong thì xuất lại PNG và ghi đè `diagrams/wbs-tong-quan.png`.
 
 ## 2. Bảng WBS chi tiết
 
