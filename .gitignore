@@ -3,5 +3,22 @@ coverage/
 dist/
 .env
 .env.*
+!.env.example
 *.log
 .DS_Store
+
+# CSDL SQLite khi phát triển
+backend/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Dữ liệu bài đăng thô chưa ẩn danh hóa (WBS 2.2), KHÔNG đưa lên repo public
+data/raw/
+
+# Ghi chú nội bộ, chỉ đọc trên máy (vd CONVENTIONS.local.md)
+*.local.md
+
+# File build tạm của TypeScript
+*.tsbuildinfo

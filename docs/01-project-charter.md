@@ -69,10 +69,12 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Chức năng | Mức |
 |---|---|
 | Web app responsive, dùng tốt trên điện thoại | Must |
-| Đăng ký / đăng nhập (email, Google), dùng dịch vụ xác thực có sẵn | Must |
+| Đăng ký / đăng nhập bằng email + mật khẩu (JWT) | Must |
+| Đăng nhập bằng Google | Could |
 | Đăng kèo: sân, thời gian, trình độ, số chỗ theo giới tính, chi phí mỗi người | Must |
 | Dán nội dung bài đăng → tự động điền form (dựa trên luật, LLM, hybrid) | Must |
-| Tìm kiếm và lọc theo khu vực, khoảng cách, thời gian, trình độ | Must |
+| Tìm kiếm và lọc theo khu vực, thời gian, trình độ | Must |
+| Tìm theo khoảng cách (tọa độ sân) | Could |
 | Tham gia / rời kèo; kèo tự đóng khi đủ người | Must |
 | Thử nghiệm thực tế tại 1 khu vực (Hà Nội) | Must |
 | Thông báo qua email (có người tham gia, kèo sắp diễn ra) | Should |
@@ -91,10 +93,10 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 
 | # | Sản phẩm | Định dạng |
 |---|---|---|
-| D1 | Project Charter, WBS, Gantt chart | Markdown trong repo (`docs/`) |
+| D1 | Project Charter, WBS, Gantt chart, kế hoạch chất lượng, sổ rủi ro | Markdown trong repo (`docs/`) |
 | D2 | Báo cáo khảo sát người chơi | PDF |
 | D3 | Bộ dữ liệu bài đăng gán nhãn (đã ẩn danh) | JSON/CSV |
-| D4 | Tài liệu đặc tả yêu cầu (SRS) và thiết kế (kiến trúc, ERD, API) | Markdown / PDF |
+| D4 | Đặc tả yêu cầu + quy tắc nghiệp vụ (`docs/project.md`), thiết kế CSDL (`docs/database.md`), đặc tả API (`docs/API.md`) | Markdown / PDF |
 | D5 | Mã nguồn kèm test tự động và CI | GitHub repository |
 | D6 | Hệ thống chạy thật (production) | URL công khai |
 | D7 | Báo cáo đánh giá thực nghiệm (RQ1–RQ3) | Chương trong báo cáo đồ án |
@@ -107,8 +109,8 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Mốc | Nội dung | Ngày |
 |---|---|---|
 | **M0** | Charter trình duyệt, WBS và Gantt hoàn thành, CI chạy | 13/11/2026 |
-| **M1** | Chốt yêu cầu (SRS), bộ dữ liệu 200 bài gán nhãn xong | 01/12/2026 |
-| **M2** | Hoàn thành thiết kế (kiến trúc, ERD, API, wireframe) | 08/12/2026 |
+| **M1** | Chốt yêu cầu (`docs/project.md`), bộ dữ liệu 200 bài gán nhãn xong | 01/12/2026 |
+| **M2** | Hoàn thành thiết kế (kiến trúc, `docs/database.md`, `docs/API.md`, wireframe) | 08/12/2026 |
 | **M3** | Hoàn thành tính năng (*feature freeze*), deploy production | 10/01/2027 |
 | **M4** | Kết thúc thử nghiệm thực tế | 24/01/2027 |
 | **M5** | Nộp báo cáo và bảo vệ *(dự kiến, chờ lịch của khoa)* | 29/01/2027 |
@@ -133,14 +135,21 @@ Chi tiết xem [Gantt chart](03-gantt.md).
 
 | Hạng mục | Giải pháp | Chi phí ước tính |
 |---|---|---|
-| Hosting frontend / backend | Gói miễn phí (Vercel, Supabase…) | 0đ |
-| Cơ sở dữ liệu + xác thực | Supabase (PostgreSQL + PostGIS + Auth, gói miễn phí) | 0đ |
+| Hosting backend (Node.js) + frontend (file tĩnh sau khi build) | Gói miễn phí (Render / Railway) hoặc VPS của trường | 0đ |
+| Cơ sở dữ liệu | MongoDB: cài trên máy (replica set) khi phát triển; MongoDB Atlas gói M0 miễn phí khi chạy thật | 0đ |
 | API LLM cho bộ trích xuất | Giới hạn ngân sách cứng | ≤ 250.000đ |
 | Tên miền (tùy chọn) | | ≤ 300.000đ/năm |
 | CI/CD | GitHub Actions | 0đ |
 | **Tổng** | | **≤ 550.000đ** |
 
-**Thời gian:** khoảng **280 giờ công** trong 12 tuần, trung bình **~23 giờ/tuần** (chi tiết trong [WBS](02-wbs.md)). Dùng dịch vụ có sẵn (Supabase Auth, PostGIS) để giảm khối lượng backend phải tự viết.
+**Thời gian:** khoảng **280 giờ công** trong 12 tuần, trung bình **~23 giờ/tuần** (chi tiết trong [WBS](02-wbs.md)). 
+
+**Công nghệ:**
+- **Backend:** Node.js 24 LTS + Express 5 (kiến trúc modular monolith: mỗi chức năng một module routes / controller / service / model), MongoDB + Mongoose, xác thực JWT, kiểm tra dữ liệu bằng express-validator, bảo mật bằng helmet + giới hạn số lần đăng nhập.
+- **Frontend:** React 19 + Vite + TypeScript + React Router 7 + Axios, CSS thuần.
+- **Kiểm thử:** Jest + Supertest + MongoDB chạy trong RAM (backend); Vitest + React Testing Library (frontend); GitHub Actions chạy tự động mỗi lần push / Pull Request.
+
+MongoDB được chọn vì có sẵn transaction (bảo đảm hai người tham gia cùng lúc không lấy chung một chỗ) và có gói cloud miễn phí. Tìm kèo theo khu vực; tìm theo khoảng cách để mức *Could*.
 
 ---
 
@@ -154,7 +163,9 @@ Chi tiết xem [Gantt chart](03-gantt.md).
 | R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Trung bình | Trung bình | Bổ sung LLM / hybrid; mở rộng tập luật dựa trên phân tích lỗi |
 | R5 | Thiếu khách quan khi một người tự gán nhãn dữ liệu | Trung bình | Trung bình | Nhờ 1 người gán nhãn độc lập 50 bài; đo Cohen's κ; tự gán nhãn lại 20% sau 1 tuần |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Thấp | Cao | Không cào dữ liệu; ẩn danh hóa bộ dữ liệu; xin đồng ý khi khảo sát; có chính sách quyền riêng tư |
-| R7 | Chi phí hoặc giới hạn của API LLM / hosting miễn phí | Trung bình | Thấp | Đặt hạn mức chi; cache kết quả; dùng luật làm phương án dự phòng |
+| R7 | Chi phí hoặc giới hạn của API LLM / hosting miễn phí / MongoDB Atlas M0 (512 MB) | Trung bình | Thấp | Đặt hạn mức chi; cache kết quả; dùng luật làm phương án dự phòng; theo dõi dung lượng CSDL |
+
+Chi tiết từng rủi ro (dấu hiệu nhận biết sớm, kế hoạch dự phòng) ghi trong `docs/RISKS.md`.
 
 ---
 

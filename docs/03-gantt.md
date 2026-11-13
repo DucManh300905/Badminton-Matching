@@ -18,7 +18,7 @@ gantt
     section 1. Quản lý dự án
     1.1 Chốt đề tài và Charter           :done,   t11,  2026-11-09, 5d
     1.2.1-1.2.2 WBS và Gantt             :done,   t122, 2026-11-12, 2d
-    1.2.3 Kế hoạch rủi ro                :        t123, 2026-11-14, 2d
+    1.2.3 Rủi ro và chất lượng          :        t123, 2026-11-14, 2d
     1.3 Nhật ký tuần và gặp GVHD         :active, t13,  2026-11-09, 82d
     M0 Charter trình duyệt, CI chạy      :milestone, m0, 2026-11-13, 0d
 
@@ -31,12 +31,12 @@ gantt
     2.2.3 Gán nhãn và đo đồng thuận      :crit,   t223, 2026-11-23, 8d
     2.4.1 User stories và use case       :crit,   t241, 2026-11-25, 5d
     2.1.3 Phân tích khảo sát             :        t213, 2026-11-30, 2d
-    2.4.2 SRS                            :crit,   t242, 2026-11-30, 2d
+    2.4.2 Đặc tả yêu cầu                 :crit,   t242, 2026-11-30, 2d
     M1 Chốt yêu cầu và dữ liệu           :milestone, m1, 2026-12-01, 0d
 
     section 3. Thiết kế
     3.1 Kiến trúc hệ thống               :crit,   t31,  2026-12-02, 2d
-    3.2 Thiết kế CSDL (ERD)              :        t32,  2026-12-03, 2d
+    3.2 Thiết kế CSDL (collections)      :        t32,  2026-12-03, 2d
     3.3 Đặc tả API                       :crit,   t33,  2026-12-04, 3d
     3.4 Wireframe                        :        t34,  2026-12-05, 4d
     M2 Hoàn thành thiết kế               :milestone, m2, 2026-12-08, 0d
@@ -45,7 +45,7 @@ gantt
     4.1.1-4.1.2 Repo và CI               :done,   t411, 2026-11-12, 1d
     4.2 Lõi nghiệp vụ                    :active, t42,  2026-11-12, 11d
     4.3.1 Trích xuất dựa trên luật       :active, t431, 2026-11-12, 32d
-    4.1.3 Staging và Supabase            :crit,   t413, 2026-12-09, 2d
+    4.1.3 Khung full-stack và staging    :crit,   t413, 2026-12-09, 2d
     4.4.1 Xác thực                       :crit,   t441, 2026-12-10, 2d
     4.4.2 API kèo và tham gia            :crit,   t442, 2026-12-11, 7d
     4.5.1 UI đăng kèo và dán-tự-điền     :crit,   t451, 2026-12-16, 7d
@@ -79,7 +79,7 @@ gantt
 ## Đường găng (critical path)
 
 ```
-Thu thập + gán nhãn dữ liệu (2.2) → User stories/SRS (2.4) → Kiến trúc/API (3.1, 3.3)
+Thu thập + gán nhãn dữ liệu (2.2) → User stories/đặc tả (2.4) → Kiến trúc/API (3.1, 3.3)
 → Staging → Xác thực → API kèo → UI đăng kèo → Tìm kiếm → UI tìm kèo (4.x)
 → M3 → Deploy (6.1) → Pilot (6.2) → Phân tích (6.3) → Báo cáo (7.1) → M5
 ```
@@ -95,7 +95,7 @@ Với một người, gần như mọi công việc phát triển đều nằm t
 | 1 | 09/11 – 15/11 | Chốt đề tài, Charter, WBS, Gantt, repo + CI, lõi nghiệp vụ | ~35 *(đã làm phần lớn)* | **M0** (13/11) |
 | 2 | 16/11 – 22/11 | Bảng hỏi, thu thập bài đăng, phân tích giải pháp hiện có | ~20 | |
 | 3 | 23/11 – 29/11 | Gán nhãn dữ liệu, user stories | ~22 | |
-| 4 | 30/11 – 06/12 | Phân tích khảo sát, SRS, kiến trúc, ERD, API | ~22 | **M1** (01/12) |
+| 4 | 30/11 – 06/12 | Phân tích khảo sát, đặc tả yêu cầu, kiến trúc, thiết kế CSDL, API | ~22 | **M1** (01/12) |
 | 5 | 07/12 – 13/12 | Wireframe, staging, xác thực, bắt đầu API kèo | ~22 | **M2** (08/12) |
 | 6 | 14/12 – 20/12 | API kèo, UI đăng kèo, integration test | ~24 | |
 | 7 | 21/12 – 27/12 | Tìm kiếm vị trí, trích xuất LLM, UI danh sách | ~24 | |
