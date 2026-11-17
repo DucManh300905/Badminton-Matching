@@ -1,6 +1,6 @@
 # Sổ rủi ro — Badminton Matching
 
-> Cập nhật: 13/11/2026. Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
+> Cập nhật: 17/11/2026 (theo hạn hoàn thành dự án 15/12/2026). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
 > Tài liệu liên quan: [Charter](01-project-charter.md) mục 10 (R1–R7 gốc) · [QUALITY.md](QUALITY.md) · [Gantt](03-gantt.md)
 
 ## 1. Cách đánh giá
@@ -33,21 +33,22 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R11 | Sai múi giờ khi lọc theo ngày | Kỹ thuật | 4 | 3 | 12 → 3 | TB → Thấp | **Đã xử lý** |
 | R12 | Môi trường dev phụ thuộc MongoDB replica set | Kỹ thuật | 3 | 2 | 6 | Thấp | Đã có biện pháp |
 | R13 | Tài liệu không khớp với code | Quy trình | 3 | 2 | 6 | Thấp | Theo dõi |
+| R14 | Thời gian còn lại rất ngắn (hạn 15/12/2026) | Tiến độ | 4 | 5 | 20 | Cao | Đang theo dõi |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
 ## 3. Chi tiết từng rủi ro
 
 ### R1 — Làm một mình (Cao, 20 điểm)
-- **Mô tả:** đồ án cá nhân, không có người làm thay khi ốm, bận thi cuối kỳ hoặc việc riêng; kế hoạch cần khoảng 22 giờ/tuần.
-- **Dấu hiệu sớm:** một tuần làm dưới 15 giờ; một công việc trên đường găng trễ quá 3 ngày.
+- **Mô tả:** đồ án cá nhân, không có người làm thay khi ốm, bận thi cuối kỳ hoặc việc riêng; kế hoạch cần khoảng 34 giờ/tuần trong 4 tuần cuối (hạn 15/12/2026).
+- **Dấu hiệu sớm:** một tuần làm dưới 25 giờ; một công việc trên đường găng trễ quá 3 ngày.
 - **Phòng ngừa:** nhật ký tuần (WBS 1.3.1); phân loại MoSCoW trong Charter; không đặt mốc vào tuần thi.
-- **Dự phòng:** cắt theo thứ tự 4.6 Thông báo email → 4.5.3 Trang cá nhân → 5.3 E2E ([Gantt](03-gantt.md)); trễ quá 1 tuần thì báo giảng viên hướng dẫn ngay.
+- **Dự phòng:** cắt theo thứ tự 4.7 Uy tín → 4.6 Thông báo email → 5.3 E2E → 3.4 Wireframe ([Gantt](03-gantt.md) mục 4); trễ quá 1 tuần thì báo giảng viên hướng dẫn ngay.
 
 ### R2 — Thử nghiệm thực tế thiếu người dùng (Cao, 16 điểm)
-- **Mô tả:** nền tảng mới chưa có ai dùng nên chưa có kèo; chưa có kèo thì không ai vào. Không đủ số liệu cho RQ3 (mục tiêu ≥ 30 người dùng, ≥ 20 kèo).
-- **Dấu hiệu sớm:** đến 05/01/2027 chưa có chủ sân / admin hội nhóm nào đồng ý hỗ trợ.
-- **Phòng ngừa:** chỉ thử nghiệm ở 1 khu vực (Hà Nội); liên hệ chủ sân, admin hội nhóm từ tháng 12; tự đăng kèo thật để khởi động; nút chia sẻ kèo lên Facebook / Zalo.
+- **Mô tả:** nền tảng mới chưa có ai dùng nên chưa có kèo; chưa có kèo thì không ai vào. Không đủ số liệu cho RQ3 (mục tiêu ≥ 15 người dùng, ≥ 10 kèo trong 2 tuần 24/11 – 07/12/2026).
+- **Dấu hiệu sớm:** đến 21/11/2026 chưa có chủ sân / admin hội nhóm nào đồng ý hỗ trợ.
+- **Phòng ngừa:** chỉ thử nghiệm ở 1 khu vực (Hà Nội); liên hệ chủ sân, admin hội nhóm ngay tuần 17/11 – 23/11; tự đăng kèo thật để khởi động; nút chia sẻ kèo lên Facebook / Zalo.
 - **Dự phòng:** giảm chỉ tiêu và ghi rõ trong báo cáo; bổ sung số liệu từ usability test (RQ2).
 
 ### R3 — Phình phạm vi (Cao, 16 điểm)
@@ -55,16 +56,17 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Dấu hiệu sớm:** làm một chức năng không có mã trong [WBS](02-wbs.md).
 - **Phòng ngừa:** trước feature freeze (M3) chỉ làm mục *Must*; ý tưởng mới ghi vào backlog; mọi thay đổi phạm vi phải cập nhật WBS + Gantt.
 - **Ghi nhận:** giai đoạn khởi tạo đã thêm trang Tài khoản, Kèo của tôi, Hủy kèo (khoảng 6 giờ công) — chấp nhận vì là phần cốt lõi của trải nghiệm; đã ghi vào [project.md](project.md).
+- **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
 
 ### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Trung bình, 9 điểm)
 - **Mô tả:** cách viết bài đăng quá đa dạng, F1 của phương pháp luật dưới 0,75.
-- **Dấu hiệu sớm:** trên tập phát triển (140 bài), F1 một nhóm trường dưới 0,6.
+- **Dấu hiệu sớm:** trên tập phát triển (70 bài), F1 một nhóm trường dưới 0,6.
 - **Phòng ngừa:** mở rộng luật dựa trên phân tích lỗi; bộ test mẫu cho từng trường hợp khó.
 - **Dự phòng:** dựa vào phương pháp LLM / kết hợp; trình bày kết quả thấp như một phát hiện nghiên cứu (giới hạn của phương pháp luật).
 
 ### R5 — Gán nhãn dữ liệu thiếu khách quan (Trung bình, 9 điểm)
 - **Mô tả:** một người vừa viết bộ trích xuất vừa gán nhãn, dễ thiên lệch.
-- **Phòng ngừa:** hướng dẫn gán nhãn viết trước; nhờ 1 người gán độc lập 50 bài, đo Cohen's κ (mục tiêu ≥ 0,8); tự gán lại 20% sau 1 tuần; tập kiểm tra 60 bài giữ kín, không dùng khi viết luật.
+- **Phòng ngừa:** hướng dẫn gán nhãn viết trước; nhờ 1 người gán độc lập 30 bài, đo Cohen's κ (mục tiêu ≥ 0,8); tự gán lại 20% sau 1 tuần; tập kiểm tra 30 bài giữ kín, không dùng khi viết luật.
 
 ### R6 — Vi phạm quy định bảo vệ dữ liệu cá nhân (Trung bình, 10 điểm)
 - **Mô tả:** thu thập bài đăng hoặc thông tin người dùng trái Nghị định 13/2023/NĐ-CP và Luật Bảo vệ dữ liệu cá nhân.
@@ -99,6 +101,12 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 
 ### R13 — Tài liệu không khớp với code (Thấp, 6 điểm)
 - **Phòng ngừa:** thay đổi API / CSDL thì cập nhật [API.md](API.md) / [database.md](database.md) trong cùng Pull Request (mẫu PR có ô kiểm); xem lại tài liệu tại mỗi mốc.
+
+### R14 — Thời gian còn lại rất ngắn (Cao, 20 điểm)
+- **Mô tả:** hạn hoàn thành dời về 15/12/2026; còn 4 tuần cho khoảng 137 giờ công (~34 giờ/tuần), trong đó thử nghiệm thực tế cần đủ 2 tuần lịch.
+- **Dấu hiệu sớm:** M1 (23/11) chưa deploy được production; M2 (30/11) bộ dữ liệu chưa gán nhãn xong.
+- **Phòng ngừa:** deploy ngay tuần đầu để thử nghiệm chạy song song với các việc khác; giữ đủ hạng mục nhưng giảm cỡ mẫu (100 bài, ≥ 30 phản hồi khảo sát, ≥ 15 người thử nghiệm, ≥ 8 người usability test); viết báo cáo dần từ 02/12, dùng lại tài liệu kỹ thuật đã có (`project.md`, `API.md`, `database.md`).
+- **Dự phòng:** cắt theo thứ tự ở [Gantt](03-gantt.md) mục 4; không cắt thử nghiệm thực tế, bộ trích xuất LLM / kết hợp và đánh giá RQ1, vì đó là phần nghiên cứu chính.
 
 ## 4. Cập nhật sổ rủi ro
 

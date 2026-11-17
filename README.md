@@ -12,7 +12,7 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 |---|---|
 | [docs/01-project-charter.md](docs/01-project-charter.md) | Đề tài, mục tiêu, câu hỏi nghiên cứu, phạm vi, rủi ro |
 | [docs/02-wbs.md](docs/02-wbs.md) | Cấu trúc phân rã công việc |
-| [docs/03-gantt.md](docs/03-gantt.md) | Tiến độ 12 tuần, đường găng |
+| [docs/03-gantt.md](docs/03-gantt.md) | Mốc, đường găng, quy tắc cắt phạm vi, lộ trình 2 giai đoạn (lịch chi tiết: [docs/diagrams/gantt.xlsx](docs/diagrams/gantt.xlsx)) |
 | [docs/project.md](docs/project.md) | Tổng quan kỹ thuật: kiến trúc, chức năng, **quy tắc nghiệp vụ BR-01…BR-13**, bộ trích xuất |
 | [docs/API.md](docs/API.md) | Đặc tả API: endpoint, định dạng phản hồi, mã lỗi |
 | [docs/database.md](docs/database.md) | Thiết kế CSDL MongoDB: collection, index, transaction |
