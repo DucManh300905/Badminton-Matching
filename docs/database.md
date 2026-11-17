@@ -137,4 +137,4 @@ Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi �
 
 ## 7. Dữ liệu nghiên cứu
 
-Bộ dữ liệu 200 bài đăng gán nhãn (WBS 2.2) **không** nằm trong CSDL ứng dụng và **không** đưa bản thô lên Git (`data/raw/` đã bị bỏ qua trong `.gitignore`). Chỉ bản đã ẩn danh hóa mới được commit. Xem Charter mục 12.
+Bộ dữ liệu 100 bài đăng gán nhãn (WBS 2.2) **không** nằm trong CSDL ứng dụng và **không** đưa bản thô lên Git (`data/raw/` đã bị bỏ qua trong `.gitignore`). Chỉ bản đã ẩn danh hóa mới được commit. Xem Charter mục 12.

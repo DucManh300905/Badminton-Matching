@@ -5,8 +5,8 @@
 | **Sinh viên thực hiện** | An Đức Mạnh – MSSV 23110310 |
 | **Giảng viên hướng dẫn** | [ ] |
 | **Hình thức** | Đồ án cá nhân |
-| **Phiên bản** | 1.1 (bản trình duyệt) |
-| **Ngày lập** | 13/11/2026 |
+| **Phiên bản** | 1.3 (bản trình duyệt) |
+| **Ngày lập** | 13/11/2026 · cập nhật 17/11/2026: lộ trình 2 giai đoạn (web trước, app di động sau); **hạn hoàn thành dự án 15/12/2026** |
 | **Trạng thái** | Chờ giảng viên hướng dẫn phê duyệt |
 | **Tên dự án (tên tạm)** | Badminton Booking |
 
@@ -43,10 +43,10 @@ Xây dựng và thử nghiệm thực tế một nền tảng web giúp người
 ### 3.2 Mục tiêu cụ thể (SMART)
 | # | Mục tiêu | Chỉ số đo | Hạn |
 |---|---|---|---|
-| O1 | Hoàn thành web app với các chức năng cốt lõi (đăng kèo, tìm/lọc, tham gia, thông báo email) | 100% user story mức *Must* đạt tiêu chí chấp nhận | 10/01/2027 |
-| O2 | Xây dựng bộ dữ liệu bài đăng có gán nhãn | ≥ 200 bài, đã ẩn danh hóa | 01/12/2026 |
-| O3 | Bộ trích xuất đạt độ chính xác cao | F1 trung bình theo trường ≥ 0,90 (hybrid) | 05/01/2027 |
-| O4 | Thử nghiệm thực tế tại 1 khu vực | ≥ 30 người dùng thật, ≥ 20 kèo được đăng trong 2 tuần | 24/01/2027 |
+| O1 | Hoàn thành web app với các chức năng cốt lõi (đăng kèo, tìm/lọc, tham gia, thông báo email) | 100% user story mức *Must* đạt tiêu chí chấp nhận | 30/11/2026 |
+| O2 | Xây dựng bộ dữ liệu bài đăng có gán nhãn | ≥ 100 bài, đã ẩn danh hóa | 28/11/2026 |
+| O3 | Bộ trích xuất đạt độ chính xác cao | F1 trung bình theo trường ≥ 0,90 (hybrid) | 03/12/2026 |
+| O4 | Thử nghiệm thực tế tại 1 khu vực | ≥ 15 người dùng thật, ≥ 10 kèo được đăng trong 2 tuần | 07/12/2026 |
 | O5 | Đảm bảo chất lượng mã nguồn | Unit test chạy tự động trên CI, coverage dòng ≥ 80% | Liên tục |
 
 ---
@@ -55,8 +55,8 @@ Xây dựng và thử nghiệm thực tế một nền tảng web giúp người
 
 | | Câu hỏi nghiên cứu | Giả thuyết | Phương pháp kiểm chứng |
 |---|---|---|---|
-| **RQ1** | Phương pháp nào trích xuất thông tin kèo từ bài đăng tiếng Việt phi cấu trúc chính xác nhất: dựa trên luật, LLM, hay kết hợp (hybrid)? | **H1:** Hybrid đạt F1 ≥ 0,90; dựa trên luật đạt F1 ≥ 0,75. | Đo Precision/Recall/F1 theo 4 nhóm trường (thời gian, giá, số chỗ, trình độ) trên tập 200 bài gán nhãn tay. |
-| **RQ2** | Tính năng “dán bài → tự điền” có giảm thời gian tạo bài đăng so với điền form thủ công không? | **H2:** Thời gian tạo bài giảm ≥ 50%. | Thử nghiệm A/B trong phòng (within-subject), n ≥ 10, kiểm định Wilcoxon (phù hợp với mẫu nhỏ). |
+| **RQ1** | Phương pháp nào trích xuất thông tin kèo từ bài đăng tiếng Việt phi cấu trúc chính xác nhất: dựa trên luật, LLM, hay kết hợp (hybrid)? | **H1:** Hybrid đạt F1 ≥ 0,90; dựa trên luật đạt F1 ≥ 0,75. | Đo Precision/Recall/F1 theo 4 nhóm trường (thời gian, giá, số chỗ, trình độ) trên tập 100 bài gán nhãn tay (30 bài kiểm tra giữ kín). |
+| **RQ2** | Tính năng “dán bài → tự điền” có giảm thời gian tạo bài đăng so với điền form thủ công không? | **H2:** Thời gian tạo bài giảm ≥ 50%. | Thử nghiệm A/B trong phòng (within-subject), n ≥ 8, kiểm định Wilcoxon (phù hợp với mẫu nhỏ). |
 | **RQ3** | Nền tảng có cấu trúc giúp kèo được lấp đủ người hiệu quả hơn không? | **H3:** ≥ 60% kèo đăng trong thời gian thử nghiệm đủ người trước giờ chơi. | Thống kê log hệ thống trong 2 tuần thử nghiệm, kèm khảo sát mức hài lòng (thang SUS). |
 
 ---
@@ -79,12 +79,13 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Thử nghiệm thực tế tại 1 khu vực (Hà Nội) | Must |
 | Thông báo qua email (có người tham gia, kèo sắp diễn ra) | Should |
 | Nút chia sẻ kèo lên Facebook / Zalo | Should |
-| Đánh giá uy tín sau mỗi kèo | Could, chỉ làm nếu còn thời gian |
+| Đánh giá uy tín sau mỗi kèo | Could (có trong lịch, cắt đầu tiên nếu trễ) |
 
 ### 5.2 Ngoài phạm vi
 - Tự động thu thập (cào) dữ liệu từ Facebook hoặc mạng xã hội khác.
 - Thanh toán trực tuyến, đặt sân tích hợp với hệ thống của chủ sân.
-- Ứng dụng di động native (iOS/Android), web push notification.
+- Ứng dụng di động (iOS/Android): **không thuộc phạm vi đồ án**, làm ở giai đoạn 2 sau khi bảo vệ (mục 7.1).
+- Web push notification.
 - Chat thời gian thực (dùng liên kết Zalo/Messenger thay thế).
 
 ---
@@ -109,13 +110,25 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Mốc | Nội dung | Ngày |
 |---|---|---|
 | **M0** | Charter trình duyệt, WBS và Gantt hoàn thành, CI chạy | 13/11/2026 |
-| **M1** | Chốt yêu cầu (`docs/project.md`), bộ dữ liệu 200 bài gán nhãn xong | 01/12/2026 |
-| **M2** | Hoàn thành thiết kế (kiến trúc, `docs/database.md`, `docs/API.md`, wireframe) | 08/12/2026 |
-| **M3** | Hoàn thành tính năng (*feature freeze*), deploy production | 10/01/2027 |
-| **M4** | Kết thúc thử nghiệm thực tế | 24/01/2027 |
-| **M5** | Nộp báo cáo và bảo vệ *(dự kiến, chờ lịch của khoa)* | 29/01/2027 |
+| **M1** | Hệ thống chạy thật (production), chốt đặc tả yêu cầu, bắt đầu thử nghiệm thực tế | 23/11/2026 |
+| **M2** | Hoàn thành tính năng (*feature freeze*): bộ trích xuất LLM + kết hợp, bộ dữ liệu 100 bài gán nhãn | 30/11/2026 |
+| **M3** | Kết thúc thử nghiệm thực tế (2 tuần); đánh giá RQ1, RQ2 | 07/12/2026 |
+| **M4** | Báo cáo đồ án và slide hoàn thành | 13/12/2026 |
+| **M5** | **Hạn hoàn thành dự án** (ngày bảo vệ: chờ lịch của khoa) | 15/12/2026 |
 
-Chi tiết xem [Gantt chart](03-gantt.md).
+Chi tiết xem [Gantt chart](03-gantt.md) và file Excel [diagrams/gantt.xlsx](diagrams/gantt.xlsx).
+
+### 7.1 Lộ trình 2 giai đoạn
+
+| Giai đoạn | Nội dung | Thời gian | Thuộc đồ án |
+|---|---|---|:-:|
+| **1. Ứng dụng web** | Toàn bộ phạm vi ở mục 5.1; nghiên cứu RQ1–RQ3; thử nghiệm thực tế | 09/11/2026 → 15/12/2026 (M5) | Có |
+| **2. App di động** | App Android / iOS bằng React Native + Expo, dùng lại backend và API của giai đoạn 1; thông báo đẩy | Dự kiến 16/12/2026 → 18/01/2027 (mốc A1: bản thử Android) | Không |
+
+- Làm web trước vì: một nền tảng chạy được trên mọi thiết bị, thử nghiệm và đo đạc nhanh hơn; giao diện web đã thiết kế theo dạng ứng dụng điện thoại nên người dùng thử nghiệm vẫn dùng tốt trên điện thoại.
+- Backend và API (giai đoạn 1) được thiết kế độc lập với giao diện, nên giai đoạn 2 không phải sửa backend, trừ phần lưu mã thiết bị cho thông báo đẩy.
+- Giai đoạn 2 **không được bắt đầu trước M5**, để không ảnh hưởng tiến độ đồ án (xem rủi ro R3).
+- Gói công việc giai đoạn 2: [WBS](02-wbs.md) mục 5.
 
 ---
 
@@ -125,7 +138,7 @@ Chi tiết xem [Gantt chart](03-gantt.md).
 |---|---|---|
 | Sinh viên thực hiện | An Đức Mạnh (MSSV 23110310) | Toàn bộ dự án: quản lý, phân tích, thiết kế, phát triển, kiểm thử, triển khai, báo cáo |
 | Giảng viên hướng dẫn | [ ] | Định hướng chuyên môn, phê duyệt Charter và các mốc |
-| Người gán nhãn đối chứng | [1 bạn cùng lớp, tình nguyện] | Gán nhãn độc lập 50 bài để đo độ đồng thuận |
+| Người gán nhãn đối chứng | [1 bạn cùng lớp, tình nguyện] | Gán nhãn độc lập 30 bài để đo độ đồng thuận |
 | Người dùng thử nghiệm | Người chơi tại khu vực pilot | Tham gia khảo sát, usability test, pilot |
 | Chủ sân / admin hội nhóm (đối tác) | [ ] | Hỗ trợ giới thiệu nền tảng tới người chơi |
 
@@ -142,7 +155,7 @@ Chi tiết xem [Gantt chart](03-gantt.md).
 | CI/CD | GitHub Actions | 0đ |
 | **Tổng** | | **≤ 550.000đ** |
 
-**Thời gian:** khoảng **280 giờ công** trong 12 tuần, trung bình **~23 giờ/tuần** (chi tiết trong [WBS](02-wbs.md)). 
+**Thời gian:** giai đoạn 1 khoảng **260 giờ công**, hạn hoàn thành **15/12/2026**. Đến 17/11/2026 đã xong khoảng 101 giờ; phần còn lại khoảng 137 giờ trong 4 tuần, trung bình **~34 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3). 
 
 **Công nghệ:**
 - **Backend:** Node.js 24 LTS + Express 5 (kiến trúc modular monolith: mỗi chức năng một module routes / controller / service / model), MongoDB + Mongoose, xác thực JWT, kiểm tra dữ liệu bằng express-validator, bảo mật bằng helmet + giới hạn số lần đăng nhập.
@@ -161,7 +174,7 @@ MongoDB được chọn vì có sẵn transaction (bảo đảm hai người tha
 | R2 | Pilot không có đủ người dùng (bài toán “con gà – quả trứng”) | Cao | Cao | Tập trung 1 khu vực; hợp tác với chủ sân và admin group; tự đăng kèo thật để khởi động |
 | R3 | Phát sinh thêm yêu cầu (*scope creep*) | Cao | Cao | Chỉ làm *Must* trước M3; mọi ý tưởng mới ghi vào backlog, xem xét sau M5 |
 | R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Trung bình | Trung bình | Bổ sung LLM / hybrid; mở rộng tập luật dựa trên phân tích lỗi |
-| R5 | Thiếu khách quan khi một người tự gán nhãn dữ liệu | Trung bình | Trung bình | Nhờ 1 người gán nhãn độc lập 50 bài; đo Cohen's κ; tự gán nhãn lại 20% sau 1 tuần |
+| R5 | Thiếu khách quan khi một người tự gán nhãn dữ liệu | Trung bình | Trung bình | Nhờ 1 người gán nhãn độc lập 30 bài; đo Cohen's κ; tự gán nhãn lại 20% sau 1 tuần |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Thấp | Cao | Không cào dữ liệu; ẩn danh hóa bộ dữ liệu; xin đồng ý khi khảo sát; có chính sách quyền riêng tư |
 | R7 | Chi phí hoặc giới hạn của API LLM / hosting miễn phí / MongoDB Atlas M0 (512 MB) | Trung bình | Thấp | Đặt hạn mức chi; cache kết quả; dùng luật làm phương án dự phòng; theo dõi dung lượng CSDL |
 
@@ -172,22 +185,22 @@ Chi tiết từng rủi ro (dấu hiệu nhận biết sớm, kế hoạch dự 
 ## 11. Ràng buộc và giả định
 
 **Ràng buộc**
-- Thời gian: 12 tuần (09/11/2026 – 29/01/2027).
+- Thời gian: **hạn hoàn thành dự án 15/12/2026** (09/11/2026 – 15/12/2026, khoảng 5 tuần).
 - Nhân lực: 1 người.
 - Ngân sách: ≤ 550.000đ.
 - Tuân thủ pháp luật Việt Nam về bảo vệ dữ liệu cá nhân và Điều khoản của các nền tảng mạng xã hội.
 
 **Giả định**
-- Sinh viên dành trung bình khoảng 23 giờ/tuần cho đồ án. Nếu thực tế ít hơn, cắt các mục *Should/Could* trước khi lùi mốc.
+- Sinh viên dành khoảng 34 giờ/tuần trong 4 tuần cuối (17/11 – 15/12/2026). Nếu thực tế ít hơn, cắt theo thứ tự ở [Gantt](03-gantt.md) mục 4 trước khi lùi mốc.
 - Có ít nhất 1 chủ sân hoặc admin group tại Hà Nội đồng ý hỗ trợ giới thiệu trong giai đoạn pilot.
-- Lịch bảo vệ của khoa rơi vào cuối tháng 01/2027 *(cần xác nhận)*.
+- Ngày bảo vệ do khoa xếp, sau hạn hoàn thành 15/12/2026 *(cần xác nhận)*.
 
 ---
 
 ## 12. Đạo đức nghiên cứu và dữ liệu
 
 - **Không** tự động thu thập dữ liệu từ Facebook.
-- Bộ dữ liệu 200 bài lấy theo thứ tự ưu tiên: (1) bài do người tham gia khảo sát **tự gửi, có đồng ý**; (2) bài do sinh viên **chép tay** từ các group công khai, **xóa ngay** tên, số điện thoại, ảnh và đường dẫn hồ sơ. Bộ dữ liệu chỉ dùng để đánh giá nội bộ.
+- Bộ dữ liệu 100 bài lấy theo thứ tự ưu tiên: (1) bài do người tham gia khảo sát **tự gửi, có đồng ý**; (2) bài do sinh viên **chép tay** từ các group công khai, **xóa ngay** tên, số điện thoại, ảnh và đường dẫn hồ sơ. Bộ dữ liệu chỉ dùng để đánh giá nội bộ.
 - Khảo sát và usability test có phiếu đồng ý tham gia, ẩn danh khi phân tích.
 - Hệ thống thu thập tối thiểu dữ liệu cá nhân và có chính sách quyền riêng tư rõ ràng.
 

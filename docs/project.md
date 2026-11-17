@@ -1,6 +1,6 @@
 # Tổng quan dự án — Badminton Matching
 
-> Đồ án cá nhân: An Đức Mạnh (MSSV 23110310). Cập nhật: 13/11/2026.
+> Đồ án cá nhân: An Đức Mạnh (MSSV 23110310). Cập nhật: 17/11/2026.
 > Tài liệu liên quan: [Charter](01-project-charter.md) · [API.md](API.md) · [database.md](database.md) · [QUALITY.md](QUALITY.md) · [RISKS.md](RISKS.md) · [GIT.md](GIT.md)
 
 ## 1. Mục tiêu và phạm vi
@@ -8,6 +8,8 @@
 Nền tảng web giúp người chơi cầu lông **đăng kèo thiếu người, tìm kèo còn chỗ và tham gia ngay**, thay cho việc đăng bài tự do trong các hội nhóm Facebook. Điểm khác biệt là chức năng **dán bài → tự điền**: người dùng dán nội dung bài đăng quen thuộc (ví dụ *"Tối nay 19h-21h sân Cầu Giấy thiếu 2 nam 1 nữ TB- đến TB+, 50k/ng"*), hệ thống trích ra thời gian, chi phí, số chỗ và trình độ để điền sẵn form.
 
 Phạm vi chi tiết, mục tiêu đo được và câu hỏi nghiên cứu: xem [Charter](01-project-charter.md) mục 3–5.
+
+**Lộ trình:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, hạn hoàn thành 15/12/2026). Giai đoạn 2 là **app di động** bằng React Native + Expo, làm sau khi bảo vệ, dùng lại nguyên backend và API của giai đoạn 1 ([Charter](01-project-charter.md) mục 7.1, [WBS](02-wbs.md) mục 5).
 
 ## 2. Công nghệ
 
@@ -107,6 +109,7 @@ frontend/src/
 | F7 | Bộ trích xuất bằng LLM và hybrid (RQ1) | Đăng kèo | `POST /parse` | Chưa |
 | F8 | Thông báo email | — | — | Chưa (Should) |
 | F9 | Đánh giá uy tín sau kèo | — | — | Chưa (Could) |
+| F10 | App di động Android / iOS (React Native + Expo): toàn bộ F1–F6 + thông báo đẩy | App | Dùng lại API hiện có | Giai đoạn 2, sau đồ án |
 
 ## 6. Quy tắc nghiệp vụ
 
@@ -155,7 +158,7 @@ File `backend/src/modules/parser/parsePost.js`. Đầu vào là văn bản tiế
 | Số chỗ | sau "thiếu / cần / tuyển / tìm / còn / giao lưu": "2 nam 1 nữ", "1 bạn", "2 slot", "hai nam" |
 | Trình độ | "TB-", "TB", "TB+", "TB khá", "TB yếu", "khá", "giỏi", "mới chơi", "TB+ trở lên", "khá trở xuống" |
 
-Bộ trích xuất không lấy tên, số điện thoại hay đường dẫn cá nhân. Đây là phương pháp nền (baseline) cho câu hỏi nghiên cứu RQ1; phương pháp LLM và kết hợp (F7) sẽ so sánh với nó trên bộ dữ liệu 200 bài gán nhãn.
+Bộ trích xuất không lấy tên, số điện thoại hay đường dẫn cá nhân. Đây là phương pháp nền (baseline) cho câu hỏi nghiên cứu RQ1; phương pháp LLM và kết hợp (F7) sẽ so sánh với nó trên bộ dữ liệu 100 bài gán nhãn.
 
 ## 8. Chạy dự án
 

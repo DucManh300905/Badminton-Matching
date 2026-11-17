@@ -1,6 +1,6 @@
 # Kế hoạch chất lượng — Badminton Matching
 
-> Cập nhật: 13/11/2026.
+> Cập nhật: 17/11/2026 (theo hạn hoàn thành dự án 15/12/2026).
 > Tài liệu liên quan: [RISKS.md](RISKS.md) · [project.md](project.md) (quy tắc BR-xx) · [API.md](API.md) · [GIT.md](GIT.md) · [Charter](01-project-charter.md) (mục tiêu O3, O5; câu hỏi nghiên cứu RQ1–RQ3)
 
 **QA** (đảm bảo chất lượng) là các biện pháp phòng ngừa trong lúc làm, để lỗi khó xảy ra.
@@ -14,7 +14,7 @@
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 113,5 KB |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
-| Q5 | Độ chính xác bộ trích xuất | F1 trung bình theo trường ≥ 0,75 (luật) và ≥ 0,90 (kết hợp) trên tập kiểm tra 60 bài (RQ1) | **Chưa đo**: chờ bộ dữ liệu gán nhãn (WBS 2.2) |
+| Q5 | Độ chính xác bộ trích xuất | F1 trung bình theo trường ≥ 0,75 (luật) và ≥ 0,90 (kết hợp) trên tập kiểm tra 30 bài (RQ1) | **Chưa đo**: chờ bộ dữ liệu gán nhãn (WBS 2.2) |
 
 ---
 
@@ -99,7 +99,7 @@
 
 **Việc còn lại:**
 - Chuyển hai kịch bản trên thành bộ test E2E (Playwright) trong repo và chạy trên CI (WBS 5.3).
-- Thử nghiệm A/B thời gian tạo bài với ≥ 10 người (RQ2, WBS 5.5).
+- Thử nghiệm A/B thời gian tạo bài với ≥ 8 người (RQ2, WBS 5.5).
 
 ## Q5 — Độ chính xác bộ trích xuất (RQ1)
 
@@ -107,8 +107,8 @@
 - Bộ test mẫu cho từng nhóm trường và các trường hợp dễ nhầm ("Việt Nam" không phải 2 nam, "1 gậy" không phải 1 giờ, số điện thoại, "2 đôi" không phải tiền, Unicode tổ hợp từ Facebook): `tests/parser/parsePost.test.js`.
 
 **Phương pháp đo (khi có dữ liệu):**
-1. Bộ dữ liệu 200 bài, gán nhãn 4 nhóm trường; đo độ đồng thuận người gán nhãn bằng Cohen's κ (mục tiêu ≥ 0,8).
-2. Chia 70% tập phát triển luật (140 bài), 30% tập kiểm tra **giữ kín** (60 bài).
+1. Bộ dữ liệu 100 bài, gán nhãn 4 nhóm trường; đo độ đồng thuận người gán nhãn bằng Cohen's κ (mục tiêu ≥ 0,8).
+2. Chia 70% tập phát triển luật (70 bài), 30% tập kiểm tra **giữ kín** (30 bài).
 3. Tính Precision / Recall / F1 cho từng trường trên tập kiểm tra, cho 3 phương pháp: luật, LLM, kết hợp.
 4. Ghi kết quả và phân tích lỗi vào báo cáo đồ án.
 

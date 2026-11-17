@@ -1,6 +1,6 @@
 # Quy ước Git, nhánh và Pull Request — Badminton Matching
 
-> Cập nhật: 13/11/2026. Repo: https://github.com/DucManh300905/Badminton-Matching (nhánh mặc định `develop`).
+> Cập nhật: 17/11/2026. Repo: https://github.com/DucManh300905/Badminton-Matching (nhánh mặc định `develop`).
 > Tài liệu liên quan: [QUALITY.md](QUALITY.md) (điều kiện được merge) · [WBS](02-wbs.md) (mã công việc dùng trong tên nhánh)
 
 ## 1. Mô hình nhánh
@@ -85,7 +85,7 @@ Mỗi mốc trong [Gantt](03-gantt.md) là một lần phát hành: PR `develop`
 
 ```bash
 git switch main && git pull
-git tag -a v0.2.0 -m "M1: chot yeu cau, bo du lieu 200 bai"
+git tag -a v0.2.0 -m "M1: chay that (production), chot dac ta"
 git push origin v0.2.0
 git switch develop
 ```
@@ -93,9 +93,10 @@ git switch develop
 | Mốc | Tag | Nội dung | Trạng thái |
 |---|---|---|---|
 | M0 | `v0.1.0` | Charter, WBS, Gantt, CI | Đã gắn |
-| M1 | `v0.2.0` | Chốt yêu cầu, bộ dữ liệu 200 bài gán nhãn | |
-| M2 | `v0.3.0` | Hoàn thành thiết kế | |
-| M3 | `v0.9.0` | Feature freeze, bản đưa đi thử nghiệm thực tế | |
-| M5 | `v1.0.0` | Bản bảo vệ | |
+| M1 (23/11/2026) | `v0.2.0` | Chạy thật (production), bắt đầu thử nghiệm thực tế | |
+| M2 (30/11/2026) | `v0.9.0` | Feature freeze: bộ trích xuất LLM + kết hợp | |
+| M3, M4 | — | Kết thúc thử nghiệm, xong báo cáo: không đổi code nên không gắn tag | |
+| M5 (15/12/2026) | `v1.0.0` | Hoàn thành dự án | |
+| A1 (18/01/2027) | `mobile-v0.1.0` | Bản thử app di động Android (giai đoạn 2) | |
 
 Số phiên bản theo SemVer `MAJOR.MINOR.PATCH`. Khi phát hành, cập nhật `version` trong `backend/package.json`, `frontend/package.json` và `APP_VERSION` trong `frontend/src/utils/constants.ts` (hiện ở cuối trang Tài khoản).
