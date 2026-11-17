@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PostSummary } from '../types';
-import { countUpcoming } from './myPosts';
+import { countUpcoming, upcomingPosts } from './myPosts';
 
 const NOW = new Date('2026-11-13T10:00:00+07:00').getTime();
 
@@ -21,5 +21,14 @@ describe('countUpcoming', () => {
 
   it('không có kèo nào → 0', () => {
     expect(countUpcoming([], [], NOW)).toBe(0);
+  });
+});
+
+describe('upcomingPosts', () => {
+  it('trả về kèo sắp diễn ra, sớm nhất trước, không trùng', () => {
+    const authored = [post('late', '2026-11-20T19:00:00+07:00'), post('old', '2026-11-01T19:00:00+07:00')];
+    const joined = [post('soon', '2026-11-13T19:00:00+07:00'), post('late', '2026-11-20T19:00:00+07:00')];
+
+    expect(upcomingPosts(authored, joined, NOW).map((p) => p.id)).toEqual(['soon', 'late']);
   });
 });

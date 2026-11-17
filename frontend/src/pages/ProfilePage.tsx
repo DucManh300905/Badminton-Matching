@@ -39,9 +39,9 @@ export default function ProfilePage() {
 
   return (
     <>
-      <PageHeader title="Hồ sơ cá nhân" back={{ to: '/tai-khoan', label: 'Tài khoản' }} compact />
-      <div className="page-body">
-        <form onSubmit={handleSubmit} className="card stack">
+      <PageHeader title="Hồ sơ cá nhân" subtitle="Thông tin dùng để ghép bạn vào kèo phù hợp" />
+      <div>
+        <form onSubmit={handleSubmit} className="card form-card stack">
           {message && <Alert tone={message.tone}>{message.text}</Alert>}
           <div className="field">
             <label htmlFor="email" className="label">
@@ -99,9 +99,11 @@ export default function ProfilePage() {
             </div>
           </div>
           <p className="hint">Trình độ quyết định bạn tham gia được những kèo nào.</p>
-          <button type="submit" className="btn btn--primary btn--block" disabled={saving}>
-            {saving ? 'Đang lưu…' : 'Lưu thay đổi'}
-          </button>
+          <div className="form-footer">
+            <button type="submit" className="btn btn--primary" disabled={saving}>
+              {saving ? 'Đang lưu…' : 'Lưu thay đổi'}
+            </button>
+          </div>
         </form>
       </div>
     </>

@@ -23,9 +23,9 @@ export function FieldError({ message }: { message?: string }) {
 }
 
 /** Ảnh đại diện = chữ cái đầu của tên (không dùng hình) */
-export function Avatar({ name }: { name: string }) {
+export function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
   return (
-    <span className="avatar" aria-hidden="true">
+    <span className={`avatar${size === 'sm' ? ' avatar--sm' : ''}`} aria-hidden="true">
       {initials(name)}
     </span>
   );

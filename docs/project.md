@@ -21,7 +21,7 @@ Phạm vi chi tiết, mục tiêu đo được và câu hỏi nghiên cứu: xem
 | Kiểm tra dữ liệu | express-validator (ở route) + schema Mongoose (ở model) | Hai lớp bảo vệ |
 | Bảo mật | helmet, cors, express-rate-limit | Header an toàn, chỉ cho frontend gọi, chống dò mật khẩu |
 | Frontend | React 19, Vite, TypeScript, React Router 7, Axios | Kiểm tra kiểu khi build, phát hiện sớm khi API đổi |
-| Giao diện | CSS thuần (`frontend/src/styles.css`) | Không phụ thuộc thư viện; giao diện dạng ứng dụng điện thoại |
+| Giao diện | CSS thuần (`frontend/src/styles.css`) | Không phụ thuộc thư viện; giao diện web responsive (máy tính và điện thoại) |
 | Kiểm thử | Jest + Supertest + MongoDB chạy trong RAM; Vitest + React Testing Library | Test chạy độc lập, không cần cài CSDL |
 | CI | GitHub Actions | Chạy test trên mọi push và Pull Request |
 
@@ -72,7 +72,7 @@ backend/src/
 
 frontend/src/
 ├─ api/                   client.ts (axios, JWT, dịch mã lỗi) + mỗi tài nguyên một file
-├─ components/            Layout, TabBar, PageHeader, PostCard, Menu, Icon, RequireAuth, ui
+├─ components/            Layout, Navbar, AccountLayout, PageHeader, PostCard, Menu, Icon, RequireAuth, ui
 ├─ context/               AuthContext (trạng thái đăng nhập)
 ├─ pages/                 10 trang
 ├─ utils/                 hằng số, định dạng, chuyển đổi form, logic điều hướng

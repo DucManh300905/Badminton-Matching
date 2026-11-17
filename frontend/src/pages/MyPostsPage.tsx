@@ -32,42 +32,48 @@ export default function MyPostsPage() {
 
   return (
     <>
-      <PageHeader title="Kèo của tôi" subtitle="Các kèo bạn đã tham gia và đã đăng" />
+      <PageHeader
+        title="Kèo của tôi"
+        subtitle="Các kèo bạn đã tham gia và đã đăng"
+        actions={
+          <Link to="/keo/moi" className="btn btn--primary">
+            Đăng kèo mới
+          </Link>
+        }
+      />
 
-      <div className="page-body stack">
-        <div className="segmented" role="tablist" aria-label="Loại kèo">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              role="tab"
-              aria-selected={t.key === tab}
-              onClick={() => setParams({ tab: t.key }, { replace: true })}
-            >
-              {t.label}
-              {data ? ` (${data[t.key].length})` : ''}
-            </button>
-          ))}
-        </div>
-
-        {error && <Alert>{error}</Alert>}
-        {!data && !error && <Spinner />}
-        {data && posts.length === 0 && (
-          <div className="card empty">
-            {current.empty}{' '}
-            {tab === 'joined' ? <Link to="/">Tìm kèo ngay</Link> : <Link to="/keo/moi">Đăng kèo đầu tiên</Link>}
-          </div>
-        )}
-        {posts.length > 0 && (
-          <ul className="post-list">
-            {posts.map((p) => (
-              <li key={p.id}>
-                <PostCard post={p} now={now} />
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="tabs" role="tablist" aria-label="Loại kèo">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={t.key === tab}
+            onClick={() => setParams({ tab: t.key }, { replace: true })}
+          >
+            {t.label}
+            {data ? ` (${data[t.key].length})` : ''}
+          </button>
+        ))}
       </div>
+
+      {error && <Alert>{error}</Alert>}
+      {!data && !error && <Spinner />}
+      {data && posts.length === 0 && (
+        <div className="card empty">
+          {current.empty}{' '}
+          {tab === 'joined' ? <Link to="/">Tìm kèo ngay</Link> : <Link to="/keo/moi">Đăng kèo đầu tiên</Link>}
+        </div>
+      )}
+      {posts.length > 0 && (
+        <ul className="post-grid">
+          {posts.map((p) => (
+            <li key={p.id}>
+              <PostCard post={p} now={now} />
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }

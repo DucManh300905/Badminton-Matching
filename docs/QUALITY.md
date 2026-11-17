@@ -13,7 +13,7 @@
 | Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 13/13 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 160 test backend + 41 test frontend; 13/13 BR; coverage dòng 99,25% |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 113,5 KB |
-| Q4 | Dễ dùng | Luồng chính chạy được trên màn hình 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
+| Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
 | Q5 | Độ chính xác bộ trích xuất | F1 trung bình theo trường ≥ 0,75 (luật) và ≥ 0,90 (kết hợp) trên tập kiểm tra 30 bài (RQ1) | **Chưa đo**: chờ bộ dữ liệu gán nhãn (WBS 2.2) |
 
 ---
@@ -85,12 +85,12 @@
 ## Q4 — Dễ dùng
 
 **Biện pháp QA:**
-- Giao diện thiết kế cho màn hình điện thoại trước; thanh điều hướng dưới đáy; nút chính lớn, dễ bấm.
+- Giao diện web responsive: thanh điều hướng trên cùng (thu thành nút "Menu" trên màn hình hẹp), nội dung rộng tối đa 1200 px, bố cục nhiều cột co về một cột trên điện thoại; nút chính lớn, dễ bấm.
 - Mọi lỗi hiển thị bằng tiếng Việt theo `code` (bảng ở [API.md](API.md) mục 4).
 - "Dán bài → tự điền": ô được điền tự động có nền vàng để người dùng kiểm tra lại.
 - Bộ lọc nằm trên URL: tải lại trang hoặc gửi link vẫn giữ bộ lọc.
 
-**Ca kiểm tra QC (chạy tay bằng trình duyệt Chrome tự động, màn hình 390 px):**
+**Ca kiểm tra QC (chạy tay bằng trình duyệt Chrome tự động, màn hình 1366 px và 390 px):**
 
 | Mã | Luồng | Kết quả |
 |---|---|---|

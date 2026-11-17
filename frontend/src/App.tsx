@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Route, Routes } from 'react-router';
+import AccountLayout from './components/AccountLayout';
 import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 import AccountPage from './pages/AccountPage';
@@ -22,10 +23,13 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="keo/moi" element={authed(<PostNewPage />)} />
         <Route path="keo/:id" element={<PostDetailPage />} />
-        <Route path="keo-cua-toi" element={authed(<MyPostsPage />)} />
-        <Route path="tai-khoan" element={authed(<AccountPage />)} />
-        <Route path="tai-khoan/ho-so" element={authed(<ProfilePage />)} />
-        <Route path="tai-khoan/doi-mat-khau" element={authed(<ChangePasswordPage />)} />
+        {/* Khu tài khoản: dùng chung menu dọc bên trái */}
+        <Route element={authed(<AccountLayout />)}>
+          <Route path="tai-khoan" element={<AccountPage />} />
+          <Route path="tai-khoan/ho-so" element={<ProfilePage />} />
+          <Route path="tai-khoan/doi-mat-khau" element={<ChangePasswordPage />} />
+          <Route path="keo-cua-toi" element={<MyPostsPage />} />
+        </Route>
         <Route path="dang-nhap" element={<LoginPage />} />
         <Route path="dang-ky" element={<RegisterPage />} />
         <Route path="*" element={<NotFoundPage />} />

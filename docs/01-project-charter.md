@@ -125,7 +125,7 @@ Chi tiết xem [Gantt chart](03-gantt.md) và file Excel [diagrams/gantt.xlsx](d
 | **1. Ứng dụng web** | Toàn bộ phạm vi ở mục 5.1; nghiên cứu RQ1–RQ3; thử nghiệm thực tế | 09/11/2026 → 15/12/2026 (M5) | Có |
 | **2. App di động** | App Android / iOS bằng React Native + Expo, dùng lại backend và API của giai đoạn 1; thông báo đẩy | Dự kiến 16/12/2026 → 18/01/2027 (mốc A1: bản thử Android) | Không |
 
-- Làm web trước vì: một nền tảng chạy được trên mọi thiết bị, thử nghiệm và đo đạc nhanh hơn; giao diện web đã thiết kế theo dạng ứng dụng điện thoại nên người dùng thử nghiệm vẫn dùng tốt trên điện thoại.
+- Làm web trước vì: một nền tảng chạy được trên mọi thiết bị, thử nghiệm và đo đạc nhanh hơn; giao diện web responsive nên người dùng thử nghiệm dùng tốt cả trên máy tính và điện thoại.
 - Backend và API (giai đoạn 1) được thiết kế độc lập với giao diện, nên giai đoạn 2 không phải sửa backend, trừ phần lưu mã thiết bị cho thông báo đẩy.
 - Giai đoạn 2 **không được bắt đầu trước M5**, để không ảnh hưởng tiến độ đồ án (xem rủi ro R3).
 - Gói công việc giai đoạn 2: [WBS](02-wbs.md) mục 5.

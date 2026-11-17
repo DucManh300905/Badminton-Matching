@@ -83,18 +83,23 @@ export default function PostNewPage() {
 
   return (
     <>
-      <PageHeader title="Đăng kèo mới" subtitle="Dán bài đăng sẵn có để điền nhanh, hoặc điền tay bên dưới" />
+      <PageHeader
+        breadcrumbs={[{ to: '/', label: 'Danh sách kèo' }]}
+        title="Đăng kèo mới"
+        subtitle="Dán bài đăng sẵn có để điền nhanh, hoặc điền tay vào form."
+      />
 
-      <div className="page-body stack">
+      <div className="split-layout">
         {/* ---- Dán bài → tự điền ---- */}
-        <section className="card paste-box stack">
+        <aside className="card paste-box sticky stack" aria-label="Dán bài để tự điền">
+          <h2 className="card__title">Dán bài để tự điền</h2>
           <div className="field">
             <label htmlFor="rawText" className="label">
-              Dán bài đăng của bạn để tự điền form
+              Nội dung bài đăng của bạn
             </label>
             <textarea
               id="rawText"
-              rows={3}
+              rows={6}
               className="input"
               placeholder={`Ví dụ: ${EXAMPLE}`}
               value={rawText}
@@ -117,196 +122,216 @@ export default function PostNewPage() {
             )}
           </div>
           {parseInfo && <Alert tone="info">{parseInfo}</Alert>}
-        </section>
+          <p className="hint">
+            Hệ thống nhận ra thời gian, chi phí, số chỗ và trình độ. Ô được điền tự động có nền vàng; bạn kiểm tra lại
+            trước khi đăng.
+          </p>
+        </aside>
 
         {/* ---- Form ---- */}
-        <form onSubmit={handleSubmit} className="card stack">
-          {error && <Alert>{error}</Alert>}
+        <form onSubmit={handleSubmit} className="card">
+          {error && (
+            <div className="notice">
+              <Alert>{error}</Alert>
+            </div>
+          )}
 
-          <div className="grid-2">
-            <div className="field">
-              <label htmlFor="courtName" className="label">
-                Tên sân *
-              </label>
-              <input
-                id="courtName"
-                required
-                className={cls('courtName')}
-                value={form.courtName}
-                onChange={(e) => set('courtName', e.target.value)}
-              />
-              <FieldError message={fields.courtName} />
+          <section className="form-section">
+            <h2 className="form-section__title">Sân và thời gian</h2>
+            <div className="grid-2">
+              <div className="field">
+                <label htmlFor="courtName" className="label">
+                  Tên sân *
+                </label>
+                <input
+                  id="courtName"
+                  required
+                  className={cls('courtName')}
+                  value={form.courtName}
+                  onChange={(e) => set('courtName', e.target.value)}
+                />
+                <FieldError message={fields.courtName} />
+              </div>
+              <div className="field">
+                <label htmlFor="district" className="label">
+                  Khu vực *
+                </label>
+                <select
+                  id="district"
+                  required
+                  className={cls('district')}
+                  value={form.district}
+                  onChange={(e) => set('district', e.target.value)}
+                >
+                  <option value="">Chọn khu vực</option>
+                  {HANOI_AREAS.map((d) => (
+                    <option key={d}>{d}</option>
+                  ))}
+                </select>
+                <FieldError message={fields.district} />
+              </div>
             </div>
             <div className="field">
-              <label htmlFor="district" className="label">
-                Khu vực *
+              <label htmlFor="address" className="label">
+                Địa chỉ sân
               </label>
-              <select
-                id="district"
-                required
-                className={cls('district')}
-                value={form.district}
-                onChange={(e) => set('district', e.target.value)}
-              >
-                <option value="">Chọn khu vực</option>
-                {HANOI_AREAS.map((d) => (
-                  <option key={d}>{d}</option>
+              <input
+                id="address"
+                className={cls('address')}
+                value={form.address}
+                onChange={(e) => set('address', e.target.value)}
+              />
+              <FieldError message={fields.address} />
+            </div>
+            <div className="grid-3">
+              <div className="field">
+                <label htmlFor="date" className="label">
+                  Ngày *
+                </label>
+                <input
+                  id="date"
+                  type="date"
+                  required
+                  className={cls('date')}
+                  value={form.date}
+                  onChange={(e) => set('date', e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="startTime" className="label">
+                  Bắt đầu *
+                </label>
+                <input
+                  id="startTime"
+                  type="time"
+                  required
+                  className={cls('startTime')}
+                  value={form.startTime}
+                  onChange={(e) => set('startTime', e.target.value)}
+                />
+                <FieldError message={fields.startsAt} />
+              </div>
+              <div className="field">
+                <label htmlFor="endTime" className="label">
+                  Kết thúc *
+                </label>
+                <input
+                  id="endTime"
+                  type="time"
+                  required
+                  className={cls('endTime')}
+                  value={form.endTime}
+                  onChange={(e) => set('endTime', e.target.value)}
+                />
+                <FieldError message={fields.endsAt} />
+              </div>
+            </div>
+          </section>
+
+          <section className="form-section">
+            <h2 className="form-section__title">Trình độ và chi phí</h2>
+            <div className="grid-3">
+              <div className="field">
+                <label htmlFor="levelMin" className="label">
+                  Trình độ từ
+                </label>
+                <select
+                  id="levelMin"
+                  className={cls('levelMin')}
+                  value={form.levelMin}
+                  onChange={(e) => set('levelMin', e.target.value as SkillLevel)}
+                >
+                  {SKILL_LEVELS.map((l) => (
+                    <option key={l} value={l}>
+                      {LEVEL_LABELS[l]}
+                    </option>
+                  ))}
+                </select>
+                <FieldError message={fields.levelMin} />
+              </div>
+              <div className="field">
+                <label htmlFor="levelMax" className="label">
+                  Đến
+                </label>
+                <select
+                  id="levelMax"
+                  className={cls('levelMax')}
+                  value={form.levelMax}
+                  onChange={(e) => set('levelMax', e.target.value as SkillLevel)}
+                >
+                  {SKILL_LEVELS.map((l) => (
+                    <option key={l} value={l}>
+                      {LEVEL_LABELS[l]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label htmlFor="price" className="label">
+                  Chi phí mỗi người (đồng)
+                </label>
+                <input
+                  id="price"
+                  type="number"
+                  min={0}
+                  step={1000}
+                  className={cls('pricePerPerson')}
+                  value={form.pricePerPerson}
+                  onChange={(e) => set('pricePerPerson', e.target.value)}
+                />
+                <FieldError message={fields.pricePerPerson} />
+              </div>
+            </div>
+          </section>
+
+          <section className="form-section">
+            <fieldset>
+              <legend className="form-section__title">Cần thêm bao nhiêu người?</legend>
+              <div className="grid-3 grid-3--even">
+                {SLOT_INPUTS.map(([key, label]) => (
+                  <div key={key} className="field">
+                    <label htmlFor={key} className="label">
+                      {label}
+                    </label>
+                    <input
+                      id={key}
+                      type="number"
+                      min={0}
+                      max={20}
+                      className={cls(key)}
+                      value={form[key]}
+                      onChange={(e) => set(key, e.target.value)}
+                    />
+                  </div>
                 ))}
-              </select>
-              <FieldError message={fields.district} />
-            </div>
-          </div>
+              </div>
+              <FieldError message={fields.slots} />
+            </fieldset>
+          </section>
 
-          <div className="field">
-            <label htmlFor="address" className="label">
-              Địa chỉ sân
-            </label>
-            <input
-              id="address"
-              className={cls('address')}
-              value={form.address}
-              onChange={(e) => set('address', e.target.value)}
-            />
-            <FieldError message={fields.address} />
-          </div>
-
-          <div className="grid-3">
+          <section className="form-section">
             <div className="field">
-              <label htmlFor="date" className="label">
-                Ngày *
+              <label htmlFor="note" className="label">
+                Ghi chú
               </label>
-              <input
-                id="date"
-                type="date"
-                required
-                className={cls('date')}
-                value={form.date}
-                onChange={(e) => set('date', e.target.value)}
+              <textarea
+                id="note"
+                rows={3}
+                className={cls('note')}
+                value={form.note}
+                onChange={(e) => set('note', e.target.value)}
               />
             </div>
-            <div className="field">
-              <label htmlFor="startTime" className="label">
-                Bắt đầu *
-              </label>
-              <input
-                id="startTime"
-                type="time"
-                required
-                className={cls('startTime')}
-                value={form.startTime}
-                onChange={(e) => set('startTime', e.target.value)}
-              />
-              <FieldError message={fields.startsAt} />
-            </div>
-            <div className="field">
-              <label htmlFor="endTime" className="label">
-                Kết thúc *
-              </label>
-              <input
-                id="endTime"
-                type="time"
-                required
-                className={cls('endTime')}
-                value={form.endTime}
-                onChange={(e) => set('endTime', e.target.value)}
-              />
-              <FieldError message={fields.endsAt} />
-            </div>
+          </section>
+
+          <div className="form-footer">
+            <button type="button" className="btn btn--outline" onClick={() => navigate(-1)}>
+              Hủy
+            </button>
+            <button type="submit" className="btn btn--primary" disabled={submitting}>
+              {submitting ? 'Đang đăng…' : 'Đăng kèo'}
+            </button>
           </div>
-
-          <div className="grid-2">
-            <div className="field">
-              <label htmlFor="levelMin" className="label">
-                Trình độ từ
-              </label>
-              <select
-                id="levelMin"
-                className={cls('levelMin')}
-                value={form.levelMin}
-                onChange={(e) => set('levelMin', e.target.value as SkillLevel)}
-              >
-                {SKILL_LEVELS.map((l) => (
-                  <option key={l} value={l}>
-                    {LEVEL_LABELS[l]}
-                  </option>
-                ))}
-              </select>
-              <FieldError message={fields.levelMin} />
-            </div>
-            <div className="field">
-              <label htmlFor="levelMax" className="label">
-                đến
-              </label>
-              <select
-                id="levelMax"
-                className={cls('levelMax')}
-                value={form.levelMax}
-                onChange={(e) => set('levelMax', e.target.value as SkillLevel)}
-              >
-                {SKILL_LEVELS.map((l) => (
-                  <option key={l} value={l}>
-                    {LEVEL_LABELS[l]}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="field">
-            <label htmlFor="price" className="label">
-              Chi phí mỗi người (đồng)
-            </label>
-            <input
-              id="price"
-              type="number"
-              min={0}
-              step={1000}
-              className={cls('pricePerPerson')}
-              value={form.pricePerPerson}
-              onChange={(e) => set('pricePerPerson', e.target.value)}
-            />
-            <FieldError message={fields.pricePerPerson} />
-          </div>
-
-          <fieldset className="field">
-            <legend className="label">Cần thêm bao nhiêu người?</legend>
-            <div className="grid-3 grid-3--even">
-              {SLOT_INPUTS.map(([key, label]) => (
-                <div key={key} className="field">
-                  <label htmlFor={key} className="hint">
-                    {label}
-                  </label>
-                  <input
-                    id={key}
-                    type="number"
-                    min={0}
-                    max={20}
-                    className={cls(key)}
-                    value={form[key]}
-                    onChange={(e) => set(key, e.target.value)}
-                  />
-                </div>
-              ))}
-            </div>
-            <FieldError message={fields.slots} />
-          </fieldset>
-
-          <div className="field">
-            <label htmlFor="note" className="label">
-              Ghi chú
-            </label>
-            <textarea
-              id="note"
-              rows={2}
-              className={cls('note')}
-              value={form.note}
-              onChange={(e) => set('note', e.target.value)}
-            />
-          </div>
-
-          <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
-            {submitting ? 'Đang đăng…' : 'Đăng kèo'}
-          </button>
         </form>
       </div>
     </>

@@ -1,45 +1,32 @@
-import type { ReactNode } from 'react';
-import { Link } from 'react-router';
+import { NavLink } from 'react-router';
 import Icon, { type IconName } from './Icon';
-
-/** Nhóm menu có tiêu đề xanh, các dòng nằm trong một thẻ trắng */
-export function MenuSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section>
-      <h2 className="section-title">{title}</h2>
-      <div className="menu">{children}</div>
-    </section>
-  );
-}
 
 interface ItemProps {
   icon: IconName;
   label: string;
-  /** Chữ nhỏ phía phải, trước dấu > */
-  hint?: string;
   to?: string;
+  /** Chỉ sáng khi đúng đường dẫn (không sáng cho trang con) */
+  end?: boolean;
   onClick?: () => void;
   danger?: boolean;
 }
 
-/** Một dòng menu: icon nét mảnh · nhãn · (gợi ý) · dấu > */
-export function MenuItem({ icon, label, hint, to, onClick, danger }: ItemProps) {
-  const className = `menu-item${danger ? ' menu-item--danger' : ''}`;
+/** Một dòng menu: icon nét mảnh + nhãn. Có `to` → link (tự sáng khi đang ở trang đó); không có → nút. */
+export function MenuItem({ icon, label, to, end, onClick, danger }: ItemProps) {
+  const base = `menu-item${danger ? ' menu-item--danger' : ''}`;
   const content = (
     <>
-      <Icon name={icon} className="menu-item__icon" />
+      <Icon name={icon} size={20} className="menu-item__icon" />
       <span>{label}</span>
-      {hint && <span className="menu-item__hint">{hint}</span>}
-      <Icon name="chevron" size={20} className="chevron" />
     </>
   );
 
   return to ? (
-    <Link to={to} className={className}>
+    <NavLink to={to} end={end} className={({ isActive }) => `${base}${isActive ? ' menu-item--active' : ''}`}>
       {content}
-    </Link>
+    </NavLink>
   ) : (
-    <button type="button" className={className} onClick={onClick}>
+    <button type="button" className={base} onClick={onClick}>
       {content}
     </button>
   );
