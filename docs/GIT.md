@@ -16,14 +16,15 @@ feature/…       ●──●    ●───●                     nhánh ng�
 | Nhánh | Mục đích | Tách từ | Merge vào | Cách merge |
 |---|---|---|---|---|
 | `main` | Bản ổn định, dùng để demo / bảo vệ | — | — | Chỉ nhận PR từ `develop` hoặc `hotfix/*` |
-| `develop` | Tích hợp mọi thay đổi | `main` | `main` (khi đạt mốc) | **Create a merge commit** |
-| `feature/<mã-WBS>-<mô-tả>` | Tính năng mới | `develop` | `develop` | **Squash and merge** |
-| `fix/<mô-tả>` | Sửa lỗi chưa phát hành | `develop` | `develop` | Squash and merge |
-| `docs/<mô-tả>` | Chỉ sửa tài liệu | `develop` | `develop` | Squash and merge |
+| `develop` | Tích hợp mọi thay đổi | `main` | `main` (khi đạt mốc) | Create a merge commit |
+| `feature/<mã-WBS>-<mô-tả>` | Tính năng mới | `develop` | `develop` | Create a merge commit |
+| `fix/<mô-tả>` | Sửa lỗi chưa phát hành | `develop` | `develop` | Create a merge commit |
+| `docs/<mô-tả>` | Chỉ sửa tài liệu | `develop` | `develop` | Create a merge commit |
 | `hotfix/<mô-tả>` | Sửa gấp lỗi trên bản đã phát hành | `main` | `main`, rồi merge `main` về `develop` | Create a merge commit |
 
 - Tên nhánh viết thường, không dấu, nối bằng gạch ngang. Ví dụ: `feature/4.3.2-trich-xuat-llm`, `fix/dang-xuat-ve-trang-chu`, `docs/bao-cao-rq1`.
-- PR từ `develop` vào `main` **không** dùng Squash: Squash tạo commit mới trên `main` mà `develop` không có, khiến hai nhánh lệch nhau ở lần phát hành sau.
+- **Mọi PR đều dùng "Create a merge commit"** (nút mặc định "Merge pull request"): giữ lịch sử đầy đủ và các nhánh luôn chung commit, nên không bị lệch nhánh ở lần merge sau. Repo không dùng Squash hay Rebase.
+- **Mỗi việc một nhánh**, đặt tên theo mã WBS; merge xong thì xóa nhánh và tạo nhánh mới từ `develop` cho việc tiếp theo. Nhờ vậy danh sách PR khớp với WBS.
 - Xóa nhánh sau khi merge. Bật **Settings → General → Automatically delete head branches** để GitHub tự xóa.
 
 ## 2. Thông điệp commit
@@ -60,12 +61,15 @@ cd ../frontend && npm test && npm run lint && npm run build   #    test + kiểm
 
 git add -A && git commit -m "feat: ..."             # 4. commit
 git push -u origin feature/4.3.2-trich-xuat-llm     # 5. đẩy lên
-# 6. mở Pull Request vào develop (điền mẫu có sẵn) → chờ CI xanh → Squash and merge
+# 6. mở Pull Request vào develop → chờ CI xanh → Merge pull request (Create a merge commit)
+
+git switch develop && git pull                      # 7. cập nhật develop sau khi merge
+git branch -d feature/4.3.2-trich-xuat-llm          # 8. xóa nhánh đã xong
 ```
 
 ## 4. Quy tắc Pull Request
 
-- PR dùng mẫu `.github/pull_request_template.md`: làm gì / vì sao, mã WBS, cách kiểm tra, tài liệu đã cập nhật, biến `.env` mới.
+- Mô tả PR ngắn gọn: làm gì / vì sao, mã WBS, cách kiểm tra.
 - **CI bắt buộc xanh** trước khi merge. Cấu hình bảo vệ nhánh (Settings → Branches) cho cả `main` và `develop`:
   - *Require a pull request before merging* (không yêu cầu approve, vì đồ án làm một mình).
   - *Require status checks to pass*: `backend-test`, `frontend-build`.
@@ -99,4 +103,4 @@ git switch develop
 | M5 (15/12/2026) | `v1.0.0` | Hoàn thành dự án | |
 | A1 (18/01/2027) | `mobile-v0.1.0` | Bản thử app di động Android (giai đoạn 2) | |
 
-Số phiên bản theo SemVer `MAJOR.MINOR.PATCH`. Khi phát hành, cập nhật `version` trong `backend/package.json`, `frontend/package.json` và `APP_VERSION` trong `frontend/src/utils/constants.ts` (hiện ở cuối trang Tài khoản).
+Số phiên bản theo SemVer `MAJOR.MINOR.PATCH`. Khi phát hành, cập nhật `version` trong `backend/package.json`, `frontend/package.json` và `APP_VERSION` trong `frontend/src/utils/constants.ts` (hiện ở footer mọi trang).
