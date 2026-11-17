@@ -25,7 +25,7 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 | Phần | Công nghệ |
 |---|---|
 | Backend | Node.js 24 LTS · Express 5 (CommonJS) · MongoDB + Mongoose · JWT · express-validator · helmet · express-rate-limit |
-| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios (gọi API qua `VITE_API_URL`, JWT lưu `localStorage`) · CSS thuần (`src/styles.css`, giao diện dạng ứng dụng điện thoại, màu xanh lá) |
+| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios (gọi API qua `VITE_API_URL`, JWT lưu `localStorage`) · CSS thuần (`src/styles.css`, giao diện web responsive, màu xanh lá) |
 | Kiểm thử | Jest + Supertest + MongoDB chạy trong RAM (backend) · Vitest + React Testing Library (frontend) |
 | CI | GitHub Actions: `backend-test`, `frontend-build` |
 
@@ -48,7 +48,7 @@ Badminton-Matching/
 ├─ frontend/                React + TypeScript (package.json riêng)
 │  └─ src/
 │     ├─ api/               client.ts (axios + JWT + dịch mã lỗi) và mỗi tài nguyên một file
-│     ├─ components/        Layout, TabBar (điều hướng đáy), PageHeader, PostCard, Menu, Icon…
+│     ├─ components/        Layout, Navbar, AccountLayout, PageHeader, PostCard, Menu, Icon…
 │     ├─ context/  pages/
 │     ├─ utils/             Hằng số, định dạng, chuyển đổi form
 │     ├─ types.ts           Kiểu dữ liệu dùng chung
@@ -96,7 +96,7 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 | Đăng ký, đăng nhập, đổi mật khẩu, hồ sơ (`/api/auth`, `/api/users`) | Xong |
 | API kèo: danh sách có lọc, chi tiết, tạo, tham gia / rời (transaction), hủy (`/api/posts`), dán bài → tự điền (`/api/parse`) | Xong |
 | Frontend: danh sách + lọc, đăng kèo + dán-tự-điền, chi tiết, tham gia / rời / hủy, đăng nhập JWT | Xong |
-| Giao diện dạng ứng dụng điện thoại (CSS thuần), thanh điều hướng đáy, trang Tài khoản, Kèo của tôi, Hồ sơ, Đổi mật khẩu (`GET /api/users/me/posts`) | Xong |
+| Giao diện web responsive (CSS thuần): thanh điều hướng trên cùng, bộ lọc cột trái, lưới kèo, khu Tài khoản có menu dọc (Tổng quan, Kèo của tôi, Hồ sơ, Đổi mật khẩu; `GET /api/users/me/posts`) | Xong |
 
 ## Định dạng API
 

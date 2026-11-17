@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { toApiError } from '../api/client';
-import PageHeader from '../components/PageHeader';
 import { Alert, FieldError } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { RegisterInput } from '../types';
@@ -45,9 +44,18 @@ export default function RegisterPage() {
 
   return (
     <>
-      <PageHeader title="Tạo tài khoản" subtitle="Chỉ cần email, không cần số điện thoại" />
-      <div className="page-body">
+      <div className="auth-layout">
+        <section className="auth-intro">
+          <h1 className="auth-intro__title">Tham gia cộng đồng chơi cầu lông</h1>
+          <p className="auth-intro__text">Tạo tài khoản miễn phí, chỉ cần email, không cần số điện thoại.</p>
+          <ul className="auth-intro__list">
+            <li>Tìm kèo còn chỗ theo khu vực, ngày và trình độ</li>
+            <li>Dán bài đăng sẵn có, hệ thống tự điền thông tin kèo</li>
+            <li>Tham gia hoặc rời kèo chỉ với một lần bấm</li>
+          </ul>
+        </section>
         <form onSubmit={handleSubmit} className="card stack">
+          <h2 className="auth-card__title">Tạo tài khoản</h2>
           {error && <Alert>{error}</Alert>}
           <div className="field">
             <label htmlFor="displayName" className="label">

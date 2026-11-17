@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { toApiError } from '../api/client';
-import PageHeader from '../components/PageHeader';
 import { Alert } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 
@@ -31,9 +30,18 @@ export default function LoginPage() {
 
   return (
     <>
-      <PageHeader title="Đăng nhập" subtitle="Đăng nhập để đăng kèo và tham gia kèo" />
-      <div className="page-body">
+      <div className="auth-layout">
+        <section className="auth-intro">
+          <h1 className="auth-intro__title">Chào mừng bạn quay lại</h1>
+          <p className="auth-intro__text">Đăng nhập để đăng kèo, tham gia kèo và theo dõi lịch chơi của bạn.</p>
+          <ul className="auth-intro__list">
+            <li>Tìm kèo còn chỗ theo khu vực, ngày và trình độ</li>
+            <li>Dán bài đăng sẵn có, hệ thống tự điền thông tin kèo</li>
+            <li>Tham gia hoặc rời kèo chỉ với một lần bấm</li>
+          </ul>
+        </section>
         <form onSubmit={handleSubmit} className="card stack">
+          <h2 className="auth-card__title">Đăng nhập</h2>
           {error && <Alert>{error}</Alert>}
           <div className="field">
             <label htmlFor="email" className="label">

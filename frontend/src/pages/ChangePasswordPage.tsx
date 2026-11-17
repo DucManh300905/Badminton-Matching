@@ -39,9 +39,9 @@ export default function ChangePasswordPage() {
 
   return (
     <>
-      <PageHeader title="Đổi mật khẩu" back={{ to: '/tai-khoan', label: 'Tài khoản' }} compact />
-      <div className="page-body">
-        <form onSubmit={handleSubmit} className="card stack">
+      <PageHeader title="Đổi mật khẩu" subtitle="Sau khi đổi, các thiết bị khác sẽ phải đăng nhập lại" />
+      <div>
+        <form onSubmit={handleSubmit} className="card form-card stack">
           {message && <Alert tone={message.tone}>{message.text}</Alert>}
           <div className="field">
             <label htmlFor="currentPassword" className="label">
@@ -89,9 +89,11 @@ export default function ChangePasswordPage() {
             />
             <FieldError message={fields.confirm} />
           </div>
-          <button type="submit" className="btn btn--primary btn--block" disabled={saving}>
-            {saving ? 'Đang đổi…' : 'Đổi mật khẩu'}
-          </button>
+          <div className="form-footer">
+            <button type="submit" className="btn btn--primary" disabled={saving}>
+              {saving ? 'Đang đổi…' : 'Đổi mật khẩu'}
+            </button>
+          </div>
         </form>
       </div>
     </>

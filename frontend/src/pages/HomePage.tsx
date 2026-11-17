@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
-import PageHeader from '../components/PageHeader';
 import PostCard from '../components/PostCard';
 import { Alert, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
@@ -50,18 +49,29 @@ export default function HomePage() {
   }
 
   const isToday = date === today;
+  const hasFilter = !!(district || date || myLevel);
 
   return (
     <>
-      <PageHeader
-        title={isToday ? 'Kèo hôm nay' : 'Tìm kèo cầu lông'}
-        subtitle={user ? `Chào ${user.displayName}, hôm nay đánh cầu không?` : 'Tìm đồng đội, ghép kèo nhanh chóng'}
-      />
+      <section className="hero">
+        <div>
+          <h1 className="hero__title">{isToday ? 'Kèo cầu lông hôm nay' : 'Tìm kèo cầu lông, ghép đội nhanh'}</h1>
+          <p className="hero__subtitle">
+            {user
+              ? `Chào ${user.displayName}. Chọn khu vực và ngày để tìm kèo còn chỗ, hoặc đăng kèo của bạn để tìm thêm người.`
+              : 'Xem các kèo còn chỗ tại Hà Nội, lọc theo khu vực, ngày và trình độ. Đăng nhập để tham gia hoặc đăng kèo.'}
+          </p>
+        </div>
+        <Link to="/keo/moi" className="btn btn--light btn--lg">
+          Đăng kèo
+        </Link>
+      </section>
 
-      <div className="page-body stack">
-        <section className="card" aria-label="Bộ lọc">
+      <div className="with-sidebar">
+        <aside className="card sticky" aria-label="Bộ lọc">
+          <h2 className="card__title">Bộ lọc</h2>
           <div className="filters">
-            <div>
+            <div className="field">
               <label htmlFor="f-district" className="label">
                 Khu vực
               </label>
@@ -77,7 +87,7 @@ export default function HomePage() {
                 ))}
               </select>
             </div>
-            <div>
+            <div className="field">
               <label htmlFor="f-date" className="label">
                 Ngày
               </label>
@@ -98,25 +108,39 @@ export default function HomePage() {
               />
               <span>Chỉ hiện kèo hợp trình độ của tôi {!user && <span className="hint">(cần đăng nhập)</span>}</span>
             </label>
+            {hasFilter && (
+              <div className="filters__footer">
+                <button type="button" className="btn btn--link" onClick={() => setParams({}, { replace: true })}>
+                  Xóa bộ lọc
+                </button>
+              </div>
+            )}
           </div>
-        </section>
+        </aside>
 
-        {error && <Alert>{error}</Alert>}
-        {loading && <Spinner />}
-        {posts && posts.length === 0 && (
-          <div className="card empty">
-            Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+        <section aria-label="Danh sách kèo">
+          <div className="results-header">
+            <h2 className="section-title mt-0">{isToday ? 'Kèo hôm nay' : 'Kèo sắp diễn ra'}</h2>
+            {posts && <span className="results-header__count">{posts.length} kèo</span>}
           </div>
-        )}
-        {posts && posts.length > 0 && (
-          <ul className="post-list">
-            {posts.map((p) => (
-              <li key={p.id}>
-                <PostCard post={p} />
-              </li>
-            ))}
-          </ul>
-        )}
+
+          {error && <Alert>{error}</Alert>}
+          {loading && <Spinner />}
+          {posts && posts.length === 0 && (
+            <div className="card empty">
+              Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+            </div>
+          )}
+          {posts && posts.length > 0 && (
+            <ul className="post-grid">
+              {posts.map((p) => (
+                <li key={p.id}>
+                  <PostCard post={p} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </>
   );

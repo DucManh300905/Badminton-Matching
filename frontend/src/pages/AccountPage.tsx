@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { usersApi, type MyPosts } from '../api/users';
-import Icon from '../components/Icon';
-import { MenuItem, MenuSection } from '../components/Menu';
 import PageHeader from '../components/PageHeader';
-import { Avatar } from '../components/ui';
+import PostCard from '../components/PostCard';
+import { Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
-import { APP_VERSION, LEVEL_LABELS } from '../utils/constants';
-import { countUpcoming } from '../utils/myPosts';
+import { LEVEL_LABELS } from '../utils/constants';
+import { upcomingPosts } from '../utils/myPosts';
+
+/** Số kèo sắp diễn ra hiển thị ở trang tổng quan */
+const UPCOMING_LIMIT = 4;
 
 export default function AccountPage() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [mine, setMine] = useState<MyPosts | null>(null);
   const [now] = useState(() => Date.now());
 
@@ -25,64 +26,52 @@ export default function AccountPage() {
   // Trang này nằm sau RequireAuth nên luôn có user
   if (!user) return null;
 
-  // RequireAuth thấy "vừa tự đăng xuất" sẽ đưa về trang chủ; navigate('/') để chắc chắn
-  function handleLogout() {
-    logout();
-    navigate('/', { replace: true });
-  }
-
+  const upcoming = mine ? upcomingPosts(mine.authored, mine.joined, now) : null;
   // Chưa tải xong thì hiện "–" thay cho số
   const count = (n: number | undefined) => (n === undefined ? '–' : String(n));
 
   return (
     <>
-      <PageHeader>
-        <Link to="/tai-khoan/ho-so" className="profile-card" aria-label="Sửa hồ sơ">
-          <Avatar name={user.displayName} />
-          <div>
-            <p className="profile-card__name">{user.displayName}</p>
-            <p className="profile-card__email">{user.email}</p>
-          </div>
-          <Icon name="chevron" size={22} className="chevron" />
+      <PageHeader title={`Xin chào, ${user.displayName}`} subtitle="Tổng quan hoạt động của bạn" />
+
+      <div className="stats">
+        <Link to="/keo-cua-toi?tab=authored" className="stat">
+          <p className="stat__value">{count(mine?.authored.length)}</p>
+          <p className="stat__label">Kèo đã đăng</p>
         </Link>
-      </PageHeader>
-
-      <div className="page-body">
-        <div className="tiles">
-          <Link to="/keo-cua-toi?tab=authored" className="tile">
-            <span className="tile__value">{count(mine?.authored.length)}</span>
-            <span className="tile__label">Kèo đã đăng</span>
-          </Link>
-          <Link to="/keo-cua-toi?tab=joined" className="tile">
-            <span className="tile__value">{count(mine?.joined.length)}</span>
-            <span className="tile__label">Đã tham gia</span>
-          </Link>
-          <Link to="/keo-cua-toi" className="tile">
-            <span className="tile__value">
-              {count(mine ? countUpcoming(mine.authored, mine.joined, now) : undefined)}
-            </span>
-            <span className="tile__label">Sắp diễn ra</span>
-          </Link>
-          <Link to="/tai-khoan/ho-so" className="tile">
-            <span className="tile__value tile__value--text">{LEVEL_LABELS[user.level]}</span>
-            <span className="tile__label">Trình độ</span>
-          </Link>
-        </div>
-
-        <MenuSection title="Hoạt động">
-          <MenuItem icon="calendar" label="Kèo của tôi" to="/keo-cua-toi" />
-          <MenuItem icon="plus" label="Đăng kèo mới" to="/keo/moi" />
-          <MenuItem icon="list" label="Tìm kèo" to="/" />
-        </MenuSection>
-
-        <MenuSection title="Hệ thống">
-          <MenuItem icon="edit" label="Hồ sơ cá nhân" to="/tai-khoan/ho-so" />
-          <MenuItem icon="lock" label="Đổi mật khẩu" to="/tai-khoan/doi-mat-khau" />
-          <MenuItem icon="logout" label="Đăng xuất" onClick={handleLogout} danger />
-        </MenuSection>
-
-        <p className="version">Phiên bản {APP_VERSION}</p>
+        <Link to="/keo-cua-toi?tab=joined" className="stat">
+          <p className="stat__value">{count(mine?.joined.length)}</p>
+          <p className="stat__label">Đã tham gia</p>
+        </Link>
+        <Link to="/keo-cua-toi" className="stat">
+          <p className="stat__value">{count(upcoming?.length)}</p>
+          <p className="stat__label">Sắp diễn ra</p>
+        </Link>
+        <Link to="/tai-khoan/ho-so" className="stat">
+          <p className="stat__value stat__value--text">{LEVEL_LABELS[user.level]}</p>
+          <p className="stat__label">Trình độ</p>
+        </Link>
       </div>
+
+      <div className="results-header">
+        <h2 className="section-title">Kèo sắp diễn ra</h2>
+        {upcoming && upcoming.length > UPCOMING_LIMIT && <Link to="/keo-cua-toi">Xem tất cả</Link>}
+      </div>
+      {!upcoming && <Spinner />}
+      {upcoming && upcoming.length === 0 && (
+        <div className="card empty">
+          Bạn chưa có kèo nào sắp diễn ra. <Link to="/">Tìm kèo</Link> hoặc <Link to="/keo/moi">đăng kèo mới</Link>.
+        </div>
+      )}
+      {upcoming && upcoming.length > 0 && (
+        <ul className="post-grid">
+          {upcoming.slice(0, UPCOMING_LIMIT).map((p) => (
+            <li key={p.id}>
+              <PostCard post={p} now={now} />
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }
