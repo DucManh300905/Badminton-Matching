@@ -100,7 +100,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Phòng ngừa:** server in cảnh báo khi MongoDB không phải replica set; có lệnh `npm run db:init-replset`; hướng dẫn trong [database.md](database.md) mục 1. Test tự động không cần cài MongoDB (chạy trong RAM).
 
 ### R13 — Tài liệu không khớp với code (Thấp, 6 điểm)
-- **Phòng ngừa:** thay đổi API / CSDL thì cập nhật [API.md](API.md) / [database.md](database.md) trong cùng Pull Request (mẫu PR có ô kiểm); xem lại tài liệu tại mỗi mốc.
+- **Phòng ngừa:** thay đổi API / CSDL thì cập nhật [API.md](API.md) / [database.md](database.md) trong cùng Pull Request; xem lại tài liệu tại mỗi mốc.
 
 ### R14 — Thời gian còn lại rất ngắn (Cao, 20 điểm)
 - **Mô tả:** hạn hoàn thành dời về 15/12/2026; còn 4 tuần cho khoảng 137 giờ công (~34 giờ/tuần), trong đó thử nghiệm thực tế cần đủ 2 tuần lịch.
