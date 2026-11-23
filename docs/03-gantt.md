@@ -21,7 +21,7 @@ Lịch được điều chỉnh ngày 17/11/2026 theo hạn hoàn thành 15/12/2
 | Mốc | Nội dung | Ngày | Giai đoạn |
 |---|---|---|---|
 | **M0** | Charter trình duyệt, WBS và Gantt hoàn thành, CI chạy | 13/11/2026 | 1 |
-| **M1** | Hệ thống chạy thật (production), chốt đặc tả, bắt đầu thử nghiệm thực tế | 23/11/2026 | 1 |
+| **M1** | Hệ thống chạy thật (production), chốt đặc tả, bắt đầu thử nghiệm thực tế. **Đạt 23/11/2026** phần chạy thật (https://sv22.bcse-vju.com, tag `v0.2.0`); đặc tả (2.4.2) vẫn đang hoàn thiện | 23/11/2026 | 1 |
 | **M2** | Feature freeze: bộ trích xuất LLM + kết hợp, bộ dữ liệu 100 bài gán nhãn | 30/11/2026 | 1 |
 | **M3** | Kết thúc thử nghiệm thực tế (2 tuần), đánh giá RQ1, RQ2 | 07/12/2026 | 1 |
 | **M4** | Báo cáo đồ án và slide hoàn thành | 13/12/2026 | 1 |
