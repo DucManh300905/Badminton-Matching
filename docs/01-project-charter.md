@@ -148,8 +148,8 @@ Chi tiết xem [Gantt chart](03-gantt.md) và file Excel [diagrams/gantt.xlsx](d
 
 | Hạng mục | Giải pháp | Chi phí ước tính |
 |---|---|---|
-| Hosting backend (Node.js) + frontend (file tĩnh sau khi build) | Gói miễn phí (Render / Railway) hoặc VPS của trường | 0đ |
-| Cơ sở dữ liệu | MongoDB: cài trên máy (replica set) khi phát triển; MongoDB Atlas gói M0 miễn phí khi chạy thật | 0đ |
+| Hosting backend (Node.js) + frontend (file tĩnh sau khi build) | Máy chủ Ubuntu của trường, HTTPS qua Cloudflare (Nginx + PM2, [DEPLOY.md](DEPLOY.md)) | 0đ |
+| Cơ sở dữ liệu | MongoDB 8 dạng replica set: cài trên máy khi phát triển, cài trên máy chủ khi chạy thật | 0đ |
 | API LLM cho bộ trích xuất | Giới hạn ngân sách cứng | ≤ 250.000đ |
 | Tên miền (tùy chọn) | | ≤ 300.000đ/năm |
 | CI/CD | GitHub Actions | 0đ |
@@ -176,7 +176,7 @@ MongoDB được chọn vì có sẵn transaction (bảo đảm hai người tha
 | R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Trung bình | Trung bình | Bổ sung LLM / hybrid; mở rộng tập luật dựa trên phân tích lỗi |
 | R5 | Thiếu khách quan khi một người tự gán nhãn dữ liệu | Trung bình | Trung bình | Nhờ 1 người gán nhãn độc lập 30 bài; đo Cohen's κ; tự gán nhãn lại 20% sau 1 tuần |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Thấp | Cao | Không cào dữ liệu; ẩn danh hóa bộ dữ liệu; xin đồng ý khi khảo sát; có chính sách quyền riêng tư |
-| R7 | Chi phí hoặc giới hạn của API LLM / hosting miễn phí / MongoDB Atlas M0 (512 MB) | Trung bình | Thấp | Đặt hạn mức chi; cache kết quả; dùng luật làm phương án dự phòng; theo dõi dung lượng CSDL |
+| R7 | Chi phí hoặc giới hạn của API LLM | Trung bình | Thấp | Đặt hạn mức chi; cache kết quả; dùng luật làm phương án dự phòng |
 
 Chi tiết từng rủi ro (dấu hiệu nhận biết sớm, kế hoạch dự phòng) ghi trong `docs/RISKS.md`.
 

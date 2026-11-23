@@ -1,6 +1,6 @@
 # Sổ rủi ro — Badminton Matching
 
-> Cập nhật: 17/11/2026 (theo hạn hoàn thành dự án 15/12/2026). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
+> Cập nhật: 23/11/2026 (thêm R15: máy chủ chạy thật). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
 > Tài liệu liên quan: [Charter](01-project-charter.md) mục 10 (R1–R7 gốc) · [QUALITY.md](QUALITY.md) · [Gantt](03-gantt.md)
 
 ## 1. Cách đánh giá
@@ -26,7 +26,7 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Nghiên cứu | 3 | 3 | 9 | Trung bình | Chưa đo được |
 | R5 | Gán nhãn dữ liệu thiếu khách quan | Nghiên cứu | 3 | 3 | 9 | Trung bình | Chưa bắt đầu |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Pháp lý | 2 | 5 | 10 | Trung bình | Đã có biện pháp |
-| R7 | Chi phí / giới hạn LLM, hosting, MongoDB Atlas M0 | Hạ tầng | 3 | 2 | 6 | Thấp | Theo dõi |
+| R7 | Chi phí / giới hạn API LLM | Hạ tầng | 3 | 2 | 6 | Thấp | Theo dõi |
 | R8 | Lộ bí mật (`JWT_SECRET`, `.env`) lên repo Public | Bảo mật | 2 | 5 | 10 | Trung bình | Đã có biện pháp |
 | R9 | Lỗ hổng trong thư viện bên thứ ba | Bảo mật | 3 | 3 | 9 | Trung bình | Theo dõi |
 | R10 | Hai người cùng lấy một chỗ cuối cùng | Kỹ thuật | 4 | 4 | 16 → 4 | Cao → Thấp | **Đã xử lý** |
@@ -34,6 +34,7 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R12 | Môi trường dev phụ thuộc MongoDB replica set | Kỹ thuật | 3 | 2 | 6 | Thấp | Đã có biện pháp |
 | R13 | Tài liệu không khớp với code | Quy trình | 3 | 2 | 6 | Thấp | Theo dõi |
 | R14 | Thời gian còn lại rất ngắn (hạn 15/12/2026) | Tiến độ | 4 | 5 | 20 | Cao | Đang theo dõi |
+| R15 | Máy chủ chạy thật gián đoạn hoặc mất dữ liệu trong thời gian thử nghiệm | Hạ tầng | 3 | 4 | 12 | Trung bình | Đã có biện pháp |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
@@ -73,8 +74,8 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác.
 
 ### R7 — Chi phí / giới hạn dịch vụ miễn phí (Thấp, 6 điểm)
-- **Mô tả:** chi phí API LLM vượt ngân sách; MongoDB Atlas M0 giới hạn 512 MB; hosting miễn phí tự tắt khi không có truy cập.
-- **Phòng ngừa:** đặt hạn mức chi cho API LLM; chỉ gọi LLM khi phương pháp luật không trích được (kết hợp); theo dõi dung lượng CSDL.
+- **Mô tả:** chi phí API LLM vượt ngân sách. (Hosting không còn là chi phí: hệ thống chạy trên máy chủ riêng, xem R15.)
+- **Phòng ngừa:** đặt hạn mức chi cho API LLM; chỉ gọi LLM khi phương pháp luật không trích được (kết hợp).
 
 ### R8 — Lộ bí mật lên repo Public (Trung bình, 10 điểm)
 - **Mô tả:** `JWT_SECRET` hoặc chuỗi kết nối CSDL bị commit → ai cũng giả mạo được token của bất kỳ người dùng nào.
@@ -107,6 +108,12 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Dấu hiệu sớm:** M1 (23/11) chưa deploy được production; M2 (30/11) bộ dữ liệu chưa gán nhãn xong.
 - **Phòng ngừa:** deploy ngay tuần đầu để thử nghiệm chạy song song với các việc khác; giữ đủ hạng mục nhưng giảm cỡ mẫu (100 bài, ≥ 30 phản hồi khảo sát, ≥ 15 người thử nghiệm, ≥ 8 người usability test); viết báo cáo dần từ 02/12, dùng lại tài liệu kỹ thuật đã có (`project.md`, `API.md`, `database.md`).
 - **Dự phòng:** cắt theo thứ tự ở [Gantt](03-gantt.md) mục 4; không cắt thử nghiệm thực tế, bộ trích xuất LLM / kết hợp và đánh giá RQ1, vì đó là phần nghiên cứu chính.
+
+### R15 — Máy chủ chạy thật gián đoạn hoặc mất dữ liệu (Trung bình, 12 điểm)
+- **Mô tả:** hệ thống chạy trên một máy chủ Ubuntu đặt sau Cloudflare ([DEPLOY.md](DEPLOY.md)). Máy có thể khởi động lại ngoài kế hoạch, ổ đĩa còn ít (khoảng 4 GB trống), MongoDB không bật xác thực; mất dữ liệu giữa thời gian thử nghiệm là mất số liệu RQ3.
+- **Dấu hiệu sớm:** `https://sv22.bcse-vju.com/api/health` không phản hồi; ổ đĩa dùng trên 90%; file sao lưu hằng ngày không xuất hiện.
+- **Phòng ngừa:** PM2 tự chạy lại backend khi lỗi và sau khi máy khởi động lại (`pm2 startup` + `pm2 save`); khởi động lại máy một lần **trước** khi bắt đầu thử nghiệm để kiểm tra; MongoDB chỉ nghe `127.0.0.1`, máy không mở cổng ra Internet; sao lưu tự động hằng ngày, giữ 7 ngày; xoay vòng log PM2; kiểm tra bằng `npm run smoke` sau mỗi lần triển khai.
+- **Dự phòng:** khôi phục từ bản sao lưu gần nhất ([DEPLOY.md](DEPLOY.md) mục 6); chép bản sao lưu về máy cá nhân mỗi tuần thử nghiệm; ghi lại thời gian gián đoạn vào nhật ký thử nghiệm để loại khỏi số liệu.
 
 ## 4. Cập nhật sổ rủi ro
 

@@ -6,6 +6,8 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 
 **Đồ án cá nhân** – Sinh viên thực hiện: An Đức Mạnh (MSSV 23110310)
 
+**Bản chạy thật:** https://sv22.bcse-vju.com
+
 ## Tài liệu dự án
 
 | Tài liệu | Nội dung |
@@ -19,6 +21,7 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 | [docs/QUALITY.md](docs/QUALITY.md) | Kế hoạch chất lượng: ngưỡng đạt, ca kiểm tra, kết quả đo |
 | [docs/RISKS.md](docs/RISKS.md) | Sổ rủi ro: chấm điểm, phòng ngừa, dự phòng |
 | [docs/GIT.md](docs/GIT.md) | Quy ước nhánh, commit, Pull Request, phát hành |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Triển khai máy chủ chạy thật: Nginx, PM2, sao lưu, cập nhật, xử lý sự cố |
 
 ## Công nghệ
 
@@ -53,6 +56,7 @@ Badminton-Matching/
 │     ├─ utils/             Hằng số, định dạng, chuyển đổi form
 │     ├─ types.ts           Kiểu dữ liệu dùng chung
 │     └─ styles.css         Toàn bộ CSS (biến màu ở :root)
+├─ deploy/                 Cấu hình máy chủ: Nginx, deploy.sh, backup.sh (xem docs/DEPLOY.md)
 └─ docs/
 ```
 
@@ -84,7 +88,7 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 |---|---|
 | `cd backend && npm test` | Test backend (MongoDB chạy trong RAM, không cần cài) |
 | `cd backend && npm run test:coverage` | Kèm báo cáo coverage (`backend/coverage/index.html`) |
-| `cd backend && npm run smoke` | Kiểm tra nhanh API **đang chạy thật** (cần `npm run dev` + `npm run seed:demo`), tự dọn dữ liệu thử |
+| `cd backend && npm run smoke` | Kiểm tra nhanh API **đang chạy thật** (cần `npm run dev`; với máy chủ: đặt `SMOKE_API_URL`), tự tạo và tự dọn tài khoản thử |
 | `cd frontend && npm test` | Test frontend |
 | `cd frontend && npm run lint && npm run build` | Kiểm tra code và build frontend |
 
