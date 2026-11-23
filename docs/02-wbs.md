@@ -34,7 +34,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 2.2.2 | Thu thập ≥ 100 bài đăng | Dữ liệu thô đã ẩn danh | M | 4 | 2.2.1 | Chưa |
 | 2.2.3 | Gán nhãn chuẩn (ground truth) + đo độ đồng thuận (κ trên 30 bài) | Bộ dữ liệu gán nhãn (D3), Cohen's κ | M | 6 | 2.2.2 | Chưa |
 | 2.3 | Phân tích giải pháp hiện có | Bảng so sánh | S | 3 | – | Chưa |
-| 2.4.1 | User stories + use case (MoSCoW) | Product backlog: [04-user-stories.md](04-user-stories.md) (23 story, 9 use case) | M | 5 | 2.1.3 | Xong |
+| 2.4.1 | User stories + use case (MoSCoW) | Product backlog: [04-user-stories.md](04-user-stories.md) (26 story, 12 use case) | M | 5 | 2.1.3 | Xong |
 | 2.4.2 | Đặc tả yêu cầu + quy tắc nghiệp vụ (mã BR-xx) | `docs/project.md` (D4) | M | 4 | 2.4.1 | Đang làm |
 | **3** | **THIẾT KẾ** | | | **15** | | |
 | 3.1 | Kiến trúc hệ thống (modular monolith) | Sơ đồ kiến trúc trong `docs/project.md` | M | 4 | 2.4.1 | Xong |
