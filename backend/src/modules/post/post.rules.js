@@ -217,6 +217,24 @@ const leavePost = (post, playerId, now) => {
     };
 };
 
+/**
+ * Chủ kèo hủy kèo (BR-13): chỉ chủ kèo, chỉ trước giờ bắt đầu, kèo chưa bị hủy.
+ * Kèo đã hủy biến khỏi danh sách và không ai tham gia / rời được nữa.
+ * @param {Post} post
+ * @param {string} actorId
+ * @param {Date} now
+ * @returns {Post}
+ */
+const cancelPost = (post, actorId, now) => {
+    if (actorId !== post.authorId) {
+        throw new AppError(403, 'NOT_AUTHOR', 'Chỉ chủ kèo mới hủy được kèo');
+    }
+    if (post.status === 'closed') throw joinError('POST_NOT_OPEN');
+    if (now.getTime() >= post.startsAt.getTime()) throw joinError('POST_STARTED');
+
+    return { ...post, status: 'closed' };
+};
+
 module.exports = {
     MAX_DURATION_HOURS,
     MAX_PRICE_PER_PERSON,
@@ -228,5 +246,6 @@ module.exports = {
     createPost,
     remainingSlots,
     joinPost,
-    leavePost
+    leavePost,
+    cancelPost
 };

@@ -6,20 +6,29 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 
 **Đồ án cá nhân** – Sinh viên thực hiện: An Đức Mạnh (MSSV 23110310)
 
+**Bản chạy thật:** https://sv22.bcse-vju.com
+
 ## Tài liệu dự án
 
 | Tài liệu | Nội dung |
 |---|---|
 | [docs/01-project-charter.md](docs/01-project-charter.md) | Đề tài, mục tiêu, câu hỏi nghiên cứu, phạm vi, rủi ro |
 | [docs/02-wbs.md](docs/02-wbs.md) | Cấu trúc phân rã công việc |
-| [docs/03-gantt.md](docs/03-gantt.md) | Tiến độ 12 tuần, đường găng |
+| [docs/03-gantt.md](docs/03-gantt.md) | Mốc, đường găng, quy tắc cắt phạm vi, lộ trình 2 giai đoạn (lịch chi tiết: [docs/diagrams/gantt.xlsx](docs/diagrams/gantt.xlsx)) |
+| [docs/project.md](docs/project.md) | Tổng quan kỹ thuật: kiến trúc, chức năng, **quy tắc nghiệp vụ BR-01…BR-13**, bộ trích xuất |
+| [docs/API.md](docs/API.md) | Đặc tả API: endpoint, định dạng phản hồi, mã lỗi |
+| [docs/database.md](docs/database.md) | Thiết kế CSDL MongoDB: collection, index, transaction |
+| [docs/QUALITY.md](docs/QUALITY.md) | Kế hoạch chất lượng: ngưỡng đạt, ca kiểm tra, kết quả đo |
+| [docs/RISKS.md](docs/RISKS.md) | Sổ rủi ro: chấm điểm, phòng ngừa, dự phòng |
+| [docs/GIT.md](docs/GIT.md) | Quy ước nhánh, commit, Pull Request, phát hành |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Triển khai máy chủ chạy thật: Nginx, PM2, sao lưu, cập nhật, xử lý sự cố |
 
 ## Công nghệ
 
 | Phần | Công nghệ |
 |---|---|
 | Backend | Node.js 24 LTS · Express 5 (CommonJS) · MongoDB + Mongoose · JWT · express-validator · helmet · express-rate-limit |
-| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios |
+| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios (gọi API qua `VITE_API_URL`, JWT lưu `localStorage`) · CSS thuần (`src/styles.css`, giao diện web responsive, màu xanh lá) |
 | Kiểm thử | Jest + Supertest + MongoDB chạy trong RAM (backend) · Vitest + React Testing Library (frontend) |
 | CI | GitHub Actions: `backend-test`, `frontend-build` |
 
@@ -35,11 +44,19 @@ Badminton-Matching/
 │  │  ├─ middlewares/       auth, error, validate, rateLimit
 │  │  ├─ modules/           Mỗi chức năng một thư mục: routes / controller / service / model
 │  │  │  ├─ auth/  user/    Đăng ký, đăng nhập, hồ sơ
-│  │  │  ├─ post/           Kèo: model + quy tắc nghiệp vụ (post.rules.js)
+│  │  │  ├─ post/           Kèo: model, quy tắc nghiệp vụ (post.rules.js), service, routes
 │  │  │  └─ parser/         Bộ trích xuất bài đăng dựa trên luật
 │  │  └─ utils/             AppError, asyncHandler, giờ VN, chính sách mật khẩu, dữ liệu mẫu
 │  └─ tests/                Mỗi module một thư mục test
 ├─ frontend/                React + TypeScript (package.json riêng)
+│  └─ src/
+│     ├─ api/               client.ts (axios + JWT + dịch mã lỗi) và mỗi tài nguyên một file
+│     ├─ components/        Layout, Navbar, AccountLayout, PageHeader, PostCard, Menu, Icon…
+│     ├─ context/  pages/
+│     ├─ utils/             Hằng số, định dạng, chuyển đổi form
+│     ├─ types.ts           Kiểu dữ liệu dùng chung
+│     └─ styles.css         Toàn bộ CSS (biến màu ở :root)
+├─ deploy/                 Cấu hình máy chủ: Nginx, deploy.sh, backup.sh (xem docs/DEPLOY.md)
 └─ docs/
 ```
 
@@ -58,9 +75,12 @@ npm run dev                 # http://localhost:8080/api/health
 
 ```bash
 cd frontend
+cp .env.example .env        # VITE_API_URL=http://localhost:8080/api (không có .env thì dùng địa chỉ này)
 npm install
 npm run dev                 # http://localhost:5173
 ```
+
+Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal khác) rồi mở http://localhost:5173.
 
 ### Kiểm thử
 
@@ -68,6 +88,7 @@ npm run dev                 # http://localhost:5173
 |---|---|
 | `cd backend && npm test` | Test backend (MongoDB chạy trong RAM, không cần cài) |
 | `cd backend && npm run test:coverage` | Kèm báo cáo coverage (`backend/coverage/index.html`) |
+| `cd backend && npm run smoke` | Kiểm tra nhanh API **đang chạy thật** (cần `npm run dev`; với máy chủ: đặt `SMOKE_API_URL`), tự tạo và tự dọn tài khoản thử |
 | `cd frontend && npm test` | Test frontend |
 | `cd frontend && npm run lint && npm run build` | Kiểm tra code và build frontend |
 
@@ -75,10 +96,11 @@ npm run dev                 # http://localhost:5173
 
 | Chức năng | Trạng thái |
 |---|---|
-| Quy tắc nghiệp vụ của kèo, bộ trích xuất bài đăng | ✅ Có test |
-| Đăng ký, đăng nhập, đổi mật khẩu, hồ sơ (`/api/auth`, `/api/users`) | ✅ |
-| API kèo: danh sách, chi tiết, tạo, tham gia / rời (`/api/posts`), `/api/parse` | 🔄 Đang làm |
-| Frontend nối với API mới | 🔄 Đang làm |
+| Quy tắc nghiệp vụ của kèo, bộ trích xuất bài đăng | Xong, có test |
+| Đăng ký, đăng nhập, đổi mật khẩu, hồ sơ (`/api/auth`, `/api/users`) | Xong |
+| API kèo: danh sách có lọc, chi tiết, tạo, tham gia / rời (transaction), hủy (`/api/posts`), dán bài → tự điền (`/api/parse`) | Xong |
+| Frontend: danh sách + lọc, đăng kèo + dán-tự-điền, chi tiết, tham gia / rời / hủy, đăng nhập JWT | Xong |
+| Giao diện web responsive (CSS thuần): thanh điều hướng trên cùng, bộ lọc cột trái, lưới kèo, khu Tài khoản có menu dọc (Tổng quan, Kèo của tôi, Hồ sơ, Đổi mật khẩu; `GET /api/users/me/posts`) | Xong |
 
 ## Định dạng API
 

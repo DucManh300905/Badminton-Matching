@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "seed:demo": "node src/utils/seedDemo.js",
-    "db:init-replset": "node src/utils/initReplicaSet.js"
+    "db:init-replset": "node src/utils/initReplicaSet.js",
+    "smoke": "node src/utils/smokeApi.js"
   },
   "jest": {
     "testEnvironment": "node",
@@ -30,7 +31,8 @@
       "!src/server.js",
       "!src/config/database.js",
       "!src/utils/seedDemo.js",
-      "!src/utils/initReplicaSet.js"
+      "!src/utils/initReplicaSet.js",
+      "!src/utils/smokeApi.js"
     ],
     "coverageReporters": [
       "text",

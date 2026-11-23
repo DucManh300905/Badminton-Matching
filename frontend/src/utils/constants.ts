@@ -1,7 +1,7 @@
 // Phải khớp với server/src/domain/types.js và server/src/domain/districts.js
 
-export const SKILL_LEVELS = ['YEU', 'TB_YEU', 'TB_MINUS', 'TB', 'TB_PLUS', 'KHA', 'GIOI'] as const
-export type SkillLevel = (typeof SKILL_LEVELS)[number]
+export const SKILL_LEVELS = ['YEU', 'TB_YEU', 'TB_MINUS', 'TB', 'TB_PLUS', 'KHA', 'GIOI'] as const;
+export type SkillLevel = (typeof SKILL_LEVELS)[number];
 
 export const LEVEL_LABELS: Record<SkillLevel, string> = {
   YEU: 'Yếu / mới chơi',
@@ -11,7 +11,7 @@ export const LEVEL_LABELS: Record<SkillLevel, string> = {
   TB_PLUS: 'TB+ / TB khá',
   KHA: 'Khá',
   GIOI: 'Giỏi',
-}
+};
 
 export const HANOI_AREAS = [
   'Ba Đình',
@@ -27,8 +27,11 @@ export const HANOI_AREAS = [
   'Bắc Từ Liêm',
   'Hà Đông',
   'Khác',
-] as const
-export type Area = (typeof HANOI_AREAS)[number]
+] as const;
+export type Area = (typeof HANOI_AREAS)[number];
 
-export const GENDER_LABELS = { male: 'Nam', female: 'Nữ' } as const
-export type Gender = keyof typeof GENDER_LABELS
+export const GENDER_LABELS = { male: 'Nam', female: 'Nữ' } as const;
+export type Gender = keyof typeof GENDER_LABELS;
+
+/** Hiện ở cuối trang Tài khoản; nhớ đổi cùng "version" trong package.json */
+export const APP_VERSION = '0.1.0';
