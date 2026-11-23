@@ -46,6 +46,8 @@ step "Frontend: build"
 step "Frontend: chép bản build vào $WEB_ROOT"
 sudo rm -rf "$WEB_ROOT.new" "$WEB_ROOT.old"
 sudo cp -r frontend/dist "$WEB_ROOT.new"
+# Nginx (www-data) phải đọc được, kể cả khi terminal đang đặt umask chặt (vd: 077)
+sudo chmod -R a+rX "$WEB_ROOT.new"
 if [ -d "$WEB_ROOT" ]; then sudo mv "$WEB_ROOT" "$WEB_ROOT.old"; fi
 sudo mv "$WEB_ROOT.new" "$WEB_ROOT"
 sudo rm -rf "$WEB_ROOT.old"

@@ -10,7 +10,7 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 13/13 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 160 test backend + 41 test frontend; 13/13 BR; coverage dòng 99,25% |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 13/13 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 160 test backend + 42 test frontend; 13/13 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 113,5 KB |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
@@ -38,6 +38,7 @@
 | TC-Q1-05 | Người khác hủy kèo; chủ kèo hủy rồi có người vào | 403 `NOT_AUTHOR`; 409 `POST_NOT_OPEN` | `post.test.js` |
 | TC-Q1-06 | Lọc kèo ngày mai lúc 5h30 sáng khi server chạy giờ UTC | Kèo nằm đúng ngày theo lịch Việt Nam | `post.test.js`, `utils/vnTime.test.js` |
 | TC-Q1-07 | Đăng kèo giờ kết thúc trước giờ bắt đầu / ở quá khứ | 400, chỉ rõ trường `endsAt` / `startsAt` | `post.test.js` |
+| TC-Q1-08 | Smoke test trên **máy chủ chạy thật** (qua Cloudflare + Nginx): đăng ký, đăng nhập, dán bài, đăng kèo, 3 người tranh 2 chỗ cùng lúc, rời, hủy | 17/17 bước đạt, tự dọn dữ liệu thử | `npm run smoke` với `SMOKE_API_URL=https://sv22.bcse-vju.com/api`, 23/11/2026 ([DEPLOY.md](DEPLOY.md) mục 4) |
 
 ## Q2 — Bảo mật
 
@@ -96,6 +97,7 @@
 |---|---|---|
 | TC-Q4-01 | Xem danh sách → lọc → chưa đăng nhập bị chuyển sang Đăng nhập → đăng nhập → dán bài mẫu → tự điền → đăng kèo → người khác tham gia → "Kèo của tôi" → token hết hạn → chủ kèo hủy kèo → trang 404 | 14/14 bước đạt, 0 lỗi JavaScript |
 | TC-Q4-02 | Đăng ký → sửa trình độ → đổi mật khẩu (nhập lại sai, sai mật khẩu hiện tại, đúng) → đăng xuất → đăng nhập bằng mật khẩu mới | 10/10 bước đạt |
+| TC-Q4-03 | Mở bản chạy thật https://sv22.bcse-vju.com ở 1366 px và 390 px: trang chủ, gọi API danh sách kèo, mở thẳng `/dang-ky` | 6/6 bước đạt, 0 lỗi JavaScript của ứng dụng (23/11/2026) |
 
 **Việc còn lại:**
 - Chuyển hai kịch bản trên thành bộ test E2E (Playwright) trong repo và chạy trên CI (WBS 5.3).

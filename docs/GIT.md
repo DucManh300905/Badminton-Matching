@@ -97,7 +97,7 @@ git switch develop
 | Mốc | Tag | Nội dung | Trạng thái |
 |---|---|---|---|
 | M0 | `v0.1.0` | Charter, WBS, Gantt, CI | Đã gắn |
-| M1 (23/11/2026) | `v0.2.0` | Chạy thật (production), bắt đầu thử nghiệm thực tế | |
+| M1 (23/11/2026) | `v0.2.0` | Chạy thật (production), bắt đầu thử nghiệm thực tế | Đã gắn |
 | M2 (30/11/2026) | `v0.9.0` | Feature freeze: bộ trích xuất LLM + kết hợp | |
 | M3, M4 | — | Kết thúc thử nghiệm, xong báo cáo: không đổi code nên không gắn tag | |
 | M5 (15/12/2026) | `v1.0.0` | Hoàn thành dự án | |

@@ -44,7 +44,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | **4** | **PHÁT TRIỂN** | | | **99** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
-| 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local | M | 3 | 3.1 | Đang làm |
+| 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
 | 4.2 | Lõi nghiệp vụ: kèo, chỗ, trình độ | `backend/src/modules/post/post.rules.js` | M | 8 | 4.1.1 | Xong |
 | 4.3.1 | Bộ trích xuất dựa trên luật (baseline) | `backend/src/modules/parser/` | M | 12 | 4.1.1, 2.2.3 | Đang làm |
 | 4.3.2 | Bộ trích xuất bằng LLM | Module LLM | M | 8 | 4.3.1 | Chưa |
@@ -64,7 +64,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 5.4 | Đánh giá bộ trích xuất (RQ1) | Bảng P/R/F1 | M | 6 | 2.2.3, 4.3.3 | Chưa |
 | 5.5 | Usability test A/B (RQ2), ≥ 8 người | Kết quả kiểm định Wilcoxon | M | 5 | 4.5.1 | Chưa |
 | **6** | **TRIỂN KHAI & PILOT** | | | **19** | | |
-| 6.1 | Deploy production | URL production (D6) | M | 3 | M3 | Chưa |
+| 6.1 | Deploy production | URL production (D6): https://sv22.bcse-vju.com | M | 3 | 4.1.3 | Xong |
 | 6.2 | Pilot 2 tuần tại Hà Nội | Log hệ thống, phản hồi | M | 12 | 6.1 | Chưa |
 | 6.3 | Phân tích số liệu pilot (RQ3) | Thống kê + điểm SUS | M | 4 | 6.2 | Chưa |
 | **7** | **KẾT THÚC** | | | **29** | | |
