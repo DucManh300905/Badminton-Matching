@@ -44,7 +44,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | **4** | **PHÁT TRIỂN** | | | **99** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
-| 4.1.3 | Khung dự án + môi trường chạy thật (Render, MongoDB Atlas) | Ứng dụng chạy được ở local | M | 3 | 3.1 | Đang làm |
+| 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local | M | 3 | 3.1 | Đang làm |
 | 4.2 | Lõi nghiệp vụ: kèo, chỗ, trình độ | `backend/src/modules/post/post.rules.js` | M | 8 | 4.1.1 | Xong |
 | 4.3.1 | Bộ trích xuất dựa trên luật (baseline) | `backend/src/modules/parser/` | M | 12 | 4.1.1, 2.2.3 | Đang làm |
 | 4.3.2 | Bộ trích xuất bằng LLM | Module LLM | M | 8 | 4.3.1 | Chưa |

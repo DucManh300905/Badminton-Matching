@@ -14,7 +14,7 @@
 | Không lộ dữ liệu nhạy cảm | Plugin `toJSON` toàn cục: `_id` → `id`, bỏ `__v`, **luôn xóa** `password` và `tokenVersion` | Lỡ trả nguyên document ra API cũng không lộ |
 | Lưu tối thiểu thông tin cá nhân | Chỉ email, tên hiển thị, giới tính, trình độ | Không thu thập số điện thoại, ảnh, ngày sinh |
 
-**Yêu cầu chạy:** MongoDB phải chạy dạng **replica set** thì mới dùng được transaction. MongoDB Atlas có sẵn. MongoDB cài trên máy: thêm `replication: replSetName: rs0` vào `mongod.cfg`, khởi động lại, rồi chạy `npm run db:init-replset` một lần. Nếu chưa bật, server vẫn khởi động nhưng in cảnh báo, và chức năng tham gia kèo sẽ lỗi.
+**Yêu cầu chạy:** MongoDB phải chạy dạng **replica set** thì mới dùng được transaction. MongoDB cài trên máy (và trên máy chủ chạy thật, [DEPLOY.md](DEPLOY.md)): thêm `replication: replSetName: rs0` vào `mongod.cfg`, khởi động lại, rồi chạy `npm run db:init-replset` một lần. Nếu chưa bật, server vẫn khởi động nhưng in cảnh báo, và chức năng tham gia kèo sẽ lỗi.
 
 ## 2. Sơ đồ quan hệ
 

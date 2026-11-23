@@ -16,7 +16,7 @@ Phạm vi chi tiết, mục tiêu đo được và câu hỏi nghiên cứu: xem
 | Phần | Công nghệ | Lý do chọn |
 |---|---|---|
 | Backend | Node.js 24 LTS, Express 5 (CommonJS) | Phổ biến, nhẹ; Node 24 còn được hỗ trợ tới 04/2028 |
-| CSDL | MongoDB 8 + Mongoose 9 | Có transaction (chống tranh chỗ), có gói cloud miễn phí (Atlas M0) |
+| CSDL | MongoDB 8 + Mongoose 9 | Có transaction (chống tranh chỗ); chạy thật trên máy chủ riêng ([DEPLOY.md](DEPLOY.md)) |
 | Xác thực | JWT (hạn 7 ngày) + bcrypt | Không cần lưu phiên phía server |
 | Kiểm tra dữ liệu | express-validator (ở route) + schema Mongoose (ở model) | Hai lớp bảo vệ |
 | Bảo mật | helmet, cors, express-rate-limit | Header an toàn, chỉ cho frontend gọi, chống dò mật khẩu |
