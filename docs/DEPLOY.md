@@ -171,6 +171,9 @@ Trước khi phân tích số liệu thử nghiệm (RQ3), chép một bản sao
 
 | Hiện tượng | Kiểm tra |
 |---|---|
+| Web báo lỗi 500, `error.log` có `Permission denied` / `internal redirection cycle` | Nginx không đọc được thư mục web: `sudo chmod -R a+rX /var/www/badminton` (`deploy.sh` đã tự làm bước này) |
+| Trình duyệt vẫn hiện trang cũ của tên miền | Bản lưu trong trình duyệt (cache / service worker), không phải máy chủ: mở cửa sổ ẩn danh để kiểm tra; xóa bằng DevTools → Application → Storage → **Clear site data** |
+| Console báo 404 `/cdn-cgi/rum` | Script thống kê do Cloudflare chèn vào, không thuộc ứng dụng; bỏ qua |
 | Web báo lỗi 502 | Backend không chạy: `pm2 ls`, `pm2 logs badminton-backend --lines 50` |
 | Lỗi 52x trang Cloudflare | Nginx không chạy hoặc máy chủ tắt: `systemctl status nginx` |
 | `deploy.sh` dừng ở "Thiếu backend/.env" | Làm lại mục 3.3 |
