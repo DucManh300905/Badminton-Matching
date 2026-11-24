@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { initials } from '../utils/format';
+import Icon, { type IconName } from './Icon';
 
 export function Spinner({ label = 'Đang tải…' }: { label?: string }) {
   return (
@@ -22,11 +23,51 @@ export function FieldError({ message }: { message?: string }) {
   return <p className="field-error">{message}</p>;
 }
 
-/** Ảnh đại diện = chữ cái đầu của tên (không dùng hình) */
-export function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
+/** Ảnh đại diện: ảnh người dùng tải lên (WBS 4.9); chưa có thì dùng chữ cái đầu của tên */
+export function Avatar({
+  name,
+  url,
+  size = 'md',
+}: {
+  name: string;
+  url?: string | null;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+}) {
+  const cls = `avatar${size === 'md' ? '' : ` avatar--${size}`}`;
+  if (url) return <img className={`${cls} avatar--img`} src={url} alt="" aria-hidden="true" loading="lazy" />;
   return (
-    <span className={`avatar${size === 'sm' ? ' avatar--sm' : ''}`} aria-hidden="true">
+    <span className={cls} aria-hidden="true">
       {initials(name)}
+    </span>
+  );
+}
+
+/** Tiêu đề thẻ kèm icon nét mảnh */
+export function CardTitle({
+  icon,
+  children,
+  className = '',
+  as: Tag = 'h2',
+}: {
+  icon: IconName;
+  children: ReactNode;
+  className?: string;
+  as?: 'h2' | 'h3';
+}) {
+  return (
+    <Tag className={`card__title card__title--icon ${className}`.trim()}>
+      <Icon name={icon} size={20} />
+      <span>{children}</span>
+    </Tag>
+  );
+}
+
+/** Dòng chữ kèm icon nhỏ phía trước (thông tin kèo, nhãn bộ lọc…) */
+export function IconText({ icon, children }: { icon: IconName; children: ReactNode }) {
+  return (
+    <span className="icon-text">
+      <Icon name={icon} size={16} />
+      <span>{children}</span>
     </span>
   );
 }

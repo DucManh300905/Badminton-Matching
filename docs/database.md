@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu — Badminton Matching
 
-> Cập nhật: 13/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
+> Cập nhật: 24/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
 > Tài liệu liên quan: [API.md](API.md) · [project.md](project.md) (quy tắc BR-xx)
 
 ## 1. Nguyên tắc thiết kế
@@ -33,6 +33,8 @@ erDiagram
         string level
         number tokenVersion "select false"
         date passwordChangedAt
+        object bankAccount "bankBin, accountNumber, accountName"
+        string avatar "tên file ảnh, null = chưa có"
     }
     POST {
         ObjectId _id
@@ -46,12 +48,18 @@ erDiagram
         number pricePerPerson
         object slots "male, female, any"
         string status "open, full, closed"
-        string rawText "không trả ra API"
+        array guests "bạn không dùng app: name"
+        array expenses "kind, label, amount, everyone, sharedBy"
+        date costsUpdatedAt
+        string cover "tên file ảnh bìa, null = chưa có"
     }
     PARTICIPANT {
         ObjectId user FK
         string slot "male, female, any"
         date joinedAt
+        date paidAt "null = chưa trả"
+        number paidAmount "số tiền lúc đánh dấu đã trả"
+        boolean attended "null = chưa điểm danh"
     }
 ```
 
@@ -70,6 +78,10 @@ Model: `backend/src/modules/user/user.model.js`
 | `level` | String | 7 mức `YEU` … `GIOI` | Kiểm tra khoảng trình độ (BR-09) |
 | `tokenVersion` | Number | mặc định 0, `select: false` | Tăng 1 mỗi lần đổi mật khẩu; JWT mang số cũ bị từ chối |
 | `passwordChangedAt` | Date | | Lần đổi mật khẩu gần nhất (tham khảo) |
+| `bankAccount.bankBin` | String | thuộc danh sách ngân hàng (`utils/banks.js`) | Tài khoản nhận tiền (WBS 4.8.1), **không bắt buộc**; cả object không có khi chưa nhập |
+| `bankAccount.accountNumber` | String | 6 – 19 chữ số | Chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15) |
+| `bankAccount.accountName` | String | 2 – 50 chữ cái **in hoa không dấu** | Server tự chuẩn hóa khi lưu |
+| `avatar` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh đại diện (WBS 4.9). Chỉ lưu **tên file**; API trả `avatarUrl = /uploads/avatars/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
 **Vì sao dùng `tokenVersion`, không so thời gian:** JWT chỉ ghi thời điểm cấp chính xác tới giây. Nếu so "đổi mật khẩu sau thời điểm cấp token", token cũ dùng trong cùng giây đổi mật khẩu vẫn lọt qua. So số phiên bản thì không phụ thuộc đồng hồ.
@@ -91,8 +103,13 @@ Model: `backend/src/modules/post/post.model.js`
 | `participants[]` | mảng nhúng | xem 3.3 | |
 | `status` | String | `open` / `full` / `closed`, mặc định `open` | Vòng đời: [project.md](project.md) mục 6 |
 | `note` | String | ≤ 1000 | |
-| `rawText` | String | ≤ 5000 | Nội dung bài gốc người dùng dán vào; dùng đánh giá bộ trích xuất (RQ1), **không trả ra API** |
+| `guests[]` | `{ _id, name }` | tối đa 20, tên 1 – 30 ký tự | Bạn của chủ kèo **không dùng app** (WBS 4.8.2), chỉ có tên, vẫn được tính khi chia tiền |
+| `expenses[]` | xem 3.4 | tối đa 30 | Các khoản chi; chỉ chủ kèo sửa (BR-16) |
+| `costsUpdatedAt` | Date | | Lần sửa chi phí gần nhất (số liệu RQ1, RQ2) |
+| `cover` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh bìa (WBS 4.9); API trả `coverUrl = /uploads/covers/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |
+
+**Ảnh không nằm trong CSDL.** File WebP nằm ở thư mục `UPLOAD_DIR` (`avatars/`, `covers/`), CSDL chỉ giữ tên file. Đổi hoặc xóa ảnh thì server xóa luôn file cũ; sao lưu phải gồm cả thư mục này ([DEPLOY.md](DEPLOY.md) mục 6).
 
 Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` trong `post.rules.js`) từ `slots` và `participants`, để không bao giờ lệch nhau.
 
@@ -103,8 +120,23 @@ Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` tr
 | `user` | ObjectId → `users` | Người tham gia |
 | `slot` | String | Loại chỗ người này đang giữ: `male` / `female` / `any` (BR-10) |
 | `joinedAt` | Date | Thời điểm tham gia, giữ nguyên khi người khác vào / rời |
+| `paidAt` | Date \| null | Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); `null` = chưa trả. Giữ nguyên khi người khác vào / rời; ghi bằng toán tử vị trí `participants.$.paidAt` (một lệnh, không cần transaction) |
+| `paidAmount` | Number \| null | Số tiền phải trả tại lúc được đánh dấu đã trả (BR-18); so với số hiện tại để biết "còn thiếu" / "trả dư" |
+| `attended` | Boolean \| null | Điểm danh từ giờ bắt đầu: `true` có mặt, `false` vắng, `null` chưa điểm danh. Số liệu bùng kèo; không tự đổi phần chia tiền |
 
-Không có `_id` riêng (`_id: false`). Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
+Không có `_id` riêng (`_id: false`).
+
+### 3.4 `expenses` (nhúng trong `posts`)
+
+| Trường | Kiểu | Ghi chú |
+|---|---|---|
+| `kind` | String | `court` / `shuttle` / `water` / `food` / `other` |
+| `label` | String | Tên khoản, bắt buộc với `other`, ≤ 40 ký tự |
+| `amount` | Number | Số nguyên 0 – 10.000.000 |
+| `everyone` | Boolean | "Chọn tất cả": luôn tính theo danh sách người hiện tại |
+| `sharedBy` | [String] | Mã người cùng chịu khi `everyone = false`: `host`, `u:<userId>`, `g:<guestId>` |
+
+Số tiền mỗi người **không lưu** mà tính khi đọc (`computeDues` trong `post.costs.js`), để luôn đúng khi có người vào / rời hoặc chi phí thay đổi. Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
 
 ## 4. Index
 
@@ -134,6 +166,7 @@ Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi �
 - Tạo 4 tài khoản `minh`, `lan`, `hung`, `thu` `@example.com` (mật khẩu `DEMO_PASSWORD`, mặc định `Demo@123`) và 5 kèo trong 3 ngày tới.
 - **Chỉ xóa và tạo lại tài khoản `@example.com` cùng kèo của họ**; tài khoản khác giữ nguyên.
 - Từ chối chạy khi `NODE_ENV=production`.
+- Không xóa file ảnh của tài khoản / kèo mẫu cũ; khi cần dọn, xóa thư mục `backend/uploads/` (đã nằm trong `.gitignore`).
 
 ## 7. Dữ liệu nghiên cứu
 

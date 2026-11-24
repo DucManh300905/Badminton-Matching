@@ -1,7 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import { formatLevelRange, formatPrice, formatSlots, formatTimeRange, initials } from './format';
+import {
+  formatDateShort,
+  formatLevelRange,
+  formatMoney,
+  formatPrice,
+  formatSlots,
+  formatTimeRange,
+  initials,
+} from './format';
 
 describe('format', () => {
+  it('formatMoney: 0 vẫn là số tiền (tổng đã thu), không phải "Miễn phí"', () => {
+    expect(formatMoney(0)).toBe('0đ');
+    expect(formatMoney(106_000)).toBe('106.000đ');
+  });
+
+  it('formatDateShort: thứ + ngày/tháng', () => {
+    expect(formatDateShort('2026-11-28')).toBe('T7, 28/11');
+    expect(formatDateShort('2026-11-29')).toBe('CN, 29/11');
+  });
+
   it('formatPrice', () => {
     expect(formatPrice(50_000)).toBe('50.000đ');
     expect(formatPrice(0)).toBe('Miễn phí');

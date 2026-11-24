@@ -72,14 +72,6 @@ const run = async () => {
     const wrong = await call('POST', '/auth/login', { email: email('author'), password: 'sai-mat-khau' });
     check(wrong.status === 401 && wrong.body.code === 'INVALID_CREDENTIALS', 'Sai mật khẩu → 401 INVALID_CREDENTIALS');
 
-    const parse = await call('POST', '/parse', { text: 'Tối mai 7h-9h sân Mỹ Đình tuyển 2 nam TB+ trở lên, 60k/ng' });
-    const p = parse.body.data;
-    check(
-        parse.status === 200 && p.start?.hour === 19 && p.slots?.male === 2 && p.levelMax === 'GIOI' && p.pricePerPerson === 60_000,
-        'Dán bài → tự điền',
-        `19h–21h, 2 nam, TB+ trở lên, 60.000đ (độ tin cậy ${p.confidence})`
-    );
-
     const start = new Date(Date.now() + 24 * 3600 * 1000);
     const created = await call(
         'POST',

@@ -43,7 +43,7 @@ describe('POST /api/posts — tạo kèo', () => {
         const res = await request(app)
             .post('/api/posts')
             .set(auth(owner.token))
-            .send(postBody({ note: '  Mang nước  ', rawText: 'Tối mai 19h-21h thiếu 1 nam 1 nữ' }));
+            .send(postBody({ note: '  Mang nước  ' }));
 
         expect(res.status).toBe(201);
         expect(res.body.data).toMatchObject({
@@ -58,10 +58,6 @@ describe('POST /api/posts — tạo kèo', () => {
         });
         expect(JSON.stringify(res.body.data)).not.toContain('owner@test.com');
 
-        // Nội dung gốc được lưu để đánh giá bộ trích xuất, nhưng không trả ra API
-        const saved = await Post.findById(res.body.data.id);
-        expect(saved.rawText).toBe('Tối mai 19h-21h thiếu 1 nam 1 nữ');
-        expect(res.body.data).not.toHaveProperty('rawText');
     });
 
     test('loại chỗ không gửi lên → mặc định 0', async () => {
@@ -187,7 +183,8 @@ describe('Tham gia / rời kèo', () => {
 
         let res = await join(nam.token, post.id).expect(200);
         expect(res.body.data.participants).toEqual([
-            { id: nam.user.id, displayName: 'An', gender: 'male', level: 'TB', slot: 'male', joinedAt: expect.any(String) }
+            // Người trong kèo thấy thêm trạng thái đã trả (WBS 4.8.1)
+            { id: nam.user.id, displayName: 'An', avatarUrl: null, gender: 'male', level: 'TB', slot: 'male', joinedAt: expect.any(String), paid: false, attended: null, amountDue: null, paymentStatus: 'none' }
         ]);
         expect(res.body.data.status).toBe('open');
 

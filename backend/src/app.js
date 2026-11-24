@@ -9,7 +9,7 @@ const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const userRoutes = require('./modules/user/user.routes');
 const postRoutes = require('./modules/post/post.routes');
-const parserRoutes = require('./modules/parser/parser.routes');
+const { uploadDir } = require('./utils/images');
 
 const app = express();
 
@@ -26,6 +26,9 @@ app.use(
     })
 );
 
+// Ảnh người dùng tải lên. Trên máy chủ Nginx phục vụ thẳng thư mục này (docs/DEPLOY.md); dòng dưới dùng khi chạy trên máy
+app.use('/uploads', express.static(uploadDir(), { maxAge: '30d', immutable: true }));
+
 // Giới hạn body JSON để chặn request khổng lồ
 app.use(express.json({ limit: '100kb' }));
 
@@ -40,8 +43,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 // Kèo: xem không cần đăng nhập; tạo / tham gia / rời / hủy cần đăng nhập
 app.use('/api/posts', postRoutes);
-// Dán bài → tự điền
-app.use('/api/parse', parserRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

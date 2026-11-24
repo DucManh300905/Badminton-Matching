@@ -56,7 +56,7 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <Avatar name={user.displayName} size="sm" />
+        <Avatar name={user.displayName} url={user.avatarUrl} size="sm" />
         <span>{user.displayName}</span>
       </button>
       {open && (
@@ -87,18 +87,18 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-/** Thanh điều hướng trên cùng; trên màn hình nhỏ thu lại thành nút "Menu" */
+/**
+ * Thanh điều hướng trên cùng, CHỈ hiện trên máy tính (từ 1024px).
+ * Điện thoại và máy tính bảng dùng giao diện kiểu app: thanh tab đáy (TabBar) + thanh tiêu đề (PageHeader).
+ */
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
   const [today] = useState(() => toDateInput(new Date()));
-  const [mobileOpen, setMobileOpen] = useState(false);
   const active = activeTab(pathname, search, today);
-  const close = () => setMobileOpen(false);
 
   function handleLogout() {
-    close();
     logout();
     navigate('/', { replace: true });
   }
@@ -108,7 +108,7 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="container navbar__inner">
-        <Link to="/" className="navbar__brand" onClick={close}>
+        <Link to="/" className="navbar__brand">
           Badminton Matching
         </Link>
 
@@ -144,54 +144,7 @@ export default function Navbar() {
             </>
           )}
         </div>
-
-        <button
-          type="button"
-          className="btn btn--outline navbar__toggle"
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-menu"
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? 'Đóng' : 'Menu'}
-        </button>
       </div>
-
-      {mobileOpen && (
-        <div id="mobile-menu" className="container mobile-menu">
-          {NAV_ITEMS.map((item) => (
-            <Link key={item.key} to={item.to(today)} className={linkClass(item.key)} onClick={close}>
-              {item.label}
-            </Link>
-          ))}
-          <Link to="/keo/moi" onClick={close}>
-            Đăng kèo
-          </Link>
-          {user ? (
-            <>
-              <p className="mobile-menu__user">
-                Đăng nhập: <strong>{user.displayName}</strong>
-              </p>
-              {ACCOUNT_LINKS.filter((l) => l.to !== '/keo-cua-toi').map((l) => (
-                <Link key={l.to} to={l.to} onClick={close}>
-                  {l.label}
-                </Link>
-              ))}
-              <button type="button" onClick={handleLogout}>
-                Đăng xuất
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/dang-nhap" onClick={close}>
-                Đăng nhập
-              </Link>
-              <Link to="/dang-ky" onClick={close}>
-                Đăng ký
-              </Link>
-            </>
-          )}
-        </div>
-      )}
     </header>
   );
 }

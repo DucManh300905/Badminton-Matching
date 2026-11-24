@@ -22,7 +22,7 @@ feature/…       ●──●    ●───●                     nhánh ng�
 | `docs/<mô-tả>` | Chỉ sửa tài liệu | `develop` | `develop` | Create a merge commit |
 | `hotfix/<mô-tả>` | Sửa gấp lỗi trên bản đã phát hành | `main` | `main`, rồi merge `main` về `develop` | Create a merge commit |
 
-- Tên nhánh viết thường, không dấu, nối bằng gạch ngang. Ví dụ: `feature/4.3.2-trich-xuat-llm`, `fix/dang-xuat-ve-trang-chu`, `docs/bao-cao-rq1`.
+- Tên nhánh viết thường, không dấu, nối bằng gạch ngang. Ví dụ: `feature/4.8.1-thu-tien-qr`, `fix/dang-xuat-ve-trang-chu`, `docs/bao-cao-rq1`.
 - **Mọi PR đều dùng "Create a merge commit"** (nút mặc định "Merge pull request"): giữ lịch sử đầy đủ và các nhánh luôn chung commit, nên không bị lệch nhánh ở lần merge sau. Repo không dùng Squash hay Rebase.
 - **Mỗi việc một nhánh**, đặt tên theo mã WBS; merge xong thì xóa nhánh và tạo nhánh mới từ `develop` cho việc tiếp theo. Nhờ vậy danh sách PR khớp với WBS.
 - Xóa nhánh sau khi merge. Bật **Settings → General → Automatically delete head branches** để GitHub tự xóa.
@@ -53,18 +53,18 @@ Quy tắc:
 
 ```bash
 git switch develop && git pull                      # 1. lấy develop mới nhất
-git switch -c feature/4.3.2-trich-xuat-llm          # 2. tạo nhánh theo mã WBS
+git switch -c feature/4.8.1-thu-tien-qr          # 2. tạo nhánh theo mã WBS
 
 # ... code + viết test ...
 cd backend && npm test                              # 3. test backend
 cd ../frontend && npm test && npm run lint && npm run build   #    test + kiểm tra frontend
 
 git add -A && git commit -m "feat: ..."             # 4. commit
-git push -u origin feature/4.3.2-trich-xuat-llm     # 5. đẩy lên
+git push -u origin feature/4.8.1-thu-tien-qr     # 5. đẩy lên
 # 6. mở Pull Request vào develop → chờ CI xanh → Merge pull request (Create a merge commit)
 
 git switch develop && git pull                      # 7. cập nhật develop sau khi merge
-git branch -d feature/4.3.2-trich-xuat-llm          # 8. xóa nhánh đã xong
+git branch -d feature/4.8.1-thu-tien-qr          # 8. xóa nhánh đã xong
 ```
 
 ## 4. Quy tắc Pull Request
@@ -97,8 +97,8 @@ git switch develop
 | Mốc | Tag | Nội dung | Trạng thái |
 |---|---|---|---|
 | M0 | `v0.1.0` | Charter, WBS, Gantt, CI | Đã gắn |
-| M1 (23/11/2026) | `v0.2.0` | Chạy thật (production), bắt đầu thử nghiệm thực tế | |
-| M2 (30/11/2026) | `v0.9.0` | Feature freeze: bộ trích xuất LLM + kết hợp | |
+| M1 (23/11/2026) | `v0.2.0` | Chạy thật (production), bắt đầu thử nghiệm thực tế | Đã gắn |
+| M2 (30/11/2026) | `v0.9.0` | Feature freeze: thu tiền bằng mã QR, chốt chi phí sau buổi | |
 | M3, M4 | — | Kết thúc thử nghiệm, xong báo cáo: không đổi code nên không gắn tag | |
 | M5 (15/12/2026) | `v1.0.0` | Hoàn thành dự án | |
 | A1 (18/01/2027) | `mobile-v0.1.0` | Bản thử app di động Android (giai đoạn 2) | |

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { HANOI_AREAS, POST_STATUSES, SLOT_KINDS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
+const { EXPENSE_KINDS, MAX_EXPENSE } = require('./post.costs');
 
 const slotCount = {
     type: Number,
@@ -29,7 +30,46 @@ const participantSchema = new mongoose.Schema(
         joinedAt: {
             type: Date,
             default: Date.now
+        },
+        // Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); null = chưa trả
+        paidAt: {
+            type: Date,
+            default: null
+        },
+        // Số tiền phải trả tại lúc được đánh dấu đã trả (BR-18): so với số hiện tại để biết "còn thiếu" / "trả dư"
+        paidAmount: {
+            type: Number,
+            default: null
+        },
+        // Điểm danh sau giờ bắt đầu: true có mặt, false vắng, null chưa điểm danh
+        attended: {
+            type: Boolean,
+            default: null
         }
+    },
+    { _id: false }
+);
+
+// Bạn của chủ kèo không dùng app: chỉ có tên, vẫn được tính trong phần chia tiền (WBS 4.8.2)
+const guestSchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, minlength: 1, maxlength: 30 }
+});
+
+// Một khoản chi của kèo (BR-17). sharedBy là mã người: "host", "u:<userId>", "g:<guestId>"
+const expenseSchema = new mongoose.Schema(
+    {
+        kind: { type: String, enum: EXPENSE_KINDS, required: true },
+        label: { type: String, trim: true, maxlength: 40 },
+        amount: {
+            type: Number,
+            required: true,
+            min: 0,
+            max: MAX_EXPENSE,
+            validate: { validator: Number.isInteger, message: 'Số tiền phải là số nguyên' }
+        },
+        // "Chọn tất cả": luôn tính theo danh sách người hiện tại của kèo
+        everyone: { type: Boolean, default: false },
+        sharedBy: { type: [String], default: [] }
     },
     { _id: false }
 );
@@ -104,11 +144,13 @@ const postSchema = new mongoose.Schema(
             trim: true,
             maxlength: 1000
         },
-        // Nội dung gốc người dùng dán vào ô "tự điền" — dùng để đánh giá bộ trích xuất (RQ1)
-        rawText: {
-            type: String,
-            maxlength: 5000
-        }
+        // Chi phí theo từng khoản (WBS 4.8.2); chỉ chủ kèo sửa (BR-16)
+        guests: { type: [guestSchema], default: [] },
+        expenses: { type: [expenseSchema], default: [] },
+        // Lần sửa chi phí gần nhất (số liệu cho RQ1, RQ2)
+        costsUpdatedAt: { type: Date, default: null },
+        // Tên file ảnh bìa (WBS 4.9); null = dải màu mặc định
+        cover: { type: String, default: null }
     },
     { timestamps: true }
 );

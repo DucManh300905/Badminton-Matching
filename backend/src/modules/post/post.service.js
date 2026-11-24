@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 const Post = require('./post.model');
 const rules = require('./post.rules');
+const costs = require('./post.costs');
+const { saveImage, removeImage } = require('../../utils/images');
 const AppError = require('../../utils/AppError');
 const { SKILL_LEVELS, levelIndex } = require('../../utils/skillLevel');
 const { vnDayRange } = require('../../utils/vnTime');
@@ -12,13 +14,15 @@ const LIST_LIMIT = 100;
 
 const notFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy kèo');
 
-const AUTHOR_FIELDS = 'displayName';
-const PARTICIPANT_FIELDS = 'displayName gender level';
+const AUTHOR_FIELDS = 'displayName avatar';
+const PARTICIPANT_FIELDS = 'displayName gender level avatar';
+// Trang chi tiết cần thêm tài khoản nhận tiền của chủ kèo; serializer chỉ đưa cho người trong kèo (BR-15)
+const AUTHOR_DETAIL_FIELDS = 'displayName avatar bankAccount';
 
 /** Đọc kèo kèm tên chủ kèo + thông tin người tham gia */
 const findDetail = (id) =>
     Post.findById(id)
-        .populate('author', AUTHOR_FIELDS)
+        .populate('author', AUTHOR_DETAIL_FIELDS)
         .populate('participants.user', PARTICIPANT_FIELDS);
 
 /**
@@ -97,8 +101,7 @@ const createPost = async (authorId, input, now) => {
         levelMax: input.levelMax,
         pricePerPerson: input.pricePerPerson,
         slots: input.slots,
-        note: input.note,
-        rawText: input.rawText
+        note: input.note
     });
 
     return getPost(post._id);
@@ -148,7 +151,150 @@ const leavePost = (postId, userId, now) => updateParticipants(postId, (post) => 
 /** @param {string} postId @param {string} userId @param {Date} now */
 const cancelPost = (postId, userId, now) => updateParticipants(postId, (post) => rules.cancelPost(post, userId, now));
 
+/**
+ * Chủ kèo đánh dấu một người đã / chưa chuyển tiền (BR-14).
+ * Không cần transaction: chỉ đổi đúng một trường của một người, ghi nguyên tử bằng toán tử vị trí "$".
+ * @param {string} postId
+ * @param {string} authorId  Người đang thao tác
+ * @param {string} playerId  Người được đánh dấu
+ * @param {boolean} paid
+ * @param {Date} now
+ */
+const setPaid = async (postId, authorId, playerId, paid, now) => {
+    const post = await Post.findById(postId).select('author status participants.user guests expenses');
+    if (!post) {
+        throw notFound();
+    }
+    if (String(post.author) !== authorId) {
+        throw new AppError(403, 'NOT_AUTHOR', 'Chỉ chủ kèo mới đánh dấu được');
+    }
+    if (post.status === 'closed') {
+        throw new AppError(409, 'POST_NOT_OPEN', 'Kèo đã bị hủy');
+    }
+    if (!post.participants.some((p) => String(p.user) === playerId)) {
+        throw new AppError(409, 'NOT_JOINED', 'Người này không tham gia kèo');
+    }
+
+    // Lưu số tiền phải trả tại lúc đánh dấu (BR-18) để sau này biết "còn thiếu" / "trả dư"
+    const dues = costs.computeDues(costs.toCostPost(post));
+    const paidAmount = dues?.get(costs.userRef(playerId)) ?? 0;
+
+    await Post.updateOne(
+        { _id: postId, 'participants.user': playerId },
+        {
+            $set: {
+                'participants.$.paidAt': paid ? now : null,
+                'participants.$.paidAmount': paid ? paidAmount : null
+            }
+        }
+    );
+    return getPost(postId);
+};
+
+/**
+ * Chủ kèo lưu toàn bộ chi phí: các khoản chi + bạn không dùng app (BR-16, BR-17).
+ * Chỉ ghi 3 trường chi phí bằng $set, nên không đụng tới danh sách người tham gia đang được
+ * tham gia / rời song song; người đã rời tự bị loại khỏi phần chia khi tính tiền.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {{ guests?: { key: string, name: string }[], expenses?: object[] }} input
+ * @param {Date} now
+ */
+const updateCosts = async (postId, actorId, input, now) => {
+    const post = await Post.findById(postId).select('author status participants.user guests');
+    if (!post) {
+        throw notFound();
+    }
+
+    const { guests, expenses } = costs.normalizeCosts(
+        {
+            authorId: String(post.author),
+            status: post.status,
+            participantIds: post.participants.map((p) => String(p.user)),
+            guests: post.guests.map((g) => ({ id: String(g._id), name: g.name }))
+        },
+        actorId,
+        input,
+        () => String(new mongoose.Types.ObjectId())
+    );
+
+    await Post.updateOne(
+        { _id: postId },
+        {
+            $set: {
+                guests: guests.map((g) => ({ _id: g.id, name: g.name })),
+                expenses,
+                costsUpdatedAt: now
+            }
+        },
+        { runValidators: true }
+    );
+    return getPost(postId);
+};
+
+/**
+ * Chủ kèo điểm danh người tham gia, từ giờ bắt đầu trở đi.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {{ attendance?: { userId: string, attended: boolean }[] }} input
+ * @param {Date} now
+ */
+const setAttendance = async (postId, actorId, input, now) => {
+    const post = await Post.findById(postId).select('author status startsAt participants.user');
+    if (!post) {
+        throw notFound();
+    }
+
+    const attendance = costs.normalizeAttendance(
+        {
+            authorId: String(post.author),
+            status: post.status,
+            startsAt: post.startsAt,
+            participantIds: post.participants.map((p) => String(p.user))
+        },
+        actorId,
+        input,
+        now
+    );
+
+    for (const [userId, attended] of attendance) {
+        await Post.updateOne(
+            { _id: postId, 'participants.user': userId },
+            { $set: { 'participants.$.attended': attended } }
+        );
+    }
+    return getPost(postId);
+};
+
+/**
+ * Chủ kèo đổi / xóa ảnh bìa (WBS 4.9). Chỉ chủ kèo, kèo chưa hủy. Ảnh cũ bị xóa.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {Buffer | null} buffer  null = xóa ảnh bìa
+ */
+const setCover = async (postId, actorId, buffer) => {
+    const post = await Post.findById(postId).select('author status cover');
+    if (!post) {
+        throw notFound();
+    }
+    if (String(post.author) !== actorId) {
+        throw new AppError(403, 'NOT_AUTHOR', 'Chỉ chủ kèo mới đổi được ảnh bìa');
+    }
+    if (post.status === 'closed') {
+        throw new AppError(409, 'POST_NOT_OPEN', 'Kèo đã bị hủy');
+    }
+
+    const fileName = buffer === null ? null : await saveImage('covers', buffer);
+    await Post.updateOne({ _id: postId }, { $set: { cover: fileName } });
+    await removeImage('covers', post.cover);
+    return getPost(postId);
+};
+
 module.exports = {
+    setCover,
+    updateCosts,
+    setAttendance,
+    setPaid,
     LIST_LIMIT,
     MY_POSTS_LIMIT,
     listPosts,

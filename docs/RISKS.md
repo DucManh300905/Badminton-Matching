@@ -1,6 +1,6 @@
 # Sổ rủi ro — Badminton Matching
 
-> Cập nhật: 23/11/2026 (thêm R15: máy chủ chạy thật). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
+> Cập nhật: 24/11/2026 (Charter 2.0: bỏ bộ trích xuất bài đăng; đóng R4, R5; thêm R16, R17). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
 > Tài liệu liên quan: [Charter](01-project-charter.md) mục 10 (R1–R7 gốc) · [QUALITY.md](QUALITY.md) · [Gantt](03-gantt.md)
 
 ## 1. Cách đánh giá
@@ -23,10 +23,10 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R1 | Làm một mình: ốm, bận thi, việc riêng | Tiến độ | 4 | 5 | 20 | Cao | Đang theo dõi |
 | R2 | Thử nghiệm thực tế thiếu người dùng | Nghiên cứu | 4 | 4 | 16 | Cao | Đang theo dõi |
 | R3 | Phình phạm vi | Tiến độ | 4 | 4 | 16 | Cao | Đang theo dõi |
-| R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Nghiên cứu | 3 | 3 | 9 | Trung bình | Chưa đo được |
-| R5 | Gán nhãn dữ liệu thiếu khách quan | Nghiên cứu | 3 | 3 | 9 | Trung bình | Chưa bắt đầu |
+| R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Nghiên cứu | – | – | – | – | **Đóng** (bỏ bộ trích xuất, 24/11) |
+| R5 | Gán nhãn dữ liệu thiếu khách quan | Nghiên cứu | – | – | – | – | **Đóng** (không còn bộ dữ liệu gán nhãn, 24/11) |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Pháp lý | 2 | 5 | 10 | Trung bình | Đã có biện pháp |
-| R7 | Chi phí / giới hạn API LLM | Hạ tầng | 3 | 2 | 6 | Thấp | Theo dõi |
+| R7 | Mã QR chuyển khoản sai (sai số tài khoản, sai số tiền) | Kỹ thuật | 2 | 3 | 6 | Thấp | Theo dõi |
 | R8 | Lộ bí mật (`JWT_SECRET`, `.env`) lên repo Public | Bảo mật | 2 | 5 | 10 | Trung bình | Đã có biện pháp |
 | R9 | Lỗ hổng trong thư viện bên thứ ba | Bảo mật | 3 | 3 | 9 | Trung bình | Theo dõi |
 | R10 | Hai người cùng lấy một chỗ cuối cùng | Kỹ thuật | 4 | 4 | 16 → 4 | Cao → Thấp | **Đã xử lý** |
@@ -35,6 +35,9 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R13 | Tài liệu không khớp với code | Quy trình | 3 | 2 | 6 | Thấp | Theo dõi |
 | R14 | Thời gian còn lại rất ngắn (hạn 15/12/2026) | Tiến độ | 4 | 5 | 20 | Cao | Đang theo dõi |
 | R15 | Máy chủ chạy thật gián đoạn hoặc mất dữ liệu trong thời gian thử nghiệm | Hạ tầng | 3 | 4 | 12 | Trung bình | Đã có biện pháp |
+| R16 | Giảng viên chưa đồng ý đổi đề tài và câu hỏi nghiên cứu lúc muộn (Charter 2.0) | Quy trình | 3 | 5 | 15 | Cao | Đang theo dõi |
+| R17 | Thiếu số liệu cho RQ1, RQ2 vì chủ kèo không nhập khoản chi / không đánh dấu đã trả | Nghiên cứu | 3 | 4 | 12 | Trung bình | Đang theo dõi |
+| R18 | Ảnh người dùng tải lên: ảnh không phù hợp, lộ vị trí qua EXIF, file độc hại, đầy ổ đĩa | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
@@ -58,24 +61,29 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Phòng ngừa:** trước feature freeze (M3) chỉ làm mục *Must*; ý tưởng mới ghi vào backlog; mọi thay đổi phạm vi phải cập nhật WBS + Gantt.
 - **Ghi nhận:** giai đoạn khởi tạo đã thêm trang Tài khoản, Kèo của tôi, Hủy kèo (khoảng 6 giờ công) — chấp nhận vì là phần cốt lõi của trải nghiệm; đã ghi vào [project.md](project.md).
 - **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
+- **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
+- **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
+- **Ghi nhận (24/11/2026, lần 3):** thêm 4.9 icon và ảnh đại diện / ảnh bìa (12 giờ) theo yêu cầu, làm xong trong ngày; tổng giai đoạn 1 thành 262 giờ, phần việc còn lại không đổi.
 
-### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Trung bình, 9 điểm)
+### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Đóng 24/11/2026)
+- **Đóng:** bộ trích xuất bị bỏ khi đổi trọng tâm nghiên cứu (Charter 2.0). Nội dung dưới đây giữ lại để đối chiếu.
 - **Mô tả:** cách viết bài đăng quá đa dạng, F1 của phương pháp luật dưới 0,75.
 - **Dấu hiệu sớm:** trên tập phát triển (70 bài), F1 một nhóm trường dưới 0,6.
 - **Phòng ngừa:** mở rộng luật dựa trên phân tích lỗi; bộ test mẫu cho từng trường hợp khó.
-- **Dự phòng:** dựa vào phương pháp LLM / kết hợp; trình bày kết quả thấp như một phát hiện nghiên cứu (giới hạn của phương pháp luật).
+- **Dự phòng:** mở rộng luật cho các nhóm lỗi lớn nhất trên tập phát triển (không đụng tập kiểm tra); nếu vẫn dưới chỉ tiêu, trình bày như một phát hiện nghiên cứu (giới hạn của phương pháp luật) kèm bảng phân loại lỗi. Phương án dùng LLM / hybrid đã bỏ ngày 24/11/2026.
 
-### R5 — Gán nhãn dữ liệu thiếu khách quan (Trung bình, 9 điểm)
+### R5 — Gán nhãn dữ liệu thiếu khách quan (Đóng 24/11/2026)
+- **Đóng:** không còn bộ dữ liệu gán nhãn (Charter 2.0). Nội dung dưới đây giữ lại để đối chiếu.
 - **Mô tả:** một người vừa viết bộ trích xuất vừa gán nhãn, dễ thiên lệch.
 - **Phòng ngừa:** hướng dẫn gán nhãn viết trước; nhờ 1 người gán độc lập 30 bài, đo Cohen's κ (mục tiêu ≥ 0,8); tự gán lại 20% sau 1 tuần; tập kiểm tra 30 bài giữ kín, không dùng khi viết luật.
 
 ### R6 — Vi phạm quy định bảo vệ dữ liệu cá nhân (Trung bình, 10 điểm)
 - **Mô tả:** thu thập bài đăng hoặc thông tin người dùng trái Nghị định 13/2023/NĐ-CP và Luật Bảo vệ dữ liệu cá nhân.
-- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác.
+- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác. **Ảnh đại diện / ảnh bìa** (WBS 4.9) không bắt buộc, xóa được, server bỏ toàn bộ EXIF kể cả vị trí GPS (R18). **Số tài khoản nhận tiền** (WBS 4.8.1) do người dùng tự nhập và tự xóa được, không bắt buộc, chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15, TC-Q2-09); hệ thống không lưu giao dịch chuyển tiền.
 
-### R7 — Chi phí / giới hạn dịch vụ miễn phí (Thấp, 6 điểm)
-- **Mô tả:** chi phí API LLM vượt ngân sách. (Hosting không còn là chi phí: hệ thống chạy trên máy chủ riêng, xem R15.)
-- **Phòng ngừa:** đặt hạn mức chi cho API LLM; chỉ gọi LLM khi phương pháp luật không trích được (kết hợp).
+### R7 — Mã QR chuyển khoản sai (Thấp, 6 điểm)
+- **Mô tả:** chủ kèo nhập sai số tài khoản hoặc mã QR sinh sai số tiền / nội dung, người chơi chuyển nhầm (gói 4.8). Thay cho rủi ro chi phí API LLM trước đây (đã bỏ LLM ngày 24/11/2026).
+- **Phòng ngừa:** hiện tên chủ tài khoản cạnh mã QR để người chuyển đối chiếu; mã QR sinh theo chuẩn VietQR và có unit test với các mẫu đã kiểm tra bằng ứng dụng ngân hàng; nội dung chuyển khoản có mã kèo; hệ thống không giữ tiền nên không phát sinh hoàn tiền.
 
 ### R8 — Lộ bí mật lên repo Public (Trung bình, 10 điểm)
 - **Mô tả:** `JWT_SECRET` hoặc chuỗi kết nối CSDL bị commit → ai cũng giả mạo được token của bất kỳ người dùng nào.
@@ -107,13 +115,30 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Mô tả:** hạn hoàn thành dời về 15/12/2026; còn 4 tuần cho khoảng 137 giờ công (~34 giờ/tuần), trong đó thử nghiệm thực tế cần đủ 2 tuần lịch.
 - **Dấu hiệu sớm:** M1 (23/11) chưa deploy được production; M2 (30/11) bộ dữ liệu chưa gán nhãn xong.
 - **Phòng ngừa:** deploy ngay tuần đầu để thử nghiệm chạy song song với các việc khác; giữ đủ hạng mục nhưng giảm cỡ mẫu (100 bài, ≥ 30 phản hồi khảo sát, ≥ 15 người thử nghiệm, ≥ 8 người usability test); viết báo cáo dần từ 02/12, dùng lại tài liệu kỹ thuật đã có (`project.md`, `API.md`, `database.md`).
-- **Dự phòng:** cắt theo thứ tự ở [Gantt](03-gantt.md) mục 4; không cắt thử nghiệm thực tế, bộ trích xuất LLM / kết hợp và đánh giá RQ1, vì đó là phần nghiên cứu chính.
+- **Dự phòng:** cắt theo thứ tự ở [Gantt](03-gantt.md) mục 5; không cắt thử nghiệm thực tế, bộ dữ liệu gán nhãn và đánh giá RQ1, vì đó là phần nghiên cứu chính. Ngày 24/11/2026 đã bỏ bộ trích xuất LLM / hybrid (13 giờ) để có thời gian cho gói 4.8.
 
 ### R15 — Máy chủ chạy thật gián đoạn hoặc mất dữ liệu (Trung bình, 12 điểm)
 - **Mô tả:** hệ thống chạy trên một máy chủ Ubuntu đặt sau Cloudflare ([DEPLOY.md](DEPLOY.md)). Máy có thể khởi động lại ngoài kế hoạch, ổ đĩa còn ít (khoảng 4 GB trống), MongoDB không bật xác thực; mất dữ liệu giữa thời gian thử nghiệm là mất số liệu RQ3.
 - **Dấu hiệu sớm:** `https://sv22.bcse-vju.com/api/health` không phản hồi; ổ đĩa dùng trên 90%; file sao lưu hằng ngày không xuất hiện.
 - **Phòng ngừa:** PM2 tự chạy lại backend khi lỗi và sau khi máy khởi động lại (`pm2 startup` + `pm2 save`); khởi động lại máy một lần **trước** khi bắt đầu thử nghiệm để kiểm tra; MongoDB chỉ nghe `127.0.0.1`, máy không mở cổng ra Internet; sao lưu tự động hằng ngày, giữ 7 ngày; xoay vòng log PM2; kiểm tra bằng `npm run smoke` sau mỗi lần triển khai.
 - **Dự phòng:** khôi phục từ bản sao lưu gần nhất ([DEPLOY.md](DEPLOY.md) mục 6); chép bản sao lưu về máy cá nhân mỗi tuần thử nghiệm; ghi lại thời gian gián đoạn vào nhật ký thử nghiệm để loại khỏi số liệu.
+
+### R16 — Giảng viên chưa đồng ý đổi đề tài lúc muộn (Cao, 15 điểm)
+- **Mô tả:** ngày 24/11/2026 đổi trọng tâm nghiên cứu từ trích xuất bài đăng sang chia chi phí theo từng khoản và thu tiền QR (Charter 2.0), chỉ 3 tuần trước hạn.
+- **Dấu hiệu sớm:** chưa có phản hồi của giảng viên sau 2 ngày gửi Charter 2.0.
+- **Phòng ngừa:** gửi Charter 2.0 kèm mục 14 (lý do đổi) ngay; phần nền tảng (ghép kèo, thu tiền QR, máy chủ) không phụ thuộc quyết định này nên vẫn làm tiếp.
+- **Dự phòng:** Charter 1.x và code bộ trích xuất còn trong lịch sử Git (tag `v0.2.0`), khôi phục được trong vài giờ nếu giảng viên yêu cầu giữ đề tài cũ.
+
+### R17 — Thiếu số liệu cho RQ1, RQ2 (Trung bình, 12 điểm)
+- **Mô tả:** RQ1, RQ2 dựa trên khoản chi và thời điểm đánh dấu đã trả do chủ kèo nhập; nếu chủ kèo không nhập thì không có số liệu.
+- **Dấu hiệu sớm:** sau tuần thử nghiệm đầu, dưới 5 kèo có khoản chi.
+- **Phòng ngừa:** nhắc chủ kèo trên trang kèo; nhập khoản chi được bất cứ lúc nào; tự tổ chức một số kèo thật trong thử nghiệm.
+- **Dự phòng:** bổ sung bằng câu hỏi trong khảo sát cuối thử nghiệm; trình bày RQ1 bằng số liệu khảo sát nếu số kèo quá ít, ghi rõ giới hạn.
+
+### R18 — Ảnh người dùng tải lên (Thấp, 6 điểm)
+- **Mô tả:** ảnh đại diện / ảnh bìa (WBS 4.9) có thể chứa vị trí GPS của người chụp, là file giả dạng ảnh, quá lớn làm đầy ổ đĩa, hoặc có nội dung không phù hợp.
+- **Phòng ngừa:** kiểm tra định dạng theo nội dung file (chỉ JPEG / PNG / WebP), tối đa 5 MB ở cả Nginx và backend, giới hạn số điểm ảnh khi giải mã; server vẽ lại ảnh thành WebP kích thước cố định nên metadata (EXIF, GPS) và dữ liệu thừa bị bỏ; tên file ngẫu nhiên, chỉ xóa đúng dạng tên do server tạo; ảnh cũ bị xóa khi đổi nên mỗi người chỉ chiếm 1 ảnh đại diện, mỗi kèo 1 ảnh bìa (~20–100 KB). Test: `backend/tests/images.test.js`.
+- **Dự phòng:** ảnh không phù hợp trong thời gian thử nghiệm: xóa file trong `UPLOAD_DIR` và đặt trường `avatar` / `cover` về `null`; chưa làm chức năng báo cáo ảnh vì quy mô thử nghiệm nhỏ.
 
 ## 4. Cập nhật sổ rủi ro
 

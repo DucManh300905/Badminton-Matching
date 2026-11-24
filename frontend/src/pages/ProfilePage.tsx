@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { toApiError } from '../api/client';
 import { usersApi, type ProfileInput } from '../api/users';
+import AvatarUploader from '../components/AvatarUploader';
+import BankAccountForm from '../components/BankAccountForm';
 import PageHeader from '../components/PageHeader';
-import { Alert, FieldError } from '../components/ui';
+import { Alert, CardTitle, FieldError } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { GENDER_LABELS, LEVEL_LABELS, SKILL_LEVELS, type Gender, type SkillLevel } from '../utils/constants';
 
@@ -39,9 +41,15 @@ export default function ProfilePage() {
 
   return (
     <>
-      <PageHeader title="Hồ sơ cá nhân" subtitle="Thông tin dùng để ghép bạn vào kèo phù hợp" />
-      <div>
-        <form onSubmit={handleSubmit} className="card form-card stack">
+      <PageHeader
+        breadcrumbs={[{ to: '/tai-khoan', label: 'Tài khoản' }]}
+        title="Hồ sơ cá nhân"
+        subtitle="Thông tin dùng để ghép bạn vào kèo phù hợp"
+      />
+      <div className="stack">
+        <AvatarUploader />
+        <form onSubmit={handleSubmit} className="card form-card stack" aria-label="Thông tin cá nhân">
+          <CardTitle icon="user">Thông tin cá nhân</CardTitle>
           {message && <Alert tone={message.tone}>{message.text}</Alert>}
           <div className="field">
             <label htmlFor="email" className="label">
@@ -105,6 +113,7 @@ export default function ProfilePage() {
             </button>
           </div>
         </form>
+        <BankAccountForm />
       </div>
     </>
   );

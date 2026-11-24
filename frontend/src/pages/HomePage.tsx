@@ -3,15 +3,17 @@ import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PostCard from '../components/PostCard';
-import { Alert, Spinner } from '../components/ui';
+import Icon from '../components/Icon';
+import { Alert, CardTitle, IconText, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostFilter, PostSummary } from '../types';
 import { HANOI_AREAS } from '../utils/constants';
-import { toDateInput } from '../utils/format';
+import { formatDateShort, toDateInput } from '../utils/format';
 
 export default function HomePage() {
   const { user } = useAuth();
   const [today] = useState(() => toDateInput(new Date()));
+  const [tomorrow] = useState(() => toDateInput(new Date(Date.now() + 24 * 3600 * 1000)));
   // Bộ lọc nằm trên URL (?district=...&date=...) → chia sẻ link hoặc F5 vẫn giữ nguyên
   const [params, setParams] = useSearchParams();
   const district = params.get('district') ?? '';
@@ -50,9 +52,65 @@ export default function HomePage() {
 
   const isToday = date === today;
   const hasFilter = !!(district || date || myLevel);
+  const customDate = date && date !== today && date !== tomorrow;
+  const chip = (on: boolean) => `chip${on ? ' chip--on' : ''}`;
 
   return (
     <>
+      {/* Điện thoại: thanh tiêu đề gọn thay cho banner */}
+      <header className="home-appbar">
+        <div>
+          <p className="home-appbar__brand">Badminton Matching</p>
+          <p className="home-appbar__hello">{user ? `Chào ${user.displayName}` : 'Tìm kèo cầu lông, ghép đội nhanh'}</p>
+        </div>
+        {!user && (
+          <Link to="/dang-nhap" className="btn btn--outline">
+            Đăng nhập
+          </Link>
+        )}
+      </header>
+
+      {/* Điện thoại: lọc nhanh bằng hàng chip cuộn ngang (máy tính dùng bộ lọc cột trái) */}
+      <div className="chips" role="group" aria-label="Lọc nhanh">
+        <button type="button" className={chip(!date)} aria-pressed={!date} onClick={() => update('date', '')}>
+          Mọi ngày
+        </button>
+        <button type="button" className={chip(isToday)} aria-pressed={isToday} onClick={() => update('date', today)}>
+          Hôm nay
+        </button>
+        <button
+          type="button"
+          className={chip(date === tomorrow)}
+          aria-pressed={date === tomorrow}
+          onClick={() => update('date', tomorrow)}
+        >
+          Ngày mai
+        </button>
+        <label className={`${chip(!!customDate)} chip--picker`}>
+          <span>{customDate ? formatDateShort(date) : 'Chọn ngày'}</span>
+          <input type="date" aria-label="Chọn ngày" value={date} onChange={(e) => update('date', e.target.value)} />
+        </label>
+        <label className={`${chip(!!district)} chip--picker`}>
+          <span>{district || 'Khu vực'}</span>
+          <select aria-label="Khu vực" value={district} onChange={(e) => update('district', e.target.value)}>
+            <option value="">Tất cả khu vực</option>
+            {HANOI_AREAS.map((d) => (
+              <option key={d}>{d}</option>
+            ))}
+          </select>
+        </label>
+        {user && (
+          <button
+            type="button"
+            className={chip(myLevel)}
+            aria-pressed={myLevel}
+            onClick={() => update('myLevel', myLevel ? '' : '1')}
+          >
+            Hợp trình độ
+          </button>
+        )}
+      </div>
+
       <section className="hero">
         <div>
           <h1 className="hero__title">{isToday ? 'Kèo cầu lông hôm nay' : 'Tìm kèo cầu lông, ghép đội nhanh'}</h1>
@@ -68,12 +126,12 @@ export default function HomePage() {
       </section>
 
       <div className="with-sidebar">
-        <aside className="card sticky" aria-label="Bộ lọc">
-          <h2 className="card__title">Bộ lọc</h2>
+        <aside className="card sticky filters-panel" aria-label="Bộ lọc">
+          <CardTitle icon="filter">Bộ lọc</CardTitle>
           <div className="filters">
             <div className="field">
               <label htmlFor="f-district" className="label">
-                Khu vực
+                <IconText icon="mapPin">Khu vực</IconText>
               </label>
               <select
                 id="f-district"
@@ -89,7 +147,7 @@ export default function HomePage() {
             </div>
             <div className="field">
               <label htmlFor="f-date" className="label">
-                Ngày
+                <IconText icon="calendar">Ngày</IconText>
               </label>
               <input
                 id="f-date"
@@ -128,7 +186,10 @@ export default function HomePage() {
           {loading && <Spinner />}
           {posts && posts.length === 0 && (
             <div className="card empty">
-              Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+              <Icon name="shuttle" size={40} className="empty__icon" />
+              <p>
+                Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+              </p>
             </div>
           )}
           {posts && posts.length > 0 && (

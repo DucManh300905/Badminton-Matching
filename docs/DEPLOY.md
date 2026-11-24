@@ -1,6 +1,6 @@
 # Triển khai máy chủ chạy thật — Badminton Matching
 
-> Cập nhật: 23/11/2026. Địa chỉ chạy thật: **https://sv22.bcse-vju.com** (web) · **https://sv22.bcse-vju.com/api** (API).
+> Cập nhật: 24/11/2026. Địa chỉ chạy thật: **https://sv22.bcse-vju.com** (web) · **https://sv22.bcse-vju.com/api** (API).
 > Tài liệu liên quan: [GIT.md](GIT.md) (nhánh, tag phát hành) · [RISKS.md](RISKS.md) (R15) · [database.md](database.md)
 
 ## 1. Kiến trúc
@@ -13,6 +13,7 @@ Cloudflare ──(đường hầm)──► Nginx :80 trên máy chủ
                               ├─ /api/*  ──► Node 24 + Express :8080 (PM2: badminton-backend)
                               │                 └─► MongoDB 8 :27017 (127.0.0.1, replica set rs0)
                               │                        database: badminton_matching
+                              ├─ /uploads/* ─► /var/lib/badminton/uploads (ảnh đại diện, ảnh bìa)
                               └─ /*      ──► /var/www/badminton (bản build của frontend)
 ```
 
@@ -23,9 +24,9 @@ Cloudflare ──(đường hầm)──► Nginx :80 trên máy chủ
 | File trong repo | Vai trò |
 |---|---|
 | [backend/ecosystem.config.cjs](../backend/ecosystem.config.cjs) | Cấu hình PM2: tên tiến trình, Node 24, `NODE_ENV=production` |
-| [deploy/nginx-badminton.conf](../deploy/nginx-badminton.conf) | Site Nginx: web tĩnh + chuyển `/api` vào backend, lấy IP thật từ Cloudflare |
+| [deploy/nginx-badminton.conf](../deploy/nginx-badminton.conf) | Site Nginx: web tĩnh, ảnh tải lên (`/uploads`), chuyển `/api` vào backend, lấy IP thật từ Cloudflare |
 | [deploy/deploy.sh](../deploy/deploy.sh) | Lấy code, cài thư viện, build web, khởi động lại backend, kiểm tra `/api/health` |
-| [deploy/backup.sh](../deploy/backup.sh) | Sao lưu database, giữ 7 ngày |
+| [deploy/backup.sh](../deploy/backup.sh) | Sao lưu database và thư mục ảnh, giữ 7 ngày |
 
 ## 2. Yêu cầu máy chủ
 
@@ -75,21 +76,28 @@ CLIENT_URL=https://sv22.bcse-vju.com
 MONGODB_URI=mongodb://127.0.0.1:27017/badminton_matching?replicaSet=rs0
 JWT_SECRET=<chuỗi 96 ký tự vừa tạo>
 TRUST_PROXY=1
+UPLOAD_DIR=/var/lib/badminton/uploads
 ```
 
 - `JWT_SECRET` chỉ nằm trên máy chủ; **không** commit, không gửi qua chat. Đổi giá trị này làm mọi người dùng phải đăng nhập lại.
 - `TRUST_PROXY=1`: Nginx đã đặt `X-Forwarded-For` = IP thật của người dùng (lấy từ header `CF-Connecting-IP` của Cloudflare), nên giới hạn số lần đăng nhập sai đếm đúng theo từng người.
+- `UPLOAD_DIR`: nơi backend ghi ảnh đại diện / ảnh bìa (đã cắt, đổi WebP, xóa EXIF / GPS). Nằm ngoài thư mục repo để `deploy.sh` không xóa mất; tạo ở mục 3.4.
 - Bỏ dòng `DEMO_PASSWORD`: **không chạy `npm run seed:demo` trên máy chủ chạy thật**, để số liệu thử nghiệm không lẫn dữ liệu mẫu.
 
-### 3.4 Nginx
+### 3.4 Thư mục ảnh và Nginx
 
 ```bash
+sudo mkdir -p /var/lib/badminton/uploads
+sudo chown -R "$USER":"$USER" /var/lib/badminton
+sudo chmod 755 /var/lib/badminton /var/lib/badminton/uploads
 sudo cp deploy/nginx-badminton.conf /etc/nginx/sites-available/badminton
 sudo ln -sf /etc/nginx/sites-available/badminton /etc/nginx/sites-enabled/badminton
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
 `nginx -t` báo lỗi thì **không** reload; sửa file rồi chạy lại.
+
+Backend (chạy bằng tài khoản của bạn qua PM2) ghi ảnh vào thư mục này với quyền 644; Nginx (`www-data`) chỉ cần quyền đọc. Mỗi lần sửa `deploy/nginx-badminton.conf` trong repo, chép lại và reload bằng 3 lệnh cuối ở trên.
 
 ### 3.5 Triển khai lần đầu
 
@@ -130,7 +138,7 @@ Chạy thử ngay: `bash deploy/backup.sh` → in `sao lưu xong: ...`.
 curl -s http://127.0.0.1:8080/api/health                 # trên máy chủ
 curl -s https://sv22.bcse-vju.com/api/health             # từ bất kỳ máy nào
 cd ~/apps/badminton-matching/backend
-SMOKE_API_URL=https://sv22.bcse-vju.com/api npm run smoke # 17 bước, tự dọn tài khoản thử
+SMOKE_API_URL=https://sv22.bcse-vju.com/api npm run smoke # 16 bước, tự dọn tài khoản thử
 ```
 
 - `npm run smoke` tự tạo 4 tài khoản tạm và xóa ở cuối, nên chạy được trên CSDL trống. Giới hạn 10 tài khoản / giờ / IP → **tối đa 2 lần mỗi giờ**.
@@ -155,13 +163,17 @@ bash deploy/deploy.sh v0.2.0      # tên tag hoặc mã commit
 
 ## 6. Sao lưu và khôi phục
 
-Bản sao lưu: `~/backups/badminton/badminton_matching-<ngày-giờ>.archive.gz`, giữ 7 ngày.
+Bản sao lưu, giữ 7 ngày:
+
+- Database: `~/backups/badminton/badminton_matching-<ngày-giờ>.archive.gz`
+- Ảnh tải lên: `~/backups/badminton/uploads-<ngày-giờ>.tar.gz` (database chỉ lưu tên file, nên khôi phục cả hai cùng mốc)
 
 Khôi phục (ghi đè dữ liệu hiện tại của `badminton_matching`):
 
 ```bash
 pm2 stop badminton-backend
 mongorestore --gzip --archive=$HOME/backups/badminton/<tên-file>.archive.gz --nsInclude='badminton_matching.*' --drop
+tar -xzf $HOME/backups/badminton/uploads-<ngày-giờ>.tar.gz -C /var/lib/badminton
 pm2 start badminton-backend
 ```
 
@@ -171,6 +183,11 @@ Trước khi phân tích số liệu thử nghiệm (RQ3), chép một bản sao
 
 | Hiện tượng | Kiểm tra |
 |---|---|
+| Web báo lỗi 500, `error.log` có `Permission denied` / `internal redirection cycle` | Nginx không đọc được thư mục web: `sudo chmod -R a+rX /var/www/badminton` (`deploy.sh` đã tự làm bước này) |
+| Trình duyệt vẫn hiện trang cũ của tên miền | Bản lưu trong trình duyệt (cache / service worker), không phải máy chủ: mở cửa sổ ẩn danh để kiểm tra; xóa bằng DevTools → Application → Storage → **Clear site data** |
+| Console báo 404 `/cdn-cgi/rum` | Script thống kê do Cloudflare chèn vào, không thuộc ứng dụng; bỏ qua |
+| Tải ảnh báo "Nội dung gửi lên quá lớn" (413) | Nginx còn cấu hình cũ (`client_max_body_size 1m`): chép lại `deploy/nginx-badminton.conf`, mục 3.4 |
+| Ảnh đại diện / ảnh bìa không hiện (404 / 403) | `UPLOAD_DIR` trong `backend/.env` phải là `/var/lib/badminton/uploads`; thư mục có quyền 755 (mục 3.4); `pm2 restart badminton-backend --update-env` |
 | Web báo lỗi 502 | Backend không chạy: `pm2 ls`, `pm2 logs badminton-backend --lines 50` |
 | Lỗi 52x trang Cloudflare | Nginx không chạy hoặc máy chủ tắt: `systemctl status nginx` |
 | `deploy.sh` dừng ở "Thiếu backend/.env" | Làm lại mục 3.3 |
@@ -187,6 +204,7 @@ pm2 delete badminton-backend && pm2 save
 sudo rm -f /etc/nginx/sites-enabled/badminton /etc/nginx/sites-available/badminton
 sudo systemctl reload nginx
 sudo rm -rf /var/www/badminton
+sudo rm -rf /var/lib/badminton    # ảnh người dùng tải lên
 crontab -e                        # xóa dòng backup.sh
 # Xóa dữ liệu (không khôi phục được nếu không có bản sao lưu):
 # mongosh --quiet --eval 'db.getSiblingDB("badminton_matching").dropDatabase()'

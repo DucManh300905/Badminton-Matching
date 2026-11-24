@@ -7,7 +7,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 /** 50000 → "50.000đ"; 0 → "Miễn phí" */
 export function formatPrice(vnd: number): string {
-  return vnd === 0 ? 'Miễn phí' : `${vnd.toLocaleString('vi-VN')}đ`;
+  return vnd === 0 ? 'Miễn phí' : formatMoney(vnd);
+}
+
+/** Số tiền thuần (0 → "0đ"), dùng cho tổng đã thu / phải thu */
+export function formatMoney(vnd: number): string {
+  return `${vnd.toLocaleString('vi-VN')}đ`;
 }
 
 /** "T6, 14/11 · 19:00–21:00" */
@@ -32,6 +37,13 @@ export function formatSlots(s: SlotNeed): string {
   return parts.join(' · ');
 }
 
+/** "2026-11-28" → "T7, 28/11" (chip ngày trên điện thoại) */
+export function formatDateShort(ymd: string): string {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return `${WEEKDAYS[date.getDay()]}, ${pad(d)}/${pad(m)}`;
+}
+
 /** Date → "YYYY-MM-DD" theo giờ máy người dùng (dùng cho <input type="date">). */
 export function toDateInput(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -44,9 +56,4 @@ export function toDateInput(d: Date): string {
 export function initials(name: string): string {
   const last = name.trim().split(/\s+/).pop() ?? '';
   return last ? last.charAt(0).toLocaleUpperCase('vi-VN') : '?';
-}
-
-/** { hour: 19, minute: 0 } → "19:00" */
-export function toTimeInput(t: { hour: number; minute: number }): string {
-  return `${pad(t.hour)}:${pad(t.minute)}`;
 }

@@ -21,7 +21,7 @@ Phạm vi chi tiết, mục tiêu đo được và câu hỏi nghiên cứu: xem
 | Kiểm tra dữ liệu | express-validator (ở route) + schema Mongoose (ở model) | Hai lớp bảo vệ |
 | Bảo mật | helmet, cors, express-rate-limit | Header an toàn, chỉ cho frontend gọi, chống dò mật khẩu |
 | Frontend | React 19, Vite, TypeScript, React Router 7, Axios | Kiểm tra kiểu khi build, phát hiện sớm khi API đổi |
-| Giao diện | CSS thuần (`frontend/src/styles.css`) | Không phụ thuộc thư viện; giao diện web responsive (máy tính và điện thoại) |
+| Giao diện | CSS thuần (`frontend/src/styles.css`) | Không phụ thuộc thư viện; kiểu app trên điện thoại / máy tính bảng (dưới 1024px), kiểu web trên máy tính; PWA cài được |
 | Kiểm thử | Jest + Supertest + MongoDB chạy trong RAM; Vitest + React Testing Library | Test chạy độc lập, không cần cài CSDL |
 | CI | GitHub Actions | Chạy test trên mọi push và Pull Request |
 
@@ -43,7 +43,6 @@ flowchart LR
         C --> S[service]
         S --> RU[post.rules.js<br/>quy tắc thuần]
         S --> M[model Mongoose]
-        PR[parser/parsePost.js<br/>bộ trích xuất]
     end
     M --> DB[(MongoDB<br/>replica set)]
 ```
@@ -67,12 +66,11 @@ backend/src/
 │  ├─ auth/               đăng ký, đăng nhập, đổi mật khẩu, ký JWT
 │  ├─ user/               model User, hồ sơ, rule express-validator dùng chung
 │  ├─ post/               model, rules (BR), service (transaction), serializer, routes
-│  └─ parser/             bộ trích xuất bài đăng + route /api/parse
 └─ utils/                 AppError, asyncHandler, hằng số, giờ VN, chính sách mật khẩu, script
 
 frontend/src/
 ├─ api/                   client.ts (axios, JWT, dịch mã lỗi) + mỗi tài nguyên một file
-├─ components/            Layout, Navbar, AccountLayout, PageHeader, PostCard, Menu, Icon, RequireAuth, ui
+├─ components/            Layout, Navbar (máy tính), TabBar (điện thoại), AccountLayout, PageHeader, PostCard, Menu, Icon, RequireAuth, ui
 ├─ context/               AuthContext (trạng thái đăng nhập)
 ├─ pages/                 10 trang
 ├─ utils/                 hằng số, định dạng, chuyển đổi form, logic điều hướng
@@ -86,13 +84,13 @@ frontend/src/
 - **Không tin dữ liệu trong JWT:** mỗi request đọc lại người dùng trong CSDL.
 - **Một định dạng lỗi duy nhất** `{ success, message, code, errors }`; frontend hiển thị theo `code` ([API.md](API.md) mục 4).
 - **Giờ Việt Nam:** CSDL lưu UTC; mọi phép tính "ngày" (lọc theo ngày, dữ liệu mẫu) đi qua `utils/vnTime.js`, vì server và CI có thể chạy ở múi giờ khác.
-- **Không lộ thông tin cá nhân:** API công khai chỉ trả tên hiển thị; không trả email người khác, không trả nội dung bài gốc (`rawText`).
+- **Không lộ thông tin cá nhân:** API công khai chỉ trả tên hiển thị; không trả email người khác; số tài khoản và chi phí chỉ người trong kèo thấy (BR-15).
 
 ## 4. Vai trò
 
 | Vai trò | Làm được |
 |---|---|
-| Khách (chưa đăng nhập) | Xem, lọc danh sách kèo; xem chi tiết kèo; dùng thử "dán bài → tự điền" |
+| Khách (chưa đăng nhập) | Xem, lọc danh sách kèo; xem chi tiết kèo (không thấy chi phí, số tài khoản) |
 | Người chơi (đã đăng nhập) | Mọi quyền của khách + đăng kèo, tham gia / rời kèo, xem "Kèo của tôi", sửa hồ sơ, đổi mật khẩu |
 | Chủ kèo | Người chơi đã đăng kèo đó: hủy kèo (BR-13); không tự tham gia kèo của mình (BR-07) |
 
@@ -103,10 +101,10 @@ frontend/src/
 | F1 | Đăng ký, đăng nhập, đăng xuất | Đăng ký, Đăng nhập, Tài khoản | `/auth/register`, `/auth/login` | Xong |
 | F2 | Hồ sơ, đổi mật khẩu | Hồ sơ cá nhân, Đổi mật khẩu | `/users/me`, `/auth/change-password` | Xong |
 | F3 | Danh sách kèo + lọc khu vực / ngày / trình độ | Tìm kèo, Hôm nay | `GET /posts` | Xong |
-| F4 | Đăng kèo + dán bài tự điền (dựa trên luật) | Đăng kèo | `POST /posts`, `POST /parse` | Xong |
+| F4 | Đăng kèo (chi phí dự kiến mỗi người) | Đăng kèo | `POST /posts` | Xong |
 | F5 | Chi tiết, tham gia, rời, hủy kèo | Chi tiết kèo | `/posts/:id/…` | Xong |
 | F6 | Kèo của tôi (đã đăng / đã tham gia) | Kèo của tôi, Tài khoản | `GET /users/me/posts` | Xong |
-| F7 | Bộ trích xuất bằng LLM và hybrid (RQ1) | Đăng kèo | `POST /parse` | Chưa |
+| F7 | Chi phí theo từng khoản (chọn người chịu, bạn không dùng app, ai trong kèo cũng xem được), thu tiền bằng mã QR (còn thiếu / trả dư), điểm danh | Chi tiết kèo, Hồ sơ | `PUT /posts/:id/costs`, `PUT /posts/:id/attendance`, `PATCH …/payment`, `PUT/DELETE /users/me/bank-account` | Xong (tin nhắn tổng kết, lịch sử chi tiêu: chưa) |
 | F8 | Thông báo email | — | — | Chưa (Should) |
 | F9 | Đánh giá uy tín sau kèo | — | — | Chưa (Could) |
 | F10 | App di động Android / iOS (React Native + Expo): toàn bộ F1–F6 + thông báo đẩy | App | Dùng lại API hiện có | Giai đoạn 2, sau đồ án |
@@ -130,6 +128,11 @@ Mỗi quy tắc có mã **BR-xx**. Mã này xuất hiện trong code (`backend/s
 | BR-11 | Hết chỗ → kèo tự chuyển `full` | — | `post.rules.test.js`, `post.test.js` (5 người cùng lúc) |
 | BR-12 | Chỉ rời kèo trước giờ bắt đầu; kèo `full` có người rời → mở lại `open` | 409 `POST_STARTED` / `NOT_JOINED` | `post.rules.test.js`, `post.test.js` |
 | BR-13 | Chỉ chủ kèo được hủy kèo, chỉ trước giờ bắt đầu; kèo đã hủy ẩn khỏi danh sách, không ai tham gia / rời được | 403 `NOT_AUTHOR`, 409 `POST_STARTED` / `POST_NOT_OPEN` | `post.rules.test.js`, `post.test.js` |
+| BR-14 | Chỉ chủ kèo đánh dấu người tham gia đã / chưa trả tiền; người đó phải đang trong kèo; kèo đã hủy thì không đánh dấu được | 403 `NOT_AUTHOR`, 409 `NOT_JOINED` / `POST_NOT_OPEN` | `tests/post/payment.test.js` |
+| BR-15 | Tài khoản nhận tiền của chủ kèo và trạng thái đã trả chỉ hiện cho chủ kèo và người đã tham gia kèo đó | Không trả trường `payment`, `paid` | `tests/post/payment.test.js` |
+| BR-16 | Chỉ chủ kèo sửa chi phí (khoản chi, bạn không dùng app) và điểm danh; sửa chi phí **bất cứ lúc nào** trừ kèo đã hủy; điểm danh từ giờ bắt đầu | 403 `NOT_AUTHOR`, 409 `POST_NOT_OPEN` / `NOT_STARTED` | `tests/post/costs.rules.test.js`, `payment.test.js` |
+| BR-17 | Mỗi khoản chia đều cho người được chọn ("Chọn tất cả" = mọi người hiện có, gồm người vào sau; người đã rời tự bị loại); mỗi người trả tổng phần của mình, làm tròn lên 1.000đ; mỗi khoản 0 – 10.000.000đ, tối đa 30 khoản, ít nhất 1 người chịu | 400 `VALIDATION_ERROR` | `tests/post/costs.rules.test.js`, `payment.test.js` |
+| BR-18 | Đánh dấu đã trả lưu số tiền lúc đó; nếu sau đó phải trả nhiều hơn → "còn thiếu" (có mã QR cho phần thiếu), ít hơn → "trả dư" (chủ kèo tự hoàn lại ngoài app) | — | `tests/post/costs.rules.test.js`, `payment.test.js` |
 
 ### Vòng đời một kèo
 
@@ -146,19 +149,14 @@ stateDiagram-v2
 
 Kèo đã qua giờ bắt đầu vẫn giữ trạng thái cũ trong CSDL, nhưng không còn hiện trong danh sách và không thay đổi được nữa (BR-06, BR-12, BR-13).
 
-## 7. Bộ trích xuất bài đăng (dựa trên luật)
+## 7. Chi phí theo từng khoản và thu tiền (Charter 2.0)
 
-File `backend/src/modules/parser/parsePost.js`. Đầu vào là văn bản tiếng Việt tự do; đầu ra là các trường trích được và độ tin cậy (`confidence` = số nhóm trường trích được / 4).
+File `backend/src/modules/post/post.costs.js` (hàm thuần) và `post.serializer.js`.
 
-| Nhóm | Cách viết hiểu được |
-|---|---|
-| Ngày | "tối nay", "mai", "ngày kia / mốt", "thứ 7", "T3", "CN", "chủ nhật" |
-| Giờ | "19h-21h", "19:00 - 21:00", "7h-9h tối", "8h rưỡi", "5h30"; 1h–4h không có ngữ cảnh hiểu là buổi chiều |
-| Chi phí | "50k", "50k/ng", "60.000đ", "45 nghìn"; ưu tiên giá có "/người" hơn giá thuê sân |
-| Số chỗ | sau "thiếu / cần / tuyển / tìm / còn / giao lưu": "2 nam 1 nữ", "1 bạn", "2 slot", "hai nam" |
-| Trình độ | "TB-", "TB", "TB+", "TB khá", "TB yếu", "khá", "giỏi", "mới chơi", "TB+ trở lên", "khá trở xuống" |
-
-Bộ trích xuất không lấy tên, số điện thoại hay đường dẫn cá nhân. Đây là phương pháp nền (baseline) cho câu hỏi nghiên cứu RQ1; phương pháp LLM và kết hợp (F7) sẽ so sánh với nó trên bộ dữ liệu 100 bài gán nhãn.
+- Chủ kèo thêm các **khoản chi** (sân, cầu, nước, ăn, khác) và **bạn không dùng app**; mỗi khoản chọn người cùng chịu hoặc "Chọn tất cả".
+- Khi đọc kèo, server tính số tiền mỗi người (BR-17), trạng thái trả tiền (BR-18) và mã QR VietQR cho đúng số còn phải chuyển.
+- Ví dụ: sân 320.000đ chia 4 người, ăn 300.000đ chia 3 người đi ăn → người đi ăn 180.000đ, người chỉ đánh 80.000đ.
+- Bộ trích xuất bài đăng ("dán bài → tự điền") đã **bỏ ngày 24/11/2026** khi đổi trọng tâm nghiên cứu ([Charter](01-project-charter.md) mục 14); code cũ còn trong lịch sử Git (tag `v0.2.0`).
 
 ## 8. Chạy dự án
 
