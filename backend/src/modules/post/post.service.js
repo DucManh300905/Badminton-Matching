@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const Post = require('./post.model');
 const rules = require('./post.rules');
-const settlement_ = require('./post.settlement');
+const costs = require('./post.costs');
 const AppError = require('../../utils/AppError');
 const { SKILL_LEVELS, levelIndex } = require('../../utils/skillLevel');
 const { vnDayRange } = require('../../utils/vnTime');
@@ -100,8 +100,7 @@ const createPost = async (authorId, input, now) => {
         levelMax: input.levelMax,
         pricePerPerson: input.pricePerPerson,
         slots: input.slots,
-        note: input.note,
-        rawText: input.rawText
+        note: input.note
     });
 
     return getPost(post._id);
@@ -161,7 +160,7 @@ const cancelPost = (postId, userId, now) => updateParticipants(postId, (post) =>
  * @param {Date} now
  */
 const setPaid = async (postId, authorId, playerId, paid, now) => {
-    const post = await Post.findById(postId).select('author status participants.user');
+    const post = await Post.findById(postId).select('author status participants.user guests expenses');
     if (!post) {
         throw notFound();
     }
@@ -175,34 +174,81 @@ const setPaid = async (postId, authorId, playerId, paid, now) => {
         throw new AppError(409, 'NOT_JOINED', 'Người này không tham gia kèo');
     }
 
+    // Lưu số tiền phải trả tại lúc đánh dấu (BR-18) để sau này biết "còn thiếu" / "trả dư"
+    const dues = costs.computeDues(costs.toCostPost(post));
+    const paidAmount = dues?.get(costs.userRef(playerId)) ?? 0;
+
     await Post.updateOne(
         { _id: postId, 'participants.user': playerId },
-        { $set: { 'participants.$.paidAt': paid ? now : null } }
+        {
+            $set: {
+                'participants.$.paidAt': paid ? now : null,
+                'participants.$.paidAmount': paid ? paidAmount : null
+            }
+        }
     );
     return getPost(postId);
 };
 
 /**
- * Chủ kèo chốt chi phí thật và điểm danh (BR-16, BR-17). Chốt lại được trong khung thời gian.
- * Không cần transaction: chỉ chốt được sau giờ bắt đầu, lúc đó không ai tham gia / rời kèo được nữa
- * (BR-06, BR-12) nên danh sách người tham gia đã cố định.
+ * Chủ kèo lưu toàn bộ chi phí: các khoản chi + bạn không dùng app (BR-16, BR-17).
+ * Chỉ ghi 3 trường chi phí bằng $set, nên không đụng tới danh sách người tham gia đang được
+ * tham gia / rời song song; người đã rời tự bị loại khỏi phần chia khi tính tiền.
  * @param {string} postId
  * @param {string} actorId
- * @param {import('./post.settlement').SettleInput} input
+ * @param {{ guests?: { key: string, name: string }[], expenses?: object[] }} input
  * @param {Date} now
  */
-const settlePost = async (postId, actorId, input, now) => {
-    const post = await Post.findById(postId);
+const updateCosts = async (postId, actorId, input, now) => {
+    const post = await Post.findById(postId).select('author status participants.user guests');
     if (!post) {
         throw notFound();
     }
 
-    const { settlement, attendance } = settlement_.settle(
+    const { guests, expenses } = costs.normalizeCosts(
+        {
+            authorId: String(post.author),
+            status: post.status,
+            participantIds: post.participants.map((p) => String(p.user)),
+            guests: post.guests.map((g) => ({ id: String(g._id), name: g.name }))
+        },
+        actorId,
+        input,
+        () => String(new mongoose.Types.ObjectId())
+    );
+
+    await Post.updateOne(
+        { _id: postId },
+        {
+            $set: {
+                guests: guests.map((g) => ({ _id: g.id, name: g.name })),
+                expenses,
+                costsUpdatedAt: now
+            }
+        },
+        { runValidators: true }
+    );
+    return getPost(postId);
+};
+
+/**
+ * Chủ kèo điểm danh người tham gia, từ giờ bắt đầu trở đi.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {{ attendance?: { userId: string, attended: boolean }[] }} input
+ * @param {Date} now
+ */
+const setAttendance = async (postId, actorId, input, now) => {
+    const post = await Post.findById(postId).select('author status startsAt participants.user');
+    if (!post) {
+        throw notFound();
+    }
+
+    const attendance = costs.normalizeAttendance(
         {
             authorId: String(post.author),
             status: post.status,
             startsAt: post.startsAt,
-            endsAt: post.endsAt,
             participantIds: post.participants.map((p) => String(p.user))
         },
         actorId,
@@ -210,16 +256,18 @@ const settlePost = async (postId, actorId, input, now) => {
         now
     );
 
-    post.settlement = settlement;
-    for (const p of post.participants) {
-        p.attended = attendance.get(String(p.user));
+    for (const [userId, attended] of attendance) {
+        await Post.updateOne(
+            { _id: postId, 'participants.user': userId },
+            { $set: { 'participants.$.attended': attended } }
+        );
     }
-    await post.save();
     return getPost(postId);
 };
 
 module.exports = {
-    settlePost,
+    updateCosts,
+    setAttendance,
     setPaid,
     LIST_LIMIT,
     MY_POSTS_LIMIT,

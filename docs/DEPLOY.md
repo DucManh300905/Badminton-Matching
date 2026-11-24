@@ -130,7 +130,7 @@ Chạy thử ngay: `bash deploy/backup.sh` → in `sao lưu xong: ...`.
 curl -s http://127.0.0.1:8080/api/health                 # trên máy chủ
 curl -s https://sv22.bcse-vju.com/api/health             # từ bất kỳ máy nào
 cd ~/apps/badminton-matching/backend
-SMOKE_API_URL=https://sv22.bcse-vju.com/api npm run smoke # 17 bước, tự dọn tài khoản thử
+SMOKE_API_URL=https://sv22.bcse-vju.com/api npm run smoke # 16 bước, tự dọn tài khoản thử
 ```
 
 - `npm run smoke` tự tạo 4 tài khoản tạm và xóa ở cuối, nên chạy được trên CSDL trống. Giới hạn 10 tài khoản / giờ / IP → **tối đa 2 lần mỗi giờ**.

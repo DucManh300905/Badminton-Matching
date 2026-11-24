@@ -47,14 +47,16 @@ erDiagram
         number pricePerPerson
         object slots "male, female, any"
         string status "open, full, closed"
-        string rawText "không trả ra API"
-        object settlement "chi phí đã chốt, có thể không có"
+        array guests "bạn không dùng app: name"
+        array expenses "kind, label, amount, everyone, sharedBy"
+        date costsUpdatedAt
     }
     PARTICIPANT {
         ObjectId user FK
         string slot "male, female, any"
         date joinedAt
         date paidAt "null = chưa trả"
+        number paidAmount "số tiền lúc đánh dấu đã trả"
         boolean attended "null = chưa điểm danh"
     }
 ```
@@ -98,12 +100,9 @@ Model: `backend/src/modules/post/post.model.js`
 | `participants[]` | mảng nhúng | xem 3.3 | |
 | `status` | String | `open` / `full` / `closed`, mặc định `open` | Vòng đời: [project.md](project.md) mục 6 |
 | `note` | String | ≤ 1000 | |
-| `rawText` | String | ≤ 5000 | Nội dung bài gốc người dùng dán vào; dùng đánh giá bộ trích xuất (RQ1), **không trả ra API** |
-| `settlement.courtFee`, `.shuttleFee`, `.otherFee` | Number | số nguyên ≥ 0 | Chi phí thật sau buổi (WBS 4.8.2); cả object không có khi chưa chốt |
-| `settlement.headcount` | Number | ≥ 2 | Tổng số người chơi trong buổi, gồm bạn của chủ kèo không dùng app |
-| `settlement.chargeAbsent` | Boolean | mặc định `false` | Người vắng có phải trả phần của mình không |
-| `settlement.perPerson` | Number | ≥ 0 | Server tính: tổng ÷ `headcount`, làm tròn lên 1.000đ (BR-17) |
-| `settlement.settledAt` | Date | | Lần chốt gần nhất |
+| `guests[]` | `{ _id, name }` | tối đa 20, tên 1 – 30 ký tự | Bạn của chủ kèo **không dùng app** (WBS 4.8.2), chỉ có tên, vẫn được tính khi chia tiền |
+| `expenses[]` | xem 3.4 | tối đa 30 | Các khoản chi; chỉ chủ kèo sửa (BR-16) |
+| `costsUpdatedAt` | Date | | Lần sửa chi phí gần nhất (số liệu RQ1, RQ2) |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
 Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` trong `post.rules.js`) từ `slots` và `participants`, để không bao giờ lệch nhau.
@@ -116,9 +115,22 @@ Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` tr
 | `slot` | String | Loại chỗ người này đang giữ: `male` / `female` / `any` (BR-10) |
 | `joinedAt` | Date | Thời điểm tham gia, giữ nguyên khi người khác vào / rời |
 | `paidAt` | Date \| null | Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); `null` = chưa trả. Giữ nguyên khi người khác vào / rời; ghi bằng toán tử vị trí `participants.$.paidAt` (một lệnh, không cần transaction) |
-| `attended` | Boolean \| null | Điểm danh khi chủ kèo chốt chi phí (BR-16): `true` có mặt, `false` vắng, `null` chưa điểm danh. Đây cũng là số liệu bùng kèo và cho biết kèo có thật sự diễn ra (RQ3) |
+| `paidAmount` | Number \| null | Số tiền phải trả tại lúc được đánh dấu đã trả (BR-18); so với số hiện tại để biết "còn thiếu" / "trả dư" |
+| `attended` | Boolean \| null | Điểm danh từ giờ bắt đầu: `true` có mặt, `false` vắng, `null` chưa điểm danh. Số liệu bùng kèo; không tự đổi phần chia tiền |
 
-Không có `_id` riêng (`_id: false`). Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
+Không có `_id` riêng (`_id: false`).
+
+### 3.4 `expenses` (nhúng trong `posts`)
+
+| Trường | Kiểu | Ghi chú |
+|---|---|---|
+| `kind` | String | `court` / `shuttle` / `water` / `food` / `other` |
+| `label` | String | Tên khoản, bắt buộc với `other`, ≤ 40 ký tự |
+| `amount` | Number | Số nguyên 0 – 10.000.000 |
+| `everyone` | Boolean | "Chọn tất cả": luôn tính theo danh sách người hiện tại |
+| `sharedBy` | [String] | Mã người cùng chịu khi `everyone = false`: `host`, `u:<userId>`, `g:<guestId>` |
+
+Số tiền mỗi người **không lưu** mà tính khi đọc (`computeDues` trong `post.costs.js`), để luôn đúng khi có người vào / rời hoặc chi phí thay đổi. Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
 
 ## 4. Index
 

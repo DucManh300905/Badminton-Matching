@@ -50,8 +50,7 @@ const run = async () => {
             levelMax: 'TB_PLUS',
             pricePerPerson: 50_000,
             slots: { male: 2, female: 1, any: 0 },
-            participants: [{ user: lan._id, slot: 'female' }],
-            rawText: 'Tối nay 19h-21h sân Cầu Giấy thiếu 2 nam 1 nữ TB- đến TB+, 50k/ng'
+            participants: [{ user: lan._id, slot: 'female' }]
         },
         {
             author: hung._id,

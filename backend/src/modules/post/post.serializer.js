@@ -1,8 +1,8 @@
 // Chuyển document Post (đã populate) thành JSON trả cho client.
 // Chỉ lộ tên hiển thị của chủ kèo / người tham gia — không bao giờ có email.
-// Tài khoản nhận tiền của chủ kèo, trạng thái đã trả, điểm danh, chi phí đã chốt chỉ đưa cho người trong kèo (BR-15).
+// Tài khoản nhận tiền, chi phí, trạng thái đã trả, điểm danh chỉ đưa cho người trong kèo (BR-15).
 const { remainingSlots } = require('./post.rules');
-const { amountDue, canSettle } = require('./post.settlement');
+const costs = require('./post.costs');
 const { bankByBin } = require('../../utils/banks');
 const { buildVietQr, transferContent } = require('../../utils/vietqr');
 
@@ -24,6 +24,7 @@ const toPostSummary = (post) => ({
     endsAt: post.endsAt,
     levelMin: post.levelMin,
     levelMax: post.levelMax,
+    // Chi phí DỰ KIẾN mỗi người do chủ kèo nhập khi đăng (để tham khảo); số tiền thật theo các khoản chi
     pricePerPerson: post.pricePerPerson,
     slots: { male: post.slots.male, female: post.slots.female, any: post.slots.any },
     remaining: remainingSlots(post.toRules()),
@@ -33,85 +34,126 @@ const toPostSummary = (post) => ({
     author: toPublicUser(post.author)
 });
 
-/** Chi phí đã chốt (WBS 4.8.2), null nếu chưa chốt */
-const toSettlement = (post) => {
-    const s = post.settlement;
-    if (!s) return null;
+/**
+ * Tính toàn bộ phần tiền của kèo một lần: số phải trả và trạng thái của từng người.
+ * @returns {{ dues: Map<string, number> | null, byUser: Map<string, { due: number, status: string, toPay: number, diff: number }> }}
+ */
+const moneyOf = (post) => {
+    const dues = costs.computeDues(costs.toCostPost(post));
+    const byUser = new Map(
+        post.participants.map((p) => {
+            const due = dues?.get(costs.userRef(userIdOf(p))) ?? 0;
+            return [userIdOf(p), { due, ...costs.paymentStatus(due, p) }];
+        })
+    );
+    return { dues, byUser };
+};
+
+/** Phần chi phí (WBS 4.8.2): các khoản, ai chịu, mỗi người phải trả bao nhiêu */
+const toCosts = (post, money) => {
+    const cp = costs.toCostPost(post);
+    const refs = costs.memberRefs(cp);
+    const nameOf = new Map([
+        [costs.HOST, post.author?.displayName ?? 'Chủ kèo'],
+        ...post.participants.map((p) => [costs.userRef(userIdOf(p)), p.user?.displayName ?? 'Người dùng đã xóa']),
+        ...cp.guests.map((g) => [costs.guestRef(g.id), g.name])
+    ]);
+    const dueOf = (ref) => (money.dues ? money.dues.get(ref) ?? 0 : null);
+
     return {
-        courtFee: s.courtFee,
-        shuttleFee: s.shuttleFee,
-        otherFee: s.otherFee,
-        total: s.courtFee + s.shuttleFee + s.otherFee,
-        headcount: s.headcount,
-        chargeAbsent: s.chargeAbsent,
-        perPerson: s.perPerson,
-        settledAt: s.settledAt
+        updatedAt: post.costsUpdatedAt ?? null,
+        total: costs.totalOf(cp.expenses),
+        guests: cp.guests,
+        expenses: cp.expenses.map((e) => {
+            const sharers = costs.sharersOf(e, refs);
+            return {
+                kind: e.kind,
+                label: e.label ?? null,
+                amount: e.amount,
+                everyone: e.everyone,
+                sharedBy: e.everyone ? [] : e.sharedBy,
+                // Người đang cùng chịu (đã bỏ người rời kèo) và phần mỗi người, chưa làm tròn
+                sharers,
+                share: sharers.length ? Math.round(e.amount / sharers.length) : 0
+            };
+        }),
+        members: [
+            { ref: costs.HOST, type: 'host', name: nameOf.get(costs.HOST), due: dueOf(costs.HOST) },
+            ...post.participants.map((p) => {
+                const ref = costs.userRef(userIdOf(p));
+                const m = money.byUser.get(userIdOf(p));
+                return {
+                    ref,
+                    type: 'user',
+                    userId: userIdOf(p),
+                    name: nameOf.get(ref),
+                    due: dueOf(ref),
+                    status: money.dues ? m.status : 'none',
+                    diff: m.diff,
+                    attended: p.attended ?? null
+                };
+            }),
+            ...cp.guests.map((g) => ({ ref: costs.guestRef(g.id), type: 'guest', name: g.name, due: dueOf(costs.guestRef(g.id)) }))
+        ]
     };
 };
 
 /**
- * Phần thanh toán (WBS 4.8.1, 4.8.2), chỉ dành cho chủ kèo và người đã tham gia.
- * @param {any} post
- * @param {string} viewerId
- * @param {boolean} isAuthor
- * @param {Date} now
+ * Phần thanh toán (WBS 4.8.1), chỉ cho chủ kèo và người đã tham gia.
+ * Chưa có khoản chi nào → chưa có mã QR (Charter 2.0, lựa chọn 1b).
  */
-const toPayment = (post, viewerId, isAuthor, now) => {
+const toPayment = (post, viewerId, isAuthor, money, now) => {
     const account = post.author?.bankAccount;
     const bank = account ? bankByBin(account.bankBin) : null;
+    const hasCosts = money.dues !== null;
+    const payers = [...money.byUser.values()].filter((m) => m.due > 0);
+    const marked = post.participants.filter((p) => p.paidAt && (money.byUser.get(userIdOf(p))?.due ?? 0) > 0);
 
-    // Chỉ tính người thực sự phải trả (người vắng không bị thu thì không tính)
-    const payers = post.participants.map((p) => ({ p, due: amountDue(post, p) })).filter((x) => x.due > 0);
-    const paid = payers.filter((x) => x.p.paidAt);
-    const summary = {
-        paidCount: paid.length,
-        participantCount: payers.length,
-        collected: paid.reduce((sum, x) => sum + x.due, 0),
-        expected: payers.reduce((sum, x) => sum + x.due, 0)
-    };
-    const receiving = {
+    const common = {
+        hasCosts,
+        estimate: post.pricePerPerson,
         bank: bank && { bin: bank.bin, shortName: bank.shortName },
         accountNumber: bank ? account.accountNumber : null,
-        accountName: bank ? account.accountName : null
+        accountName: bank ? account.accountName : null,
+        summary: {
+            paidCount: payers.filter((m) => m.status === 'paid' || m.status === 'overpaid').length,
+            participantCount: payers.length,
+            collected: marked.reduce((sum, p) => sum + (p.paidAmount ?? 0), 0),
+            expected: payers.reduce((sum, m) => sum + m.due, 0)
+        }
     };
 
     if (isAuthor) {
         return {
-            amount: post.settlement ? post.settlement.perPerson : post.pricePerPerson,
-            available: post.status !== 'closed' && !!bank,
-            ...receiving,
-            summary,
-            canSettle: canSettle(
-                {
-                    status: post.status,
-                    startsAt: post.startsAt,
-                    endsAt: post.endsAt,
-                    participantIds: post.participants.map(userIdOf)
-                },
-                now
-            )
+            ...common,
+            canEditCosts: post.status !== 'closed',
+            canMarkAttendance: post.status !== 'closed' && now.getTime() >= post.startsAt.getTime()
         };
     }
 
     const me = post.participants.find((p) => userIdOf(p) === viewerId);
-    const amount = amountDue(post, me);
-    const available = amount > 0 && post.status !== 'closed' && !!bank;
+    const mine = money.byUser.get(viewerId);
+    const toPay = hasCosts ? mine.toPay : 0;
+    const available = toPay > 0 && post.status !== 'closed' && !!bank;
     const content = transferContent(post._id, me.user?.displayName ?? '');
     return {
-        amount,
-        available,
-        ...receiving,
-        summary,
-        content,
-        qr: available ? buildVietQr({ bin: bank.bin, accountNumber: account.accountNumber, amount, content }) : null,
+        ...common,
+        amount: hasCosts ? mine.due : 0,
+        status: hasCosts ? mine.status : 'none',
+        toPay,
+        diff: mine.diff,
         paid: !!me.paidAt,
-        attended: me.attended ?? null
+        paidAmount: me.paidAmount ?? null,
+        attended: me.attended ?? null,
+        available,
+        content,
+        qr: available ? buildVietQr({ bin: bank.bin, accountNumber: account.accountNumber, amount: toPay, content }) : null
     };
 };
 
 /**
  * Dạng đầy đủ cho trang chi tiết: thêm danh sách người tham gia.
- * Người xem là chủ kèo hoặc người đã tham gia → thêm trạng thái đã trả, điểm danh, chi phí đã chốt và phần `payment`.
+ * Người xem là chủ kèo hoặc người đã tham gia → thêm chi phí, trạng thái đã trả, điểm danh và phần `payment`.
  * @param {any} post
  * @param {string} [viewerId]  Người đang xem (không có = khách)
  * @param {Date} [now]
@@ -121,6 +163,7 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
     const isAuthor = !!viewerId && viewerId === authorId;
     const isParticipant = !!viewerId && post.participants.some((p) => userIdOf(p) === viewerId);
     const insider = isAuthor || isParticipant;
+    const money = insider ? moneyOf(post) : null;
 
     return {
         ...toPostSummary(post),
@@ -130,9 +173,17 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
             level: p.user?.level ?? null,
             slot: p.slot,
             joinedAt: p.joinedAt,
-            ...(insider && { paid: !!p.paidAt, attended: p.attended ?? null, amountDue: amountDue(post, p) })
+            ...(insider && {
+                paid: !!p.paidAt,
+                attended: p.attended ?? null,
+                amountDue: money.dues ? money.byUser.get(userIdOf(p)).due : null,
+                paymentStatus: money.dues ? money.byUser.get(userIdOf(p)).status : 'none'
+            })
         })),
-        ...(insider && { settlement: toSettlement(post), payment: toPayment(post, viewerId, isAuthor, now) })
+        ...(insider && {
+            costs: toCosts(post, money),
+            payment: toPayment(post, viewerId, isAuthor, money, now)
+        })
     };
 };
 

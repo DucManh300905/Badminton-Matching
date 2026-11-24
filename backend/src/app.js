@@ -9,7 +9,6 @@ const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const userRoutes = require('./modules/user/user.routes');
 const postRoutes = require('./modules/post/post.routes');
-const parserRoutes = require('./modules/parser/parser.routes');
 
 const app = express();
 
@@ -40,8 +39,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 // Kèo: xem không cần đăng nhập; tạo / tham gia / rời / hủy cần đăng nhập
 app.use('/api/posts', postRoutes);
-// Dán bài → tự điền
-app.use('/api/parse', parserRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

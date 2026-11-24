@@ -47,7 +47,7 @@ export default function PostCard({ post, now }: Props) {
           Trình độ: <strong>{formatLevelRange(post.levelMin, post.levelMax)}</strong>
         </span>
         <span>
-          Chi phí: <strong>{formatPrice(post.pricePerPerson)}/người</strong>
+          Dự kiến: <strong>{formatPrice(post.pricePerPerson)}/người</strong>
         </span>
         <span>
           Chủ kèo: <strong>{post.author.displayName}</strong>

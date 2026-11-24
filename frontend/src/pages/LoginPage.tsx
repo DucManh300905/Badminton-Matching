@@ -36,7 +36,7 @@ export default function LoginPage() {
           <p className="auth-intro__text">Đăng nhập để đăng kèo, tham gia kèo và theo dõi lịch chơi của bạn.</p>
           <ul className="auth-intro__list">
             <li>Tìm kèo còn chỗ theo khu vực, ngày và trình độ</li>
-            <li>Dán bài đăng sẵn có, hệ thống tự điền thông tin kèo</li>
+            <li>Chia tiền theo từng khoản, thu tiền bằng mã QR</li>
             <li>Tham gia hoặc rời kèo chỉ với một lần bấm</li>
           </ul>
         </section>
