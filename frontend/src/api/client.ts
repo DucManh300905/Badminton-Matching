@@ -91,6 +91,8 @@ const CODE_MESSAGES: Record<string, string> = {
   NOT_AUTHOR: 'Chỉ chủ kèo mới làm được thao tác này.',
   FILE_TOO_LARGE: 'Ảnh tối đa 5 MB.',
   INVALID_IMAGE: 'Chỉ nhận ảnh JPEG, PNG hoặc WebP.',
+  SHUTTLE_LIMIT: 'Tối đa 20 loại cầu.',
+  BILL_LIMIT: 'Tối đa 7 ảnh bill mỗi kèo.',
   NOT_STARTED: 'Chỉ điểm danh được từ giờ bắt đầu kèo.',
   NETWORK: 'Không kết nối được máy chủ. Kiểm tra mạng hoặc backend.',
 };

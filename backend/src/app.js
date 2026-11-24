@@ -9,6 +9,7 @@ const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const userRoutes = require('./modules/user/user.routes');
 const postRoutes = require('./modules/post/post.routes');
+const shuttleRoutes = require('./modules/shuttle/shuttle.routes');
 const { uploadDir } = require('./utils/images');
 
 const app = express();
@@ -43,6 +44,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 // Kèo: xem không cần đăng nhập; tạo / tham gia / rời / hủy cần đăng nhập
 app.use('/api/posts', postRoutes);
+// Kho cầu của từng người (WBS 4.10)
+app.use('/api/shuttles', shuttleRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

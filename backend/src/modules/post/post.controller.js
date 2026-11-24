@@ -96,7 +96,23 @@ const deleteCover = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Đã xóa ảnh bìa', data: toPostDetail(post, req.user.userId) });
 });
 
+// POST /api/posts/:id/bills — chủ kèo thêm ảnh bill (WBS 4.11)
+const addBill = asyncHandler(async (req, res) => {
+    const post = await postService.addBill(req.params.id, req.user.userId, req.file?.buffer);
+
+    res.json({ success: true, message: 'Đã thêm ảnh bill', data: toPostDetail(post, req.user.userId) });
+});
+
+// DELETE /api/posts/:id/bills/:file
+const removeBill = asyncHandler(async (req, res) => {
+    const post = await postService.removeBill(req.params.id, req.user.userId, req.params.file);
+
+    res.json({ success: true, message: 'Đã xóa ảnh bill', data: toPostDetail(post, req.user.userId) });
+});
+
 module.exports = {
+    addBill,
+    removeBill,
     setCover,
     deleteCover,
     updateCosts,

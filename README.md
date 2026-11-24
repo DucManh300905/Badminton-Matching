@@ -104,6 +104,8 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 | **Chi phí theo từng khoản**: sân / cầu / nước / ăn / khác, chọn người cùng chịu (có "Chọn tất cả"), bạn không dùng app, ai trong kèo cũng xem được, chỉ chủ kèo sửa bất cứ lúc nào; còn thiếu / trả dư; điểm danh (`PUT /posts/:id/costs`, `PUT /posts/:id/attendance`) | Xong |
 | Giao diện web responsive (CSS thuần): thanh điều hướng trên cùng, bộ lọc cột trái, lưới kèo, khu Tài khoản có menu dọc (Tổng quan, Kèo của tôi, Hồ sơ, Đổi mật khẩu; `GET /api/users/me/posts`) | Xong |
 | Giao diện kiểu app trên điện thoại (dưới 1024px): thanh tab đáy 5 mục, thanh tiêu đề có nút quay lại, chip lọc nhanh, nút hành động dính ở đáy; cài lên màn hình chính (PWA: manifest, biểu tượng) | Xong |
+| **Kho cầu**: nhiều loại cầu, nhập 12 / 24 / 36 quả hoặc tự nhập + tổng tiền → giá mỗi quả, thanh mức cầu, khoản Cầu theo số quả tự trừ kho, thống kê theo tuần / tháng (`/api/shuttles`) | Xong |
+| Ảnh bill (tối đa 7) và trang hóa đơn in / lưu PDF cho người trong kèo (`/posts/:id/bills`, `/keo/:id/hoa-don`) | Xong |
 | Icon nét mảnh cạnh chữ khắp giao diện; ảnh đại diện và ảnh bìa kèo (cắt, đổi WebP, xóa EXIF / GPS; `PUT /users/me/avatar`, `PUT /posts/:id/cover`) | Xong |
 
 ## Định dạng API

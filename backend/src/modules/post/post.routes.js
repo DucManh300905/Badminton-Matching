@@ -6,7 +6,7 @@ const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover } = require('./post.controller');
+const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover, addBill, removeBill } = require('./post.controller');
 const { receiveImage } = require('../../utils/images');
 
 const router = express.Router();
@@ -82,9 +82,13 @@ router.put(
     [
         body('guests').default([]).isArray({ max: 50 }).withMessage('Danh sách bạn không dùng app không hợp lệ'),
         body('expenses').default([]).isArray({ max: 50 }).withMessage('Danh sách khoản chi không hợp lệ'),
-        body('expenses.*.amount').isInt().withMessage('Số tiền phải là số nguyên').bail().toInt(),
+        // Khoản "Cầu" theo số quả không gửi amount (server tự tính); khoản khác normalizeCosts kiểm tra lại
+        body('expenses.*.amount').optional({ values: 'null' }).isInt().withMessage('Số tiền phải là số nguyên').bail().toInt(),
         body('expenses.*.everyone').default(false).isBoolean({ strict: true }).withMessage('everyone phải là true hoặc false'),
-        body('expenses.*.sharedBy').default([]).isArray({ max: 100 }).withMessage('Người cùng chịu không hợp lệ')
+        body('expenses.*.sharedBy').default([]).isArray({ max: 100 }).withMessage('Người cùng chịu không hợp lệ'),
+        // Khoản "Cầu" theo số quả
+        body('expenses.*.quantity').optional({ values: 'null' }).isInt().withMessage('Số quả phải là số nguyên').bail().toInt(),
+        body('expenses.*.unitPrice').optional({ values: 'null' }).isFloat().withMessage('Giá mỗi quả không hợp lệ').bail().toFloat()
     ],
     validate,
     updateCosts
@@ -104,5 +108,9 @@ router.put(
 // Ảnh bìa (WBS 4.9): kiểm tra quyền trong service; nhận file trước để trả lỗi kích thước rõ ràng
 router.put('/:id/cover', authenticate, receiveImage, setCover);
 router.delete('/:id/cover', authenticate, deleteCover);
+
+// Ảnh bill / hóa đơn (WBS 4.11): chủ kèo thêm / xóa, người trong kèo xem trong chi tiết kèo
+router.post('/:id/bills', authenticate, receiveImage, addBill);
+router.delete('/:id/bills/:file', authenticate, removeBill);
 
 module.exports = router;

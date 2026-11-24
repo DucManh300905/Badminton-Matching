@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { HANOI_AREAS, POST_STATUSES, SLOT_KINDS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { EXPENSE_KINDS, MAX_EXPENSE } = require('./post.costs');
+const { EXPENSE_KINDS, MAX_EXPENSE, MAX_SHUTTLES, MAX_UNIT_PRICE, MAX_BILLS } = require('./post.costs');
 
 const slotCount = {
     type: Number,
@@ -69,7 +69,18 @@ const expenseSchema = new mongoose.Schema(
         },
         // "Chọn tất cả": luôn tính theo danh sách người hiện tại của kèo
         everyone: { type: Boolean, default: false },
-        sharedBy: { type: [String], default: [] }
+        sharedBy: { type: [String], default: [] },
+        // Khoản "Cầu" theo số quả (WBS 4.10): amount = số quả × giá mỗi quả, làm tròn lên 1.000đ.
+        // shuttle = loại cầu trong kho của chủ kèo (null = nhập giá tay); tên chép lại để vẫn hiện khi loại cầu bị xóa
+        quantity: {
+            type: Number,
+            min: 1,
+            max: MAX_SHUTTLES,
+            validate: { validator: Number.isInteger, message: 'Số quả phải là số nguyên' }
+        },
+        unitPrice: { type: Number, min: 0, max: MAX_UNIT_PRICE },
+        shuttle: { type: mongoose.Schema.Types.ObjectId, ref: 'Shuttle', default: undefined },
+        shuttleName: { type: String, trim: true, maxlength: 40 }
     },
     { _id: false }
 );
@@ -150,7 +161,13 @@ const postSchema = new mongoose.Schema(
         // Lần sửa chi phí gần nhất (số liệu cho RQ1, RQ2)
         costsUpdatedAt: { type: Date, default: null },
         // Tên file ảnh bìa (WBS 4.9); null = dải màu mặc định
-        cover: { type: String, default: null }
+        cover: { type: String, default: null },
+        // Ảnh bill / hóa đơn chủ kèo tải lên (WBS 4.11), tối đa MAX_BILLS; chỉ người trong kèo xem được
+        bills: {
+            type: [String],
+            default: [],
+            validate: { validator: (v) => v.length <= MAX_BILLS, message: `Tối đa ${MAX_BILLS} ảnh bill` }
+        }
     },
     { timestamps: true }
 );

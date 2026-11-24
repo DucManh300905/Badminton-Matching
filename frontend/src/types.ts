@@ -99,6 +99,11 @@ export interface Expense {
   /** Người đang cùng chịu (server tính) và phần của mỗi người (chưa làm tròn) */
   sharers: MemberRef[];
   share: number;
+  /** Khoản "Cầu" theo số quả (WBS 4.10); null với khoản thường / khoản cầu nhập số tiền */
+  quantity?: number | null;
+  unitPrice?: number | null;
+  shuttleId?: string | null;
+  shuttleName?: string | null;
 }
 
 export interface CostMember {
@@ -125,7 +130,40 @@ export interface PostCosts {
 export interface CostsInput {
   /** key: id cũ hoặc khóa tạm cho bạn mới thêm; khoản chi tham chiếu bằng "g:<key>" */
   guests: { key: string; name: string }[];
-  expenses: { kind: ExpenseKind; label?: string; amount: number; everyone: boolean; sharedBy: MemberRef[] }[];
+  expenses: {
+    kind: ExpenseKind;
+    label?: string;
+    /** Khoản "Cầu" theo số quả không cần gửi: server tính = số quả × giá, làm tròn lên 1.000đ */
+    amount?: number;
+    everyone: boolean;
+    sharedBy: MemberRef[];
+    quantity?: number;
+    unitPrice?: number;
+    shuttleId?: string | null;
+  }[];
+}
+
+/** Một loại cầu trong kho (WBS 4.10) */
+export interface Shuttle {
+  id: string;
+  name: string;
+  /** Số quả còn */
+  quantity: number;
+  /** Giá mỗi quả (bình quân) */
+  unitPrice: number;
+  /** Số quả ngay sau lần nhập gần nhất = 100% thanh mức cầu */
+  fullLevel: number;
+  updatedAt: string;
+}
+
+/** Số quả đã dùng (kèo mình làm chủ, đã diễn ra, chưa hủy) */
+export interface ShuttleStats {
+  thisWeek: number;
+  thisMonth: number;
+  /** 8 tuần, cũ → mới; start = thứ Hai "YYYY-MM-DD" */
+  weeks: { start: string; quantity: number }[];
+  /** 6 tháng, cũ → mới; month = "YYYY-MM" */
+  months: { month: string; quantity: number }[];
 }
 
 /** Thanh toán kèo: chỉ có khi người xem là chủ kèo hoặc người đã tham gia */
@@ -161,6 +199,8 @@ export interface PostDetail extends PostSummary {
   participants: Participant[];
   /** Chỉ người trong kèo */
   costs?: PostCosts;
+  /** Ảnh bill / hóa đơn (WBS 4.11), chỉ người trong kèo */
+  bills?: { file: string; url: string }[];
   payment?: PostPayment;
 }
 

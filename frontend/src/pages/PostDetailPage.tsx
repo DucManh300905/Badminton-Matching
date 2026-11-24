@@ -4,6 +4,7 @@ import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
 import PaymentCard from '../components/PaymentCard';
+import BillsCard from '../components/BillsCard';
 import CostsCard, { AttendanceCard } from '../components/CostsCard';
 import Icon, { type IconName } from '../components/Icon';
 import { PostCoverBanner } from '../components/PostCover';
@@ -237,6 +238,7 @@ export default function PostDetailPage() {
           </section>
 
           {post.costs && <CostsCard post={post} isAuthor={isAuthor} onSaved={setPost} />}
+          {post.costs && <BillsCard post={post} isAuthor={isAuthor} onSaved={setPost} />}
           {isAuthor && payment?.canMarkAttendance && (
             <AttendanceCard
               key={post.participants.map((p) => `${p.id}${p.attended}`).join()}
