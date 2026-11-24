@@ -22,7 +22,7 @@ export default function AccountLayout() {
     <div className={`account-layout${isRoot ? ' account-layout--root' : ''}`}>
       <aside className="card account-nav sticky" aria-label="Tài khoản">
         <div className="account-nav__profile">
-          <Avatar name={user.displayName} />
+          <Avatar name={user.displayName} url={user.avatarUrl} />
           <div>
             <p className="account-nav__name">{user.displayName}</p>
             <p className="account-nav__email">{user.email}</p>

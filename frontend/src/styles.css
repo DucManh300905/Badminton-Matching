@@ -1789,3 +1789,242 @@ textarea.input {
     background: var(--green-700);
   }
 }
+
+/* ================= Icon nét mảnh cạnh chữ & ảnh (WBS 4.9) ================= */
+.icon {
+  flex-shrink: 0;
+}
+
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-text > .icon,
+.info-grid dt > .icon,
+.post-card__meta .icon {
+  color: var(--green-600);
+}
+
+.card__title--icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card__title--icon > .icon {
+  color: var(--green-600);
+}
+
+.form-section__title.icon-text {
+  display: flex;
+}
+
+.icon-chip {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--green-700);
+  background: var(--green-50);
+}
+
+.expense-list__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-grid dt {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.info-grid__person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note--icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.note--icon > .icon {
+  margin-top: 3px;
+  color: var(--green-700);
+}
+
+.post-card__meta > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.stat__icon {
+  margin-bottom: 6px;
+  color: var(--green-600);
+}
+
+.empty__icon {
+  display: block;
+  margin: 0 auto 10px;
+  color: var(--green-400);
+}
+
+.stack--tight > * + * {
+  margin-top: 10px;
+}
+
+/* Ảnh đại diện có ảnh thật */
+.avatar--img {
+  object-fit: cover;
+  background: var(--green-100);
+}
+
+.avatar--xs {
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+}
+
+.avatar--lg {
+  width: 88px;
+  height: 88px;
+  font-size: 32px;
+}
+
+.avatar-uploader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar-uploader__actions,
+.cover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Ảnh bìa: ảnh thật hoặc dải màu xanh mặc định */
+.cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 1200 / 630;
+  color: rgba(255, 255, 255, 0.85);
+  background: var(--green-100);
+}
+
+.cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover--empty {
+  background: linear-gradient(135deg, var(--green-700) 0%, var(--green-500) 55%, var(--green-400) 100%);
+}
+
+.post-card {
+  overflow: hidden;
+}
+
+.cover--card {
+  aspect-ratio: auto;
+  height: 112px;
+  margin: -18px -18px 14px;
+}
+
+.cover--card .icon {
+  width: 32px;
+  height: 32px;
+}
+
+.cover--picker {
+  max-width: 480px;
+  border-radius: var(--radius-sm);
+}
+
+.cover-banner {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.cover--banner {
+  aspect-ratio: auto;
+  height: 260px;
+  border-radius: var(--radius);
+}
+
+.cover-banner__tools {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn--sm {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.btn--overlay {
+  color: #fff;
+  background: rgba(10, 40, 25, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+.btn--overlay:hover:not(:disabled) {
+  background: rgba(10, 40, 25, 0.8);
+}
+
+.btn--ghost {
+  border-color: transparent;
+  background: none;
+}
+
+.btn--danger-text {
+  color: var(--danger);
+}
+
+.btn--danger-text:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+.cover-banner .notice {
+  margin: 12px 0 0;
+}
+
+@media (max-width: 1023.98px) {
+  .cover--banner {
+    height: 180px;
+  }
+
+  .cover-banner {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .avatar-uploader {
+    align-items: flex-start;
+  }
+
+  .avatar--lg {
+    width: 72px;
+    height: 72px;
+  }
+}

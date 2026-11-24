@@ -5,11 +5,13 @@ const { remainingSlots } = require('./post.rules');
 const costs = require('./post.costs');
 const { bankByBin } = require('../../utils/banks');
 const { buildVietQr, transferContent } = require('../../utils/vietqr');
+const { publicUrl } = require('../../utils/images');
 
 /** @param {any} user  User đã populate (hoặc ObjectId nếu tài khoản đã bị xóa) */
 const toPublicUser = (user) => ({
     id: String(user?._id ?? user),
-    displayName: user?.displayName ?? 'Người dùng đã xóa'
+    displayName: user?.displayName ?? 'Người dùng đã xóa',
+    avatarUrl: publicUrl('avatars', user?.avatar)
 });
 
 const userIdOf = (participant) => String(participant.user?._id ?? participant.user);
@@ -31,6 +33,7 @@ const toPostSummary = (post) => ({
     participantCount: post.participants.length,
     status: post.status,
     note: post.note ?? null,
+    coverUrl: publicUrl('covers', post.cover),
     author: toPublicUser(post.author)
 });
 

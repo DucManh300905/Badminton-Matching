@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { usersApi, type MyPosts } from '../api/users';
+import Icon from '../components/Icon';
 import PageHeader from '../components/PageHeader';
 import PostCard from '../components/PostCard';
 import { Alert, Spinner } from '../components/ui';
@@ -61,8 +62,11 @@ export default function MyPostsPage() {
       {!data && !error && <Spinner />}
       {data && posts.length === 0 && (
         <div className="card empty">
-          {current.empty}{' '}
-          {tab === 'joined' ? <Link to="/">Tìm kèo ngay</Link> : <Link to="/keo/moi">Đăng kèo đầu tiên</Link>}
+          <Icon name={tab === 'joined' ? 'search' : 'calendar'} size={40} className="empty__icon" />
+          <p>
+            {current.empty}{' '}
+            {tab === 'joined' ? <Link to="/">Tìm kèo ngay</Link> : <Link to="/keo/moi">Đăng kèo đầu tiên</Link>}
+          </p>
         </div>
       )}
       {posts.length > 0 && (

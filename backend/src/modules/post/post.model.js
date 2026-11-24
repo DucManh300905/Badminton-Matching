@@ -148,7 +148,9 @@ const postSchema = new mongoose.Schema(
         guests: { type: [guestSchema], default: [] },
         expenses: { type: [expenseSchema], default: [] },
         // Lần sửa chi phí gần nhất (số liệu cho RQ1, RQ2)
-        costsUpdatedAt: { type: Date, default: null }
+        costsUpdatedAt: { type: Date, default: null },
+        // Tên file ảnh bìa (WBS 4.9); null = dải màu mặc định
+        cover: { type: String, default: null }
     },
     { timestamps: true }
 );

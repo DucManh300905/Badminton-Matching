@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { GENDERS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { BANK_BINS } = require('../../utils/banks');
+const { publicUrl } = require('../../utils/images');
 
 // Tài khoản nhận tiền chuyển khoản (WBS 4.8.1). Tùy chọn, người dùng tự nhập / xóa;
 // chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15).
@@ -63,9 +64,19 @@ const userSchema = new mongoose.Schema(
         bankAccount: {
             type: bankAccountSchema,
             default: undefined
+        },
+        // Tên file ảnh đại diện (WBS 4.9); null = dùng chữ cái đầu
+        avatar: {
+            type: String,
+            default: null
         }
     },
     { timestamps: true }
 );
+
+// Đường dẫn ảnh đại diện trả cho client (plugin toJSON bật virtuals)
+userSchema.virtual('avatarUrl').get(function avatarUrl() {
+    return publicUrl('avatars', this.avatar);
+});
 
 module.exports = mongoose.model('User', userSchema);

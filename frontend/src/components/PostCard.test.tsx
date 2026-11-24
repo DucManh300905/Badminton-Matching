@@ -62,3 +62,23 @@ describe('PostCard – trạng thái', () => {
     expect(screen.getByText('Đã diễn ra')).toBeInTheDocument();
   });
 });
+
+describe('PostCard – ảnh (WBS 4.9)', () => {
+  it('chưa có ảnh bìa → dải màu mặc định; chủ kèo chưa có ảnh → chữ cái đầu', () => {
+    const { container } = renderCard(base);
+    expect(container.querySelector('.cover--empty')).not.toBeNull();
+    expect(container.querySelector('.cover img')).toBeNull();
+    expect(container.querySelector('.avatar')?.textContent).toBe('M');
+  });
+
+  it('có ảnh bìa và ảnh đại diện → hiện đúng ảnh', () => {
+    const { container } = renderCard({
+      ...base,
+      coverUrl: '/uploads/covers/a.webp',
+      author: { ...base.author, avatarUrl: '/uploads/avatars/b.webp' },
+    });
+    expect(container.querySelector('.cover img')).toHaveAttribute('src', '/uploads/covers/a.webp');
+    expect(container.querySelector('.cover--empty')).toBeNull();
+    expect(container.querySelector('img.avatar')).toHaveAttribute('src', '/uploads/avatars/b.webp');
+  });
+});

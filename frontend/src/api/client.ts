@@ -89,6 +89,8 @@ const CODE_MESSAGES: Record<string, string> = {
   LEVEL_MISMATCH: 'Trình độ của bạn không nằm trong khoảng kèo yêu cầu.',
   NO_SLOT: 'Kèo không còn chỗ phù hợp với giới tính của bạn.',
   NOT_AUTHOR: 'Chỉ chủ kèo mới làm được thao tác này.',
+  FILE_TOO_LARGE: 'Ảnh tối đa 5 MB.',
+  INVALID_IMAGE: 'Chỉ nhận ảnh JPEG, PNG hoặc WebP.',
   NOT_STARTED: 'Chỉ điểm danh được từ giờ bắt đầu kèo.',
   NETWORK: 'Không kết nối được máy chủ. Kiểm tra mạng hoặc backend.',
 };
@@ -132,6 +134,13 @@ export function toApiError(err: unknown): ApiErrorInfo {
     message: duplicateMsg ?? CODE_MESSAGES[code] ?? data?.message ?? 'Đã có lỗi xảy ra.',
     fields,
   };
+}
+
+/** Gửi một ảnh (trường `image`). Phải đặt multipart, nếu không axios đổi FormData thành JSON */
+export function imageForm(file: File) {
+  const form = new FormData();
+  form.append('image', file);
+  return [form, { headers: { 'Content-Type': 'multipart/form-data' } }] as const;
 }
 
 export default client;

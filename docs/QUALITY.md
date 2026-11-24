@@ -10,7 +10,7 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 179 test backend + 49 test frontend; 18/18 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 188 test backend + 53 test frontend; 18/18 BR; coverage dòng 98,57% (24/11/2026); smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 128,3 KB (thêm thư viện vẽ mã QR) |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; usability test luồng chia tiền ≥ 8 người (WBS 5.5) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
@@ -66,6 +66,8 @@
 | TC-Q2-07 | Xem chi tiết kèo / danh sách | Không có email người khác; khách / người ngoài kèo không thấy chi phí, số tài khoản | `post.test.js` |
 | TC-Q2-08 | Lỗi không lường trước ở server | 500 `INTERNAL_ERROR`, không trả chi tiết lỗi | `tests/utils/error-middleware.test.js` |
 | TC-Q2-09 | Khách, người ngoài kèo, token hỏng xem chi tiết kèo có thu tiền | Không có số tài khoản, không có `payment` / `paid` (BR-15) | `tests/post/payment.test.js` |
+| TC-Q2-10 | Tải ảnh có EXIF GPS; file giả ảnh, GIF, ảnh > 5 MB; không gửi file; không đăng nhập | Ảnh lưu ra không còn EXIF / GPS, đúng 256×256 / 1200×630 WebP; còn lại bị chặn: 400 `INVALID_IMAGE`, 413 `FILE_TOO_LARGE`, 401 | `tests/images.test.js` |
+| TC-Q2-11 | Người không phải chủ kèo đổi / xóa ảnh bìa; đổi ảnh bìa kèo đã hủy | 403 `NOT_AUTHOR`; 409 `POST_NOT_OPEN` | `tests/images.test.js` |
 
 **Ghi nhận:** `npm audit` (kể cả thư viện dev) báo lỗ hổng trong thư viện con của **Jest** (`deepmerge`, `glob`). Đây là công cụ test, chỉ chạy trên máy dev và CI, không có trong bản chạy thật. Lệnh "sửa" mà npm gợi ý hạ Jest xuống bản 25 nên không áp dụng; theo dõi bản cập nhật của Jest ([RISKS.md](RISKS.md) R9).
 
@@ -107,6 +109,7 @@
 | TC-Q4-06 | Chưa có khoản chi → người chơi chưa thấy mã QR → chủ kèo thêm bạn không dùng app, sân 320.000đ (tất cả) + ăn 300.000đ (bỏ 1 người), xem trước, lưu → người chơi thấy toàn bộ chi phí, mã QR 180.000đ, không có nút sửa → chủ kèo đánh dấu đã trả, thêm tiền nước → người chơi "còn thiếu" 10.000đ → khách không thấy chi phí | 10/10 bước đạt, 0 lỗi JavaScript; giải mã mã QR "còn thiếu" ra đúng 10.000đ (25/11/2026) |
 | TC-Q4-07 | Điện thoại 390 px: thanh tab đáy 5 mục (Tìm kèo, Hôm nay, Đăng kèo, Kèo của tôi, Tài khoản), thanh điều hướng trên bị ẩn, bấm tab chuyển trang, trang con có nút quay lại; chụp 12 màn hình ở 390 px và 1366 px | Đạt, không trang nào bị cuộn ngang, 0 lỗi JavaScript (24/11/2026) |
 | TC-Q4-08 | Kiểm tra điều kiện cài như app bằng Chrome (`Page.getInstallabilityErrors`, `Page.getAppManifest`) | 0 lỗi installability, manifest không lỗi (24/11/2026) |
+| TC-Q4-09 | Tải ảnh đại diện (hiện ở thanh trên, menu tài khoản, thẻ hồ sơ); chọn file không phải ảnh bị chặn ngay trên trình duyệt; đăng kèo kèm ảnh bìa (xem trước trước khi đăng); thẻ kèo có ảnh / dải màu mặc định, mọi thẻ có icon; xóa và thêm lại ảnh bìa trên điện thoại 390 px; xóa ảnh đại diện → chữ cái đầu | 15/15 bước đạt, không cuộn ngang, 0 lỗi JavaScript / console (24/11/2026) |
 | TC-Q4-05 | Quét mã QR bằng **2 ứng dụng ngân hàng khác nhau** (không cần chuyển tiền thật) | Ứng dụng điền sẵn đúng ngân hàng, số tài khoản, tên, số tiền, nội dung. **Chưa làm**: chờ kiểm tra bằng điện thoại thật (rủi ro R7) |
 
 **Việc còn lại:**

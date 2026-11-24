@@ -5,7 +5,8 @@ import { defineConfig } from 'vitest/config';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: { port: 5173 },
+  // /uploads (ảnh người dùng tải lên) lấy từ backend; trên máy chủ Nginx phục vụ cùng tên miền
+  server: { port: 5173, proxy: { '/uploads': 'http://localhost:8080' } },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

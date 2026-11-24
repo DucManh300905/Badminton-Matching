@@ -16,6 +16,8 @@ export interface User {
   gender: Gender;
   level: SkillLevel;
   bankAccount?: BankAccount;
+  /** Ảnh đại diện (null = dùng chữ cái đầu) */
+  avatarUrl?: string | null;
 }
 
 /** Kết quả đăng ký / đăng nhập */
@@ -38,6 +40,7 @@ export type PostStatus = 'open' | 'full' | 'closed';
 export interface PublicUser {
   id: string;
   displayName: string;
+  avatarUrl?: string | null;
 }
 
 /** Kèo trong danh sách */
@@ -56,6 +59,8 @@ export interface PostSummary {
   participantCount: number;
   status: PostStatus;
   note: string | null;
+  /** Ảnh bìa (null = dải màu mặc định) */
+  coverUrl?: string | null;
   author: PublicUser;
 }
 

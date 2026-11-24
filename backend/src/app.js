@@ -9,6 +9,7 @@ const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const authRoutes = require('./modules/auth/auth.routes');
 const userRoutes = require('./modules/user/user.routes');
 const postRoutes = require('./modules/post/post.routes');
+const { uploadDir } = require('./utils/images');
 
 const app = express();
 
@@ -24,6 +25,9 @@ app.use(
         origin: process.env.CLIENT_URL || 'http://localhost:5173'
     })
 );
+
+// Ảnh người dùng tải lên. Trên máy chủ Nginx phục vụ thẳng thư mục này (docs/DEPLOY.md); dòng dưới dùng khi chạy trên máy
+app.use('/uploads', express.static(uploadDir(), { maxAge: '30d', immutable: true }));
 
 // Giới hạn body JSON để chặn request khổng lồ
 app.use(express.json({ limit: '100kb' }));

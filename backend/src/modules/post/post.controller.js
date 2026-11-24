@@ -82,7 +82,23 @@ const setAttendance = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Đã lưu điểm danh', data: toPostDetail(post, req.user.userId) });
 });
 
+// PUT /api/posts/:id/cover — chủ kèo tải ảnh bìa (multipart, trường "image")
+const setCover = asyncHandler(async (req, res) => {
+    const post = await postService.setCover(req.params.id, req.user.userId, req.file?.buffer);
+
+    res.json({ success: true, message: 'Đã đổi ảnh bìa', data: toPostDetail(post, req.user.userId) });
+});
+
+// DELETE /api/posts/:id/cover
+const deleteCover = asyncHandler(async (req, res) => {
+    const post = await postService.setCover(req.params.id, req.user.userId, null);
+
+    res.json({ success: true, message: 'Đã xóa ảnh bìa', data: toPostDetail(post, req.user.userId) });
+});
+
 module.exports = {
+    setCover,
+    deleteCover,
     updateCosts,
     setAttendance,
     setPaid,
