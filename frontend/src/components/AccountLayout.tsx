@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { MenuItem } from './Menu';
 import { Avatar } from './ui';
@@ -7,6 +7,8 @@ import { Avatar } from './ui';
 export default function AccountLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  // Điện thoại: menu chỉ hiện ở màn hình gốc "Tài khoản"; trang con dùng nút quay lại của thanh tiêu đề
+  const isRoot = useLocation().pathname === '/tai-khoan';
 
   // Nằm sau RequireAuth nên luôn có user
   if (!user) return null;
@@ -17,7 +19,7 @@ export default function AccountLayout() {
   }
 
   return (
-    <div className="account-layout">
+    <div className={`account-layout${isRoot ? ' account-layout--root' : ''}`}>
       <aside className="card account-nav sticky" aria-label="Tài khoản">
         <div className="account-nav__profile">
           <Avatar name={user.displayName} />

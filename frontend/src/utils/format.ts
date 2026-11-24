@@ -37,6 +37,13 @@ export function formatSlots(s: SlotNeed): string {
   return parts.join(' · ');
 }
 
+/** "2026-11-28" → "T7, 28/11" (chip ngày trên điện thoại) */
+export function formatDateShort(ymd: string): string {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return `${WEEKDAYS[date.getDay()]}, ${pad(d)}/${pad(m)}`;
+}
+
 /** Date → "YYYY-MM-DD" theo giờ máy người dùng (dùng cho <input type="date">). */
 export function toDateInput(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;

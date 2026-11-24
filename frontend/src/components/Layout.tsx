@@ -2,9 +2,14 @@ import { Link, Outlet } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { APP_VERSION } from '../utils/constants';
 import Navbar from './Navbar';
+import TabBar from './TabBar';
 import { Alert } from './ui';
 
-/** Khung chung: thanh điều hướng trên cùng + nội dung trang + chân trang */
+/**
+ * Khung chung.
+ * Máy tính (từ 1024px): thanh điều hướng trên cùng + nội dung + chân trang (kiểu web).
+ * Điện thoại, máy tính bảng: nội dung + thanh tab đáy (kiểu app); Navbar và chân trang ẩn bằng CSS.
+ */
 export default function Layout() {
   const { notice, clearNotice } = useAuth();
 
@@ -32,6 +37,7 @@ export default function Layout() {
           <span>Phiên bản {APP_VERSION}</span>
         </div>
       </footer>
+      <TabBar />
     </div>
   );
 }

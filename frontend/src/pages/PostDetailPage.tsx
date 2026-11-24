@@ -86,6 +86,30 @@ export default function PostDetailPage() {
         ? { text: 'Đủ người', tone: 'full' }
         : { text: `Còn ${left} chỗ`, tone: 'open' };
 
+  // Nút hành động chính: dùng ở thẻ "Tình trạng" (máy tính) và thanh dính ở đáy (điện thoại)
+  const actionButton = !user ? (
+    <Link to="/dang-nhap" state={{ from: `/keo/${post.id}` }} className="btn btn--primary btn--block btn--lg">
+      Đăng nhập để tham gia
+    </Link>
+  ) : isAuthor ? (
+    <button type="button" className="btn btn--danger btn--block" disabled={busy} onClick={() => act('cancel')}>
+      Hủy kèo
+    </button>
+  ) : hasJoined ? (
+    <button type="button" className="btn btn--danger btn--block" disabled={busy} onClick={() => act('leave')}>
+      Rời kèo
+    </button>
+  ) : (
+    <button
+      type="button"
+      className="btn btn--primary btn--block btn--lg"
+      disabled={busy || post.status !== 'open'}
+      onClick={() => act('join')}
+    >
+      {post.status === 'open' ? 'Tham gia kèo' : 'Đã đủ người'}
+    </button>
+  );
+
   return (
     <>
       <PageHeader
@@ -230,35 +254,12 @@ export default function PostDetailPage() {
               <p className="hint">Chủ kèo đã hủy kèo này.</p>
             ) : started ? (
               <p className="hint">Kèo đã bắt đầu.</p>
-            ) : !user ? (
-              <Link to="/dang-nhap" state={{ from: `/keo/${post.id}` }} className="btn btn--primary btn--block btn--lg">
-                Đăng nhập để tham gia
-              </Link>
-            ) : isAuthor ? (
-              <div className="stack">
-                <p className="hint">Đây là kèo của bạn.</p>
-                <button
-                  type="button"
-                  className="btn btn--danger btn--block"
-                  disabled={busy}
-                  onClick={() => act('cancel')}
-                >
-                  Hủy kèo
-                </button>
-              </div>
-            ) : hasJoined ? (
-              <button type="button" className="btn btn--danger btn--block" disabled={busy} onClick={() => act('leave')}>
-                Rời kèo
-              </button>
             ) : (
-              <button
-                type="button"
-                className="btn btn--primary btn--block btn--lg"
-                disabled={busy || post.status !== 'open'}
-                onClick={() => act('join')}
-              >
-                {post.status === 'open' ? 'Tham gia kèo' : 'Đã đủ người'}
-              </button>
+              <>
+                {isAuthor && <p className="hint">Đây là kèo của bạn.</p>}
+                {/* Điện thoại: nút này chuyển xuống thanh hành động dính ở đáy (bên dưới) */}
+                <div className="action-card__buttons">{actionButton}</div>
+              </>
             )}
           </aside>
           {hasJoined && payment && post.status !== 'closed' && (
@@ -266,6 +267,17 @@ export default function PostDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Điện thoại: thanh hành động dính ở đáy, ngay trên thanh tab */}
+      {post.status !== 'closed' && !started && (
+        <div className="action-bar">
+          <div className="action-bar__info">
+            <strong>{formatPrice(post.settlement?.perPerson ?? post.pricePerPerson)}</strong>
+            <span>{badge.text}</span>
+          </div>
+          {actionButton}
+        </div>
+      )}
     </>
   );
 }

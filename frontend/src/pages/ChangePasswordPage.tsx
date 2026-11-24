@@ -39,7 +39,11 @@ export default function ChangePasswordPage() {
 
   return (
     <>
-      <PageHeader title="Đổi mật khẩu" subtitle="Sau khi đổi, các thiết bị khác sẽ phải đăng nhập lại" />
+      <PageHeader
+        breadcrumbs={[{ to: '/tai-khoan', label: 'Tài khoản' }]}
+        title="Đổi mật khẩu"
+        subtitle="Sau khi đổi, các thiết bị khác sẽ phải đăng nhập lại"
+      />
       <div>
         <form onSubmit={handleSubmit} className="card form-card stack">
           {message && <Alert tone={message.tone}>{message.text}</Alert>}

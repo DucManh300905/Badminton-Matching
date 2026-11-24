@@ -109,7 +109,7 @@ Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ
 |---|---|---|:-:|---|---|
 | US-32 | Là **người chơi đã tham gia kèo**, tôi muốn quét mã QR để chuyển đúng số tiền cho chủ kèo mà không phải hỏi số tài khoản. | Chủ kèo lưu ngân hàng, số tài khoản, tên chủ tài khoản trong hồ sơ (chỉ người đã tham gia kèo mới thấy); trang chi tiết kèo hiện mã QR VietQR có **đúng giá mỗi người** và nội dung chuyển khoản gồm mã kèo; hiện tên chủ tài khoản để đối chiếu; chủ kèo chưa nhập số tài khoản thì ẩn mã QR và nhắc chủ kèo; chủ kèo đánh dấu "Đã trả" cho từng người, người chơi thấy trạng thái của mình. | S | WBS 4.8.1, BR-14, BR-15, R7 | Xong |
 | US-33 | Là **chủ kèo**, tôi muốn nhập chi phí thực tế sau buổi chơi (tiền sân, cầu, nước) và đánh dấu ai có mặt để chia lại cho đúng. | Mở được từ giờ bắt đầu tới 24 giờ sau giờ kết thúc; nhập từng khoản bằng bàn phím số; chủ kèo nhập **tổng số người chơi trong buổi** (mặc định = người có mặt + 1, gồm cả bạn không dùng app); mỗi người = tổng ÷ số người, làm tròn lên 1.000đ; chủ kèo chọn mỗi lần chốt người vắng có phải trả không; mã QR của US-32 cập nhật theo số tiền mới; người "Không đến" không bị chia tiền và được ghi nhận cho E9. | S | WBS 4.8.2, US-28, BR-16, BR-17 | Xong |
-| US-34 | Là **người chơi**, tôi muốn thêm trang web vào màn hình chính điện thoại để mở nhanh như một ứng dụng. | Trình duyệt hiện gợi ý "Thêm vào màn hình chính" (Android Chrome); mở lên không có thanh địa chỉ, có biểu tượng và tên riêng của Badminton Matching. | S | WBS 4.8.3 | Chưa |
+| US-34 | Là **người chơi**, tôi muốn thêm trang web vào màn hình chính điện thoại để mở nhanh như một ứng dụng. | Trình duyệt hiện gợi ý "Thêm vào màn hình chính" (Android Chrome); mở lên không có thanh địa chỉ, có biểu tượng và tên riêng của Badminton Matching. | S | WBS 4.8.3, 4.5.4 | Xong |
 | US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Chưa |
 | US-36 | Là **người chơi**, tôi muốn xem tổng tiền đã chi cho cầu lông theo từng tháng. | Trong "Kèo của tôi": tổng chi theo tháng, tính theo số tiền đã chốt (US-33), nếu chưa chốt thì theo giá mỗi người. | C | WBS 4.8.5 | Chưa |
 
@@ -122,9 +122,9 @@ Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài t�
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
 | Must | 12 | 10 | 2 (US-13, US-22) | 0 |
-| Should | 12 | 2 (US-32, US-33) | 2 (US-24, US-28) | 8 (US-14, US-19, US-20, US-23, US-25, US-26, US-34, US-35) |
+| Should | 12 | 3 (US-32, US-33, US-34) | 2 (US-24, US-28) | 7 (US-14, US-19, US-20, US-23, US-25, US-26, US-35) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **31** | **12** | **4** | **15** |
+| **Tổng** | **31** | **13** | **4** | **14** |
 
 Hai story **Must** còn lại nằm trên đường găng: **US-13** (tinh chỉnh bộ trích xuất dựa trên luật và đánh giá RQ1, trước 5.4 ngày 01/12) và **US-22** (xuất số liệu thử nghiệm, trước 6.3 ngày 08/12).
 

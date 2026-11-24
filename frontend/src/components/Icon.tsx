@@ -1,4 +1,5 @@
-// Icon nét mảnh, một màu (theo màu chữ). CHỈ dùng ở thanh điều hướng đáy và các dòng menu.
+// Icon nét mảnh, một màu (theo màu chữ). CHỈ dùng ở thanh tab đáy, nút quay lại của thanh tiêu đề
+// (giao diện kiểu app trên điện thoại) và các dòng menu tài khoản.
 // Tự vẽ bằng SVG, không dùng thư viện icon.
 
 const PATHS = {
@@ -47,6 +48,7 @@ const PATHS = {
   ),
   list: <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" />,
   chevron: <path d="m9 6 6 6-6 6" />,
+  back: <path d="m15 5-7 7 7 7" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;
