@@ -14,7 +14,7 @@
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 128,3 KB (thêm thư viện vẽ mã QR) |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
-| Q5 | Độ chính xác bộ trích xuất | F1 trung bình theo trường ≥ 0,75, không nhóm trường nào dưới 0,60, trên tập kiểm tra 30 bài (RQ1); có bảng phân loại lỗi | **Chưa đo**: chờ bộ dữ liệu gán nhãn (WBS 2.2) |
+| Q5 | Số liệu nghiên cứu (Charter 2.0) | Xuất được số liệu ẩn danh cho RQ1–RQ3 (khoản chi, người cùng chịu, thời điểm đã trả, kèo đủ người); không có tên, email, số tài khoản | **Chưa**: chờ 4.8.2 và lệnh xuất số liệu (US-22). Q5 cũ (độ chính xác bộ trích xuất) đã bỏ 24/11/2026 |
 
 ---
 
@@ -111,9 +111,9 @@
 
 **Việc còn lại:**
 - Chuyển hai kịch bản trên thành bộ test E2E (Playwright) trong repo và chạy trên CI (WBS 5.3).
-- Thử nghiệm A/B thời gian tạo bài với ≥ 8 người (RQ2, WBS 5.5).
+- Usability test luồng đăng kèo, chia tiền theo khoản, thu tiền với ≥ 8 người (WBS 5.5).
 
-## Q5 — Độ chính xác bộ trích xuất (RQ1)
+## Q5 cũ — Độ chính xác bộ trích xuất (đã bỏ 24/11/2026, giữ lại để đối chiếu)
 
 **Biện pháp QA:**
 - Bộ test mẫu cho từng nhóm trường và các trường hợp dễ nhầm ("Việt Nam" không phải 2 nam, "1 gậy" không phải 1 giờ, số điện thoại, "2 đôi" không phải tiền, Unicode tổ hợp từ Facebook): `tests/parser/parsePost.test.js`.

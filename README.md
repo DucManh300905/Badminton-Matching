@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/DucManh300905/Badminton-Matching/actions/workflows/ci.yml/badge.svg?branch=develop)
 
-Nền tảng web kết nối người chơi cầu lông vãng lai, có tính năng trích xuất thông tin tự động từ bài đăng tiếng Việt phi cấu trúc.
+Nền tảng web ghép kèo cầu lông vãng lai, có cơ chế chia chi phí theo từng khoản và thu tiền bằng mã QR.
 
 **Đồ án cá nhân** – Sinh viên thực hiện: An Đức Mạnh (MSSV 23110310)
 
