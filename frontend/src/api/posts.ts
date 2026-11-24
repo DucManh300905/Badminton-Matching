@@ -1,5 +1,5 @@
 import client, { type ApiResponse } from './client';
-import type { CreatePostInput, PostDetail, PostFilter, PostSummary } from '../types';
+import type { CreatePostInput, PostDetail, PostFilter, PostSummary, SettleInput } from '../types';
 
 export const postsApi = {
   /** Kèo sắp diễn ra (không cần đăng nhập) */
@@ -31,6 +31,12 @@ export const postsApi = {
   /** Chỉ chủ kèo, trước giờ bắt đầu */
   async cancel(id: string) {
     const res = await client.post<ApiResponse<PostDetail>>(`/posts/${id}/cancel`);
+    return res.data.data;
+  },
+
+  /** Chỉ chủ kèo, từ giờ bắt đầu tới 24 giờ sau giờ kết thúc: chốt chi phí thật + điểm danh */
+  async settle(id: string, input: SettleInput) {
+    const res = await client.put<ApiResponse<PostDetail>>(`/posts/${id}/settlement`, input);
     return res.data.data;
   },
 

@@ -4,11 +4,12 @@ import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
 import PaymentCard from '../components/PaymentCard';
+import SettlementForm, { SettlementSummary } from '../components/SettlementForm';
 import { Alert, Avatar, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostDetail } from '../types';
 import { GENDER_LABELS, LEVEL_LABELS } from '../utils/constants';
-import { formatLevelRange, formatPrice, formatTimeRange } from '../utils/format';
+import { formatLevelRange, formatMoney, formatPrice, formatTimeRange } from '../utils/format';
 
 const SLOT_LABELS = { male: 'chỗ nam', female: 'chỗ nữ', any: 'chỗ chung' } as const;
 const SLOT_ROWS = [
@@ -135,7 +136,7 @@ export default function PostDetailPage() {
             {isAuthor && payment && payment.amount > 0 && post.participants.length > 0 && (
               <p className="pay-summary">
                 Đã thu {payment.summary.paidCount}/{payment.summary.participantCount} người ·{' '}
-                <strong>{formatPrice(payment.summary.collected)}</strong> / {formatPrice(payment.summary.expected)}
+                <strong>{formatMoney(payment.summary.collected)}</strong> / {formatMoney(payment.summary.expected)}
               </p>
             )}
             {isAuthor && payment && payment.amount > 0 && !payment.bank && post.status !== 'closed' && (
@@ -158,10 +159,14 @@ export default function PostDetailPage() {
                       <p className="people__info">
                         {p.gender ? GENDER_LABELS[p.gender] : '—'} · {p.level ? LEVEL_LABELS[p.level] : '—'} ·{' '}
                         {SLOT_LABELS[p.slot]}
+                        {p.attended === false && ' · vắng'}
                       </p>
                     </div>
+                    {p.paid !== undefined && p.amountDue === 0 && p.attended === false && (
+                      <span className="badge badge--closed">Vắng</span>
+                    )}
                     {p.paid !== undefined &&
-                      post.pricePerPerson > 0 &&
+                      (p.amountDue ?? post.pricePerPerson) > 0 &&
                       (isAuthor && post.status !== 'closed' ? (
                         <button
                           type="button"
@@ -182,6 +187,16 @@ export default function PostDetailPage() {
               </ul>
             )}
           </section>
+
+          {isAuthor && payment?.canSettle && (
+            <SettlementForm key={post.settlement?.settledAt ?? 'new'} post={post} onSaved={setPost} />
+          )}
+          {isAuthor && !payment?.canSettle && post.settlement && (
+            <section className="card" aria-label="Chi phí đã chốt">
+              <h2 className="card__title">Chi phí đã chốt</h2>
+              <SettlementSummary settlement={post.settlement} />
+            </section>
+          )}
         </div>
 
         <div className="stack sticky">
@@ -191,7 +206,8 @@ export default function PostDetailPage() {
               <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
             </div>
             <p className="action-card__price">
-              {formatPrice(post.pricePerPerson)} <span>/ người</span>
+              {formatPrice(post.settlement?.perPerson ?? post.pricePerPerson)}{' '}
+              <span>/ người{post.settlement ? ' (đã chốt)' : ''}</span>
             </p>
             <dl className="slot-list">
               {SLOT_ROWS.filter(([k]) => post.slots[k] > 0).map(([k, label]) => (
@@ -245,7 +261,9 @@ export default function PostDetailPage() {
               </button>
             )}
           </aside>
-          {hasJoined && payment && post.status !== 'closed' && <PaymentCard payment={payment} postId={post.id} />}
+          {hasJoined && payment && post.status !== 'closed' && (
+            <PaymentCard payment={payment} postId={post.id} settlement={post.settlement} />
+          )}
         </div>
       </div>
     </>

@@ -34,7 +34,29 @@ const participantSchema = new mongoose.Schema(
         paidAt: {
             type: Date,
             default: null
+        },
+        // Điểm danh khi chốt chi phí (BR-16): true có mặt, false vắng, null chưa điểm danh
+        attended: {
+            type: Boolean,
+            default: null
         }
+    },
+    { _id: false }
+);
+
+// Kết quả chốt chi phí (BR-17). perPerson do server tính, client không gửi lên.
+const fee = { type: Number, required: true, min: 0, validate: { validator: Number.isInteger, message: 'Chi phí phải là số nguyên' } };
+const settlementSchema = new mongoose.Schema(
+    {
+        courtFee: fee,
+        shuttleFee: fee,
+        otherFee: fee,
+        // Tổng số người chơi trong buổi (gồm chủ kèo và bạn của chủ kèo không dùng app)
+        headcount: { type: Number, required: true, min: 2 },
+        // Người vắng có phải trả phần của mình không (chủ kèo chọn mỗi lần chốt)
+        chargeAbsent: { type: Boolean, default: false },
+        perPerson: { type: Number, required: true, min: 0 },
+        settledAt: { type: Date, required: true }
     },
     { _id: false }
 );
@@ -113,6 +135,11 @@ const postSchema = new mongoose.Schema(
         rawText: {
             type: String,
             maxlength: 5000
+        },
+        // Chi phí thật đã chốt sau buổi (WBS 4.8.2); không có = chưa chốt, mọi người trả theo pricePerPerson
+        settlement: {
+            type: settlementSchema,
+            default: undefined
         }
     },
     { timestamps: true }

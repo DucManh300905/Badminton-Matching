@@ -6,7 +6,7 @@ const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid } = require('./post.controller');
+const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, settlePost } = require('./post.controller');
 
 const router = express.Router();
 
@@ -73,6 +73,25 @@ router.patch(
     [body('paid').isBoolean({ strict: true }).withMessage('paid phải là true hoặc false')],
     validate,
     setPaid
+);
+
+// Chỉ kiểm tra kiểu dữ liệu ở đây; ràng buộc nghiệp vụ (BR-16, BR-17) nằm trong post.settlement.js
+const feeRule = (field) => body(field).default(0).isInt().withMessage('Chi phí phải là số nguyên').bail().toInt();
+router.put(
+    '/:id/settlement',
+    authenticate,
+    [
+        feeRule('courtFee'),
+        feeRule('shuttleFee'),
+        feeRule('otherFee'),
+        body('headcount').isInt().withMessage('Số người chơi phải là số nguyên').bail().toInt(),
+        body('chargeAbsent').default(false).isBoolean({ strict: true }).withMessage('chargeAbsent phải là true hoặc false'),
+        body('attendance').isArray({ max: 50 }).withMessage('Điểm danh không hợp lệ'),
+        body('attendance.*.userId').isString().withMessage('Điểm danh không hợp lệ'),
+        body('attendance.*.attended').isBoolean({ strict: true }).withMessage('Điểm danh không hợp lệ')
+    ],
+    validate,
+    settlePost
 );
 
 module.exports = router;

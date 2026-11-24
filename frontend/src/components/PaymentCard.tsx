@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
-import type { PostPayment } from '../types';
+import type { PostPayment, Settlement } from '../types';
 import { formatPrice } from '../utils/format';
+import { SettlementSummary } from './SettlementForm';
+import { Alert } from './ui';
 
 /** Sao chép, có phương án dự phòng cho trình duyệt không cho dùng Clipboard API (http, webview cũ) */
 async function copyText(text: string) {
@@ -45,7 +47,16 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 }
 
 /** Thẻ "Thanh toán" cho người đã tham gia kèo: mã QR VietQR đúng số tiền + nội dung chuyển khoản */
-export default function PaymentCard({ payment, postId }: { payment: PostPayment; postId: string }) {
+export default function PaymentCard({
+  payment,
+  postId,
+  settlement = null,
+}: {
+  payment: PostPayment;
+  postId: string;
+  /** Chi phí đã chốt sau buổi (WBS 4.8.2); null = chưa chốt, trả theo giá đăng kèo */
+  settlement?: Settlement | null;
+}) {
   const [qrUrl, setQrUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,11 +71,17 @@ export default function PaymentCard({ payment, postId }: { payment: PostPayment;
     };
   }, [payment.qr]);
 
+  const absent = payment.attended === false;
+
   if (payment.amount === 0) {
     return (
-      <section className="card" aria-label="Thanh toán">
+      <section className="card stack" aria-label="Thanh toán">
         <h2 className="card__title">Thanh toán</h2>
-        <p className="hint">Kèo miễn phí, không cần chuyển tiền.</p>
+        <p className="hint">
+          {absent
+            ? 'Chủ kèo ghi nhận bạn vắng mặt buổi này, bạn không phải trả tiền. Nếu ghi nhận sai, hãy báo chủ kèo.'
+            : 'Kèo miễn phí, không cần chuyển tiền.'}
+        </p>
       </section>
     );
   }
@@ -77,6 +94,15 @@ export default function PaymentCard({ payment, postId }: { payment: PostPayment;
           {payment.paid ? 'Đã trả' : 'Chưa xác nhận'}
         </span>
       </div>
+      {absent && (
+        <Alert tone="info">Chủ kèo ghi nhận bạn vắng mặt, nhưng người vắng vẫn trả phần của mình vì sân đã đặt.</Alert>
+      )}
+      {settlement && (
+        <>
+          <p className="hint">Chủ kèo đã chốt chi phí thật sau buổi chơi:</p>
+          <SettlementSummary settlement={settlement} />
+        </>
+      )}
 
       {!payment.available ? (
         <p className="hint">

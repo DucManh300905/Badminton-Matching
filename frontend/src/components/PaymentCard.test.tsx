@@ -49,6 +49,38 @@ describe('PaymentCard', () => {
     expect(screen.getByText(/chưa thêm tài khoản nhận tiền/)).toBeInTheDocument();
   });
 
+  it('đã chốt chi phí → hiện từng khoản và số tiền mỗi người', async () => {
+    render(
+      <PaymentCard
+        payment={{ ...base, amount: 53_000, attended: true }}
+        postId="abc123"
+        settlement={{
+          courtFee: 320_000,
+          shuttleFee: 80_000,
+          otherFee: 20_000,
+          total: 420_000,
+          headcount: 8,
+          chargeAbsent: false,
+          perPerson: 53_000,
+          settledAt: '2026-11-24T15:00:00.000Z',
+        }}
+      />,
+    );
+    expect(await screen.findByText('Tiền sân')).toBeInTheDocument();
+    expect(screen.getByText(/420\.000.*53\.000/)).toBeInTheDocument();
+  });
+
+  it('vắng mặt, chủ kèo không thu người vắng → không phải trả', () => {
+    render(<PaymentCard payment={{ ...base, amount: 0, available: false, qr: null, attended: false }} postId="abc" />);
+    expect(screen.getByText(/ghi nhận bạn vắng mặt buổi này, bạn không phải trả/)).toBeInTheDocument();
+  });
+
+  it('vắng mặt nhưng chủ kèo thu cả người vắng → vẫn có mã QR, có giải thích', async () => {
+    render(<PaymentCard payment={{ ...base, attended: false }} postId="abc" />);
+    expect(await screen.findByRole('img')).toBeInTheDocument();
+    expect(screen.getByText(/người vắng vẫn trả phần của mình/)).toBeInTheDocument();
+  });
+
   it('kèo miễn phí → không cần chuyển tiền', () => {
     render(<PaymentCard payment={{ ...base, amount: 0, available: false, qr: null }} postId="abc123" />);
     expect(screen.getByText(/Kèo miễn phí/)).toBeInTheDocument();

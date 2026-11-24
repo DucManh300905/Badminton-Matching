@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const Post = require('./post.model');
 const rules = require('./post.rules');
+const settlement_ = require('./post.settlement');
 const AppError = require('../../utils/AppError');
 const { SKILL_LEVELS, levelIndex } = require('../../utils/skillLevel');
 const { vnDayRange } = require('../../utils/vnTime');
@@ -181,7 +182,44 @@ const setPaid = async (postId, authorId, playerId, paid, now) => {
     return getPost(postId);
 };
 
+/**
+ * Chủ kèo chốt chi phí thật và điểm danh (BR-16, BR-17). Chốt lại được trong khung thời gian.
+ * Không cần transaction: chỉ chốt được sau giờ bắt đầu, lúc đó không ai tham gia / rời kèo được nữa
+ * (BR-06, BR-12) nên danh sách người tham gia đã cố định.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {import('./post.settlement').SettleInput} input
+ * @param {Date} now
+ */
+const settlePost = async (postId, actorId, input, now) => {
+    const post = await Post.findById(postId);
+    if (!post) {
+        throw notFound();
+    }
+
+    const { settlement, attendance } = settlement_.settle(
+        {
+            authorId: String(post.author),
+            status: post.status,
+            startsAt: post.startsAt,
+            endsAt: post.endsAt,
+            participantIds: post.participants.map((p) => String(p.user))
+        },
+        actorId,
+        input,
+        now
+    );
+
+    post.settlement = settlement;
+    for (const p of post.participants) {
+        p.attended = attendance.get(String(p.user));
+    }
+    await post.save();
+    return getPost(postId);
+};
+
 module.exports = {
+    settlePost,
     setPaid,
     LIST_LIMIT,
     MY_POSTS_LIMIT,
