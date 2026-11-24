@@ -13,6 +13,7 @@ describe('activeTab', () => {
     ['/keo/665f1f77bcf86cd799439011', '', 'search'],
     ['/keo-cua-toi', '?tab=authored', 'mine'],
     ['/tai-khoan', '', 'account'],
+    ['/kho-cau', '', 'account'],
     ['/tai-khoan/doi-mat-khau', '', 'account'],
     ['/dang-nhap', '', 'account'],
     ['/khong-co', '', null],

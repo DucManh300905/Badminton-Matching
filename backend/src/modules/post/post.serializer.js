@@ -75,6 +75,11 @@ const toCosts = (post, money) => {
                 amount: e.amount,
                 everyone: e.everyone,
                 sharedBy: e.everyone ? [] : e.sharedBy,
+                // Khoản "Cầu" theo số quả (WBS 4.10)
+                quantity: e.quantity ?? null,
+                unitPrice: e.unitPrice ?? null,
+                shuttleId: e.shuttle ?? null,
+                shuttleName: e.shuttleName ?? null,
                 // Người đang cùng chịu (đã bỏ người rời kèo) và phần mỗi người, chưa làm tròn
                 sharers,
                 share: sharers.length ? Math.round(e.amount / sharers.length) : 0
@@ -184,6 +189,7 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
             })
         })),
         ...(insider && {
+            bills: (post.bills ?? []).map((f) => ({ file: f, url: publicUrl('bills', f) })),
             costs: toCosts(post, money),
             payment: toPayment(post, viewerId, isAuthor, money, now)
         })

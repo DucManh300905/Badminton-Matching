@@ -19,6 +19,10 @@ export const EXPENSE_ICONS: Record<ExpenseKind, IconName> = {
   other: 'dots',
 };
 
+/** Tiền cầu = số quả × giá mỗi quả, làm tròn lên 1.000đ (khớp backend post.costs.js → shuttleAmount) */
+export const shuttleAmount = (quantity: number, unitPrice: number) =>
+  Math.ceil(Math.round(quantity * unitPrice) / 1000) * 1000;
+
 /** Tên hiển thị của một khoản: khoản "Khác" dùng tên chủ kèo đặt */
 export const expenseName = (e: { kind: ExpenseKind; label?: string | null }) =>
   e.kind === 'other' ? e.label?.trim() || 'Khác' : (EXPENSE_KINDS.find((k) => k.kind === e.kind)?.label ?? e.kind);

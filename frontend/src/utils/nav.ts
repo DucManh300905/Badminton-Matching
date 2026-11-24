@@ -14,6 +14,7 @@ export function activeTab(pathname: string, search: string, today: string): TabK
   if (pathname === '/keo/moi') return 'new';
   if (pathname.startsWith('/keo/')) return 'search';
   if (pathname.startsWith('/keo-cua-toi')) return 'mine';
+  if (pathname.startsWith('/kho-cau')) return 'account';
   if (pathname.startsWith('/tai-khoan') || pathname === '/dang-nhap' || pathname === '/dang-ky') return 'account';
   return null;
 }

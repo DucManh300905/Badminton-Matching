@@ -9,6 +9,8 @@ const { saveImage, removeImage } = require('../../utils/images');
 const AppError = require('../../utils/AppError');
 const { SKILL_LEVELS, levelIndex } = require('../../utils/skillLevel');
 const { vnDayRange } = require('../../utils/vnTime');
+const Shuttle = require('../shuttle/shuttle.model');
+const shuttleService = require('../shuttle/shuttle.service');
 
 const LIST_LIMIT = 100;
 
@@ -201,34 +203,68 @@ const setPaid = async (postId, authorId, playerId, paid, now) => {
  * @param {Date} now
  */
 const updateCosts = async (postId, actorId, input, now) => {
-    const post = await Post.findById(postId).select('author status participants.user guests');
-    if (!post) {
-        throw notFound();
-    }
-
-    const { guests, expenses } = costs.normalizeCosts(
-        {
-            authorId: String(post.author),
-            status: post.status,
-            participantIds: post.participants.map((p) => String(p.user)),
-            guests: post.guests.map((g) => ({ id: String(g._id), name: g.name }))
-        },
-        actorId,
-        input,
-        () => String(new mongoose.Types.ObjectId())
-    );
-
-    await Post.updateOne(
-        { _id: postId },
-        {
-            $set: {
-                guests: guests.map((g) => ({ _id: g.id, name: g.name })),
-                expenses,
-                costsUpdatedAt: now
+    const session = await mongoose.startSession();
+    try {
+        await session.withTransaction(async () => {
+            const post = await Post.findById(postId).select('author status participants.user guests expenses').session(session);
+            if (!post) {
+                throw notFound();
             }
-        },
-        { runValidators: true }
-    );
+
+            const { guests, expenses } = costs.normalizeCosts(
+                {
+                    authorId: String(post.author),
+                    status: post.status,
+                    participantIds: post.participants.map((p) => String(p.user)),
+                    guests: post.guests.map((g) => ({ id: String(g._id), name: g.name }))
+                },
+                actorId,
+                input,
+                () => String(new mongoose.Types.ObjectId())
+            );
+
+            // Khoản "Cầu" chọn từ kho (WBS 4.10): chỉ nhận loại cầu của chính chủ kèo, chép tên để hiện lại về sau
+            const ids = [...new Set(expenses.filter((e) => e.shuttle).map((e) => e.shuttle))];
+            const owned = new Map(
+                (await Shuttle.find({ _id: { $in: ids }, owner: actorId }).select('name').session(session)).map((s) => [
+                    String(s._id),
+                    s.name
+                ])
+            );
+            const previous = new Map(
+                post.expenses.filter((e) => e.shuttle).map((e) => [String(e.shuttle), e.shuttleName])
+            );
+            for (const e of expenses) {
+                if (!e.shuttle) continue;
+                if (owned.has(e.shuttle)) e.shuttleName = owned.get(e.shuttle);
+                else if (previous.has(e.shuttle)) e.shuttleName = previous.get(e.shuttle); // loại cầu đã xóa khỏi kho
+                else e.shuttle = null; // không phải cầu của mình → coi như nhập giá tay
+            }
+
+            await Post.updateOne(
+                { _id: postId },
+                {
+                    $set: {
+                        guests: guests.map((g) => ({ _id: g.id, name: g.name })),
+                        expenses,
+                        costsUpdatedAt: now
+                    }
+                },
+                { runValidators: true, session }
+            );
+
+            // Trừ / hoàn kho theo chênh lệch số quả so với lần lưu trước (2a); kho hết thì dừng ở 0
+            const before = shuttleService.usageOf(post.expenses);
+            const after = shuttleService.usageOf(expenses);
+            const deltas = new Map();
+            for (const id of new Set([...before.keys(), ...after.keys()])) {
+                deltas.set(id, (after.get(id) ?? 0) - (before.get(id) ?? 0));
+            }
+            await shuttleService.applyStockChanges(actorId, deltas, session);
+        });
+    } finally {
+        await session.endSession();
+    }
     return getPost(postId);
 };
 
@@ -290,7 +326,56 @@ const setCover = async (postId, actorId, buffer) => {
     return getPost(postId);
 };
 
+/** Chủ kèo, kèo chưa hủy */
+const findOwnOpenPost = async (postId, actorId, fields, action) => {
+    const post = await Post.findById(postId).select(`author status ${fields}`);
+    if (!post) {
+        throw notFound();
+    }
+    if (String(post.author) !== actorId) {
+        throw new AppError(403, 'NOT_AUTHOR', `Chỉ chủ kèo mới ${action}`);
+    }
+    if (post.status === 'closed') {
+        throw new AppError(409, 'POST_NOT_OPEN', 'Kèo đã bị hủy');
+    }
+    return post;
+};
+
+/**
+ * Thêm một ảnh bill (WBS 4.11), tối đa MAX_BILLS ảnh. Điều kiện "chưa đủ" nằm ngay trong lệnh ghi
+ * nên hai lần tải cùng lúc cũng không vượt quá giới hạn.
+ */
+const addBill = async (postId, actorId, buffer) => {
+    const post = await findOwnOpenPost(postId, actorId, 'bills', 'thêm được ảnh bill');
+    if (post.bills.length >= costs.MAX_BILLS) {
+        throw new AppError(409, 'BILL_LIMIT', `Tối đa ${costs.MAX_BILLS} ảnh bill`);
+    }
+    const fileName = await saveImage('bills', buffer);
+    const res = await Post.updateOne(
+        { _id: postId, [`bills.${costs.MAX_BILLS - 1}`]: { $exists: false } },
+        { $push: { bills: fileName } }
+    );
+    if (res.modifiedCount === 0) {
+        await removeImage('bills', fileName);
+        throw new AppError(409, 'BILL_LIMIT', `Tối đa ${costs.MAX_BILLS} ảnh bill`);
+    }
+    return getPost(postId);
+};
+
+/** Xóa một ảnh bill theo tên file */
+const removeBill = async (postId, actorId, fileName) => {
+    const post = await findOwnOpenPost(postId, actorId, 'bills', 'xóa được ảnh bill');
+    if (!post.bills.includes(fileName)) {
+        throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy ảnh bill');
+    }
+    await Post.updateOne({ _id: postId }, { $pull: { bills: fileName } });
+    await removeImage('bills', fileName);
+    return getPost(postId);
+};
+
 module.exports = {
+    addBill,
+    removeBill,
     setCover,
     updateCosts,
     setAttendance,

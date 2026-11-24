@@ -32,6 +32,7 @@ export default function AccountLayout() {
           <MenuItem icon="list" label="Tổng quan" to="/tai-khoan" end />
           <MenuItem icon="calendar" label="Kèo của tôi" to="/keo-cua-toi" />
           <MenuItem icon="plus" label="Đăng kèo mới" to="/keo/moi" />
+          <MenuItem icon="shuttle" label="Kho cầu" to="/kho-cau" />
           <div className="menu-divider" />
           <MenuItem icon="edit" label="Hồ sơ cá nhân" to="/tai-khoan/ho-so" />
           <MenuItem icon="lock" label="Đổi mật khẩu" to="/tai-khoan/doi-mat-khau" />

@@ -20,6 +20,7 @@ const NAV_ITEMS: NavItem[] = [
 const ACCOUNT_LINKS = [
   { to: '/tai-khoan', label: 'Tổng quan tài khoản' },
   { to: '/keo-cua-toi', label: 'Kèo của tôi' },
+  { to: '/kho-cau', label: 'Kho cầu' },
   { to: '/tai-khoan/ho-so', label: 'Hồ sơ cá nhân' },
   { to: '/tai-khoan/doi-mat-khau', label: 'Đổi mật khẩu' },
 ];
