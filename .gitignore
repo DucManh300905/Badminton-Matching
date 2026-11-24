@@ -22,3 +22,6 @@ data/raw/
 
 # File build tạm của TypeScript
 *.tsbuildinfo
+
+# Ảnh người dùng tải lên khi chạy trên máy (máy chủ lưu ở /var/lib/badminton/uploads)
+backend/uploads/

@@ -1,6 +1,9 @@
 import { Link } from 'react-router';
 import type { PostSummary } from '../types';
 import { formatLevelRange, formatPrice, formatSlots, formatTimeRange } from '../utils/format';
+import Icon from './Icon';
+import { Cover } from './PostCover';
+import { Avatar, IconText } from './ui';
 
 interface Props {
   post: PostSummary;
@@ -28,11 +31,16 @@ export default function PostCard({ post, now }: Props) {
       className={`post-card${badge.tone === 'open' ? '' : ' post-card--dim'}`}
       aria-label={`Kèo ${post.courtName}`}
     >
+      <Cover url={post.coverUrl} className="cover--card" />
       <div className="post-card__top">
         <div>
-          <p className="post-card__time">{formatTimeRange(post.startsAt, post.endsAt)}</p>
+          <p className="post-card__time">
+            <IconText icon="clock">{formatTimeRange(post.startsAt, post.endsAt)}</IconText>
+          </p>
           <h3 className="post-card__title">{post.courtName}</h3>
-          <p className="post-card__area">{post.district}</p>
+          <p className="post-card__area">
+            <IconText icon="mapPin">{post.district}</IconText>
+          </p>
         </div>
         <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
       </div>
@@ -40,17 +48,29 @@ export default function PostCard({ post, now }: Props) {
       <div className="post-card__meta">
         {needed && (
           <span>
-            Cần: <strong>{needed}</strong>
+            <Icon name="users" size={16} />
+            <span>
+              Cần: <strong>{needed}</strong>
+            </span>
           </span>
         )}
         <span>
-          Trình độ: <strong>{formatLevelRange(post.levelMin, post.levelMax)}</strong>
+          <Icon name="level" size={16} />
+          <span>
+            Trình độ: <strong>{formatLevelRange(post.levelMin, post.levelMax)}</strong>
+          </span>
         </span>
         <span>
-          Dự kiến: <strong>{formatPrice(post.pricePerPerson)}/người</strong>
+          <Icon name="wallet" size={16} />
+          <span>
+            Dự kiến: <strong>{formatPrice(post.pricePerPerson)}/người</strong>
+          </span>
         </span>
         <span>
-          Chủ kèo: <strong>{post.author.displayName}</strong>
+          <Avatar name={post.author.displayName} url={post.author.avatarUrl} size="xs" />
+          <span>
+            Chủ kèo: <strong>{post.author.displayName}</strong>
+          </span>
         </span>
       </div>
     </Link>

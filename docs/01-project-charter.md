@@ -162,7 +162,7 @@ Chi tiết xem [Gantt chart](03-gantt.md) và file Excel [diagrams/gantt.xlsx](d
 | CI/CD | GitHub Actions | 0đ |
 | **Tổng** | | **≤ 300.000đ** |
 
-**Thời gian:** giai đoạn 1 khoảng **250 giờ công** (sau điều chỉnh 24/11/2026). Từ 24/11 tới hạn 15/12/2026 còn khoảng **106 giờ** trong 3 tuần, trung bình **~35 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3).
+**Thời gian:** giai đoạn 1 khoảng **262 giờ công** (sau điều chỉnh 24/11/2026, gồm 12 giờ icon và ảnh đã làm xong). Từ 24/11 tới hạn 15/12/2026 còn khoảng **106 giờ** trong 3 tuần, trung bình **~35 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3).
 
 **Công nghệ:**
 - **Backend:** Node.js 24 LTS + Express 5 (kiến trúc modular monolith: mỗi chức năng một module routes / controller / service / model), MongoDB + Mongoose, xác thực JWT, kiểm tra dữ liệu bằng express-validator, bảo mật bằng helmet + giới hạn số lần đăng nhập.

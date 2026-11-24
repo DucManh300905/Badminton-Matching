@@ -5,7 +5,9 @@ import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
 import PaymentCard from '../components/PaymentCard';
 import CostsCard, { AttendanceCard } from '../components/CostsCard';
-import { Alert, Avatar, Spinner } from '../components/ui';
+import Icon, { type IconName } from '../components/Icon';
+import { PostCoverBanner } from '../components/PostCover';
+import { Alert, Avatar, CardTitle, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostDetail } from '../types';
 import { GENDER_LABELS, LEVEL_LABELS } from '../utils/constants';
@@ -21,6 +23,16 @@ const SLOT_ROWS = [
 type Action = 'join' | 'leave' | 'cancel';
 
 const CRUMBS = [{ to: '/', label: 'Danh sách kèo' }];
+
+/** Nhãn ô thông tin kèm icon */
+function InfoLabel({ icon, children }: { icon: IconName; children: string }) {
+  return (
+    <dt>
+      <Icon name={icon} size={16} />
+      {children}
+    </dt>
+  );
+}
 
 export default function PostDetailPage() {
   const { id = '' } = useParams();
@@ -118,45 +130,55 @@ export default function PostDetailPage() {
         subtitle={`${formatTimeRange(post.startsAt, post.endsAt)} · ${post.district}`}
       />
 
+      <PostCoverBanner post={post} canEdit={isAuthor && post.status !== 'closed'} onSaved={setPost} />
+
       <div className="detail-layout">
         <div className="stack">
           <article className="card stack">
-            <h2 className="card__title">Thông tin kèo</h2>
+            <CardTitle icon="info">Thông tin kèo</CardTitle>
             <dl className="info-grid">
               <div>
-                <dt>Thời gian</dt>
+                <InfoLabel icon="clock">Thời gian</InfoLabel>
                 <dd>{formatTimeRange(post.startsAt, post.endsAt)}</dd>
               </div>
               <div>
-                <dt>Khu vực</dt>
+                <InfoLabel icon="mapPin">Khu vực</InfoLabel>
                 <dd>{post.district}</dd>
               </div>
               <div>
-                <dt>Chủ kèo</dt>
-                <dd>{post.author.displayName}</dd>
+                <InfoLabel icon="user">Chủ kèo</InfoLabel>
+                <dd className="info-grid__person">
+                  <Avatar name={post.author.displayName} url={post.author.avatarUrl} size="xs" />
+                  {post.author.displayName}
+                </dd>
               </div>
               <div>
-                <dt>Trình độ</dt>
+                <InfoLabel icon="level">Trình độ</InfoLabel>
                 <dd>{formatLevelRange(post.levelMin, post.levelMax)}</dd>
               </div>
               <div>
-                <dt>Chi phí dự kiến</dt>
+                <InfoLabel icon="wallet">Chi phí dự kiến</InfoLabel>
                 <dd>{formatPrice(post.pricePerPerson)}/người</dd>
               </div>
               {post.address && (
                 <div>
-                  <dt>Địa chỉ</dt>
+                  <InfoLabel icon="court">Địa chỉ</InfoLabel>
                   <dd>{post.address}</dd>
                 </div>
               )}
             </dl>
-            {post.note && <p className="note">{post.note}</p>}
+            {post.note && (
+              <p className="note note--icon">
+                <Icon name="note" size={16} />
+                <span>{post.note}</span>
+              </p>
+            )}
           </article>
 
           <section className="card">
-            <h2 className="card__title">
+            <CardTitle icon="users">
               Người tham gia ({post.participants.length}/{total})
-            </h2>
+            </CardTitle>
             {isAuthor && payment?.hasCosts && payment.summary.participantCount > 0 && (
               <p className="pay-summary">
                 Đã thu {payment.summary.paidCount}/{payment.summary.participantCount} người ·{' '}
@@ -177,7 +199,7 @@ export default function PostDetailPage() {
               <ul className="people">
                 {post.participants.map((p) => (
                   <li key={p.id}>
-                    <Avatar name={p.displayName} size="sm" />
+                    <Avatar name={p.displayName} url={p.avatarUrl} size="sm" />
                     <div className="people__body">
                       <p className="people__name">{p.displayName}</p>
                       <p className="people__info">
@@ -227,7 +249,10 @@ export default function PostDetailPage() {
         <div className="stack sticky">
           <aside className="card" aria-label="Tham gia kèo">
             <div className="action-card__status">
-              <strong>Tình trạng</strong>
+              <strong className="icon-text">
+                <Icon name="flag" size={18} />
+                Tình trạng
+              </strong>
               <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
             </div>
             <p className="action-card__price">

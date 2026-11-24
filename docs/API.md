@@ -1,6 +1,6 @@
 # Đặc tả API — Badminton Matching
 
-> Cập nhật: 13/11/2026. Địa chỉ gốc khi chạy trên máy: `http://localhost:8080/api`.
+> Cập nhật: 24/11/2026. Địa chỉ gốc khi chạy trên máy: `http://localhost:8080/api`.
 > Tài liệu liên quan: [project.md](project.md) (quy tắc BR-xx) · [database.md](database.md)
 
 ## 1. Quy ước chung
@@ -31,12 +31,12 @@ Lỗi:
 |---|---|
 | 200 | Thành công |
 | 201 | Tạo mới thành công (đăng ký, đăng kèo) |
-| 400 | Dữ liệu không hợp lệ |
+| 400 | Dữ liệu không hợp lệ (kể cả file không phải ảnh) |
 | 401 | Chưa đăng nhập, token sai / hết hạn, sai email hoặc mật khẩu |
 | 403 | Đã đăng nhập nhưng không có quyền (vd không phải chủ kèo) |
 | 404 | Không tìm thấy (kể cả id sai định dạng) |
 | 409 | Xung đột trạng thái (kèo đủ người, đã tham gia, email trùng…) |
-| 413 | Body lớn hơn 100 KB |
+| 413 | Body JSON lớn hơn 100 KB, hoặc ảnh lớn hơn 5 MB |
 | 429 | Thử quá nhiều lần |
 | 500 | Lỗi máy chủ (không trả chi tiết ra ngoài) |
 
@@ -51,7 +51,7 @@ Lỗi:
 
 | Hạng mục | Giá trị |
 |---|---|
-| Kích thước body | ≤ 100 KB |
+| Kích thước body | JSON ≤ 100 KB · ảnh ≤ 5 MB |
 | Đăng nhập sai | ≤ 10 lần / 15 phút / IP (chỉ đếm lần sai) |
 | Đăng ký | ≤ 10 tài khoản / giờ / IP |
 | Đổi mật khẩu sai | ≤ 5 lần / 15 phút / IP |
@@ -65,9 +65,11 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 **User**
 ```json
 { "id": "665f…", "email": "minh@example.com", "displayName": "Minh", "gender": "male", "level": "TB",
+  "avatarUrl": "/uploads/avatars/3f9c…e1.webp",
   "bankAccount": { "bankBin": "970436", "accountNumber": "0123456789", "accountName": "NGUYEN VAN MINH" } }
 ```
 - `bankAccount` (tài khoản nhận tiền) chỉ có khi người dùng đã nhập; chỉ trả cho chính chủ.
+- `avatarUrl`: đường dẫn ảnh đại diện **cùng tên miền với web** (`null` = chưa có ảnh, giao diện dùng chữ cái đầu của tên). Mọi chỗ trả thông tin người khác (`author`, `participants[]`) cũng có `avatarUrl`.
 
 **PostSummary** (danh sách kèo)
 ```json
@@ -86,12 +88,14 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
   "participantCount": 1,
   "status": "open",
   "note": null,
-  "author": { "id": "665f…", "displayName": "Minh" }
+  "coverUrl": "/uploads/covers/8a1d…07.webp",
+  "author": { "id": "665f…", "displayName": "Minh", "avatarUrl": null }
 }
 ```
 - Thời gian là chuỗi ISO 8601, giờ UTC.
 - `slots`: số chỗ **cần thêm** theo loại; `remaining`: số chỗ còn trống.
 - `status`: `open` (còn chỗ) · `full` (đủ người) · `closed` (chủ kèo đã hủy).
+- `coverUrl`: ảnh bìa của kèo (`null` = chưa có, giao diện dùng dải màu xanh mặc định).
 
 **PostDetail** = PostSummary + danh sách người tham gia:
 ```json
@@ -178,6 +182,8 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | GET | `/users/me/posts` | Có | Kèo mình đã đăng và đã tham gia |
 | PUT | `/users/me/bank-account` | Có | Lưu / sửa tài khoản nhận tiền |
 | DELETE | `/users/me/bank-account` | Có | Xóa tài khoản nhận tiền |
+| PUT | `/users/me/avatar` | Có | Tải ảnh đại diện (multipart) |
+| DELETE | `/users/me/avatar` | Có | Xóa ảnh đại diện |
 | GET | `/posts` | | Danh sách kèo sắp diễn ra, có lọc |
 | GET | `/posts/:id` | Tùy chọn | Chi tiết kèo; có token thì người trong kèo thấy thêm phần thanh toán |
 | POST | `/posts` | Có | Đăng kèo |
@@ -187,6 +193,10 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | PATCH | `/posts/:id/participants/:userId/payment` | Có | Đánh dấu đã / chưa trả tiền (chỉ chủ kèo) |
 | PUT | `/posts/:id/costs` | Có | Lưu các khoản chi + bạn không dùng app (chỉ chủ kèo) |
 | PUT | `/posts/:id/attendance` | Có | Điểm danh, từ giờ bắt đầu (chỉ chủ kèo) |
+| PUT | `/posts/:id/cover` | Có | Tải ảnh bìa (multipart, chỉ chủ kèo) |
+| DELETE | `/posts/:id/cover` | Có | Xóa ảnh bìa (chỉ chủ kèo) |
+
+Ảnh tải lên được phục vụ tĩnh tại `/uploads/avatars/<file>` và `/uploads/covers/<file>` (không qua `/api`; máy chủ chạy thật do Nginx phục vụ).
 
 ## 3. Chi tiết endpoint
 
@@ -239,6 +249,15 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 
 #### `DELETE /users/me/bank-account`
 - `200` → `data: User` (không còn `bankAccount`) · `401`
+
+#### `PUT /users/me/avatar`
+Gửi `multipart/form-data`, một file ở trường **`image`**.
+- Nhận **JPEG, PNG, WebP**, tối đa **5 MB**. Định dạng được kiểm tra theo **nội dung file**, không tin phần mở rộng hay `Content-Type`.
+- Server xoay ảnh theo EXIF, cắt vuông **256×256** (ưu tiên vùng nổi bật), đổi sang **WebP** chất lượng 80 và **bỏ toàn bộ metadata (EXIF, GPS)**. Tên file ngẫu nhiên 32 ký tự hex; ảnh cũ bị xóa.
+- `200` → `data: User` (có `avatarUrl` mới) · `400 INVALID_IMAGE` (không có file, không phải ảnh, GIF…) · `413 FILE_TOO_LARGE` · `401`
+
+#### `DELETE /users/me/avatar`
+- `200` → `data: User` (`avatarUrl: null`), xóa file ảnh · `401`
 
 ### 3.3 Kèo
 
@@ -323,16 +342,25 @@ Body: `{ "attendance": [{ "userId": "665f…", "attended": false }] }` (chỉ nh
 - Chỉ chủ kèo, từ **giờ bắt đầu** trở đi, kèo chưa hủy. Điểm danh là số liệu bùng kèo; **không** tự đổi phần chia tiền (muốn người vắng không chịu khoản nào thì bỏ họ khỏi khoản đó).
 - `200` → `data: PostDetail` · `403 NOT_AUTHOR` · `409 NOT_STARTED` · `409 POST_NOT_OPEN` · `400 VALIDATION_ERROR` · `401` · `404 NOT_FOUND`
 
+#### `PUT /posts/:id/cover`
+Gửi `multipart/form-data`, một file ở trường **`image`**; ràng buộc và cách xử lý giống ảnh đại diện, nhưng cắt theo khung **1200×630**.
+- Chỉ chủ kèo, kèo chưa hủy (đăng xong mới tải ảnh: giao diện tạo kèo rồi gửi ảnh ngay sau đó).
+- `200` → `data: PostDetail` (có `coverUrl` mới) · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` (kèo đã hủy) · `400 INVALID_IMAGE` · `413 FILE_TOO_LARGE` · `401` · `404 NOT_FOUND`
+
+#### `DELETE /posts/:id/cover`
+- `200` → `data: PostDetail` (`coverUrl: null`) · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` · `401` · `404 NOT_FOUND`
+
 ## 4. Mã lỗi
 
 | `code` | HTTP | Ý nghĩa | Thông báo hiển thị ở frontend |
 |---|---|---|---|
 | `VALIDATION_ERROR` | 400 | Dữ liệu sai / JSON hỏng | Dữ liệu chưa hợp lệ, vui lòng kiểm tra lại. |
+| `INVALID_IMAGE` | 400 | Không gửi file, hoặc file không phải JPEG / PNG / WebP | Chỉ nhận ảnh JPEG, PNG hoặc WebP. |
 | `INVALID_PASSWORD` | 400 | Sai mật khẩu hiện tại khi đổi mật khẩu | Mật khẩu hiện tại không đúng. |
 | `UNAUTHORIZED` | 401 | Không gửi token | Vui lòng đăng nhập để tiếp tục. |
 | `TOKEN_EXPIRED` | 401 | Token sai, hết hạn, hoặc đã đổi mật khẩu | Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại. |
 | `INVALID_CREDENTIALS` | 401 | Sai email hoặc mật khẩu | Email hoặc mật khẩu không đúng. |
-| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả, sửa chi phí, điểm danh) | Chỉ chủ kèo mới làm được thao tác này. |
+| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả, sửa chi phí, điểm danh, ảnh bìa) | Chỉ chủ kèo mới làm được thao tác này. |
 | `NOT_FOUND` | 404 | Không tìm thấy / đường dẫn sai | Không tìm thấy dữ liệu. |
 | `DUPLICATE` | 409 | Trùng dữ liệu duy nhất (email) | Email này đã được đăng ký. |
 | `POST_NOT_OPEN` | 409 | Kèo đủ người hoặc đã hủy | Kèo đã đủ người hoặc đã bị hủy. |
@@ -345,6 +373,7 @@ Body: `{ "attendance": [{ "userId": "665f…", "attended": false }] }` (chỉ nh
 | `NO_SLOT` | 409 | Hết chỗ hợp giới tính | Kèo không còn chỗ phù hợp với giới tính của bạn. |
 | `SYSTEM_BUSY` | 409 | Xung đột ghi CSDL | Hệ thống đang bận, vui lòng thử lại. |
 | `PAYLOAD_TOO_LARGE` | 413 | Body quá lớn | Nội dung gửi lên quá lớn. |
+| `FILE_TOO_LARGE` | 413 | Ảnh lớn hơn 5 MB | Ảnh tối đa 5 MB. |
 | `RATE_LIMITED` | 429 | Thử quá nhiều lần | Bạn thử quá nhiều lần, vui lòng đợi ít phút rồi thử lại. |
 | `INTERNAL_ERROR` | 500 | Lỗi không lường trước | Máy chủ gặp lỗi, vui lòng thử lại sau. |
 

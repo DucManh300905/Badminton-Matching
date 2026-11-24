@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { usersApi, type MyPosts } from '../api/users';
 import PageHeader from '../components/PageHeader';
 import PostCard from '../components/PostCard';
+import Icon from '../components/Icon';
 import { Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { LEVEL_LABELS } from '../utils/constants';
@@ -36,18 +37,22 @@ export default function AccountPage() {
 
       <div className="stats">
         <Link to="/keo-cua-toi?tab=authored" className="stat">
+          <Icon name="edit" size={22} className="stat__icon" />
           <p className="stat__value">{count(mine?.authored.length)}</p>
           <p className="stat__label">Kèo đã đăng</p>
         </Link>
         <Link to="/keo-cua-toi?tab=joined" className="stat">
+          <Icon name="users" size={22} className="stat__icon" />
           <p className="stat__value">{count(mine?.joined.length)}</p>
           <p className="stat__label">Đã tham gia</p>
         </Link>
         <Link to="/keo-cua-toi" className="stat">
+          <Icon name="calendar" size={22} className="stat__icon" />
           <p className="stat__value">{count(upcoming?.length)}</p>
           <p className="stat__label">Sắp diễn ra</p>
         </Link>
         <Link to="/tai-khoan/ho-so" className="stat">
+          <Icon name="level" size={22} className="stat__icon" />
           <p className="stat__value stat__value--text">{LEVEL_LABELS[user.level]}</p>
           <p className="stat__label">Trình độ</p>
         </Link>
@@ -62,7 +67,10 @@ export default function AccountPage() {
         {!upcoming && <Spinner />}
         {upcoming && upcoming.length === 0 && (
           <div className="card empty">
-            Bạn chưa có kèo nào sắp diễn ra. <Link to="/">Tìm kèo</Link> hoặc <Link to="/keo/moi">đăng kèo mới</Link>.
+            <Icon name="calendar" size={40} className="empty__icon" />
+            <p>
+              Bạn chưa có kèo nào sắp diễn ra. <Link to="/">Tìm kèo</Link> hoặc <Link to="/keo/moi">đăng kèo mới</Link>.
+            </p>
           </div>
         )}
         {upcoming && upcoming.length > 0 && (

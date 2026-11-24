@@ -56,7 +56,7 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <Avatar name={user.displayName} size="sm" />
+        <Avatar name={user.displayName} url={user.avatarUrl} size="sm" />
         <span>{user.displayName}</span>
       </button>
       {open && (

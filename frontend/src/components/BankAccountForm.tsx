@@ -3,7 +3,7 @@ import { toApiError } from '../api/client';
 import { usersApi } from '../api/users';
 import { useAuth } from '../context/AuthContext';
 import { BANKS } from '../utils/banks';
-import { Alert, FieldError } from './ui';
+import { Alert, CardTitle, FieldError } from './ui';
 
 /** Hồ sơ cá nhân → "Nhận tiền chuyển khoản": tài khoản để người tham gia kèo chuyển tiền bằng mã QR */
 export default function BankAccountForm() {
@@ -58,7 +58,7 @@ export default function BankAccountForm() {
   return (
     <form onSubmit={handleSubmit} className="card form-card stack" aria-label="Nhận tiền chuyển khoản">
       <div>
-        <h2 className="card__title">Nhận tiền chuyển khoản</h2>
+        <CardTitle icon="bank">Nhận tiền chuyển khoản</CardTitle>
         <p className="hint">
           Người tham gia kèo của bạn sẽ thấy mã QR chuyển đúng số tiền vào tài khoản này. Chỉ người đã tham gia kèo của
           bạn mới thấy số tài khoản. Hệ thống không giữ tiền.

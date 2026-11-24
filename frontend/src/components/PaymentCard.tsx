@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import type { PostPayment } from '../types';
 import { formatMoney } from '../utils/format';
-import { Alert } from './ui';
+import { Alert, CardTitle } from './ui';
 
 /** Sao chép, có phương án dự phòng cho trình duyệt không cho dùng Clipboard API (http, webview cũ) */
 async function copyText(text: string) {
@@ -83,7 +83,9 @@ export default function PaymentCard({ payment, postId }: { payment: PostPayment;
   if (!payment.hasCosts) {
     return (
       <section className="card stack" aria-label="Thanh toán">
-        <h2 className="card__title mt-0">Thanh toán</h2>
+        <CardTitle icon="qr" className="mt-0">
+          Thanh toán
+        </CardTitle>
         <p className="hint">
           Chủ kèo chưa nhập chi phí.
           {payment.estimate > 0 && ` Chi phí dự kiến khoảng ${formatMoney(payment.estimate)}/người.`} Mã QR sẽ hiện khi
@@ -96,7 +98,9 @@ export default function PaymentCard({ payment, postId }: { payment: PostPayment;
   if (amount === 0 && payment.status !== 'overpaid') {
     return (
       <section className="card stack" aria-label="Thanh toán">
-        <h2 className="card__title mt-0">Thanh toán</h2>
+        <CardTitle icon="qr" className="mt-0">
+          Thanh toán
+        </CardTitle>
         <p className="hint">Bạn không phải trả khoản nào trong kèo này.</p>
         {absentNote}
       </section>
@@ -106,7 +110,9 @@ export default function PaymentCard({ payment, postId }: { payment: PostPayment;
   return (
     <section className="card pay-card" aria-label="Thanh toán">
       <div className="action-card__status">
-        <h2 className="card__title mt-0">Thanh toán</h2>
+        <CardTitle icon="qr" className="mt-0">
+          Thanh toán
+        </CardTitle>
         {badge && <span className={`badge badge--${badge.tone}`}>{badge.text}</span>}
       </div>
       <p className="pay-card__line">

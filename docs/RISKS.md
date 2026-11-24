@@ -37,6 +37,7 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R15 | Máy chủ chạy thật gián đoạn hoặc mất dữ liệu trong thời gian thử nghiệm | Hạ tầng | 3 | 4 | 12 | Trung bình | Đã có biện pháp |
 | R16 | Giảng viên chưa đồng ý đổi đề tài và câu hỏi nghiên cứu lúc muộn (Charter 2.0) | Quy trình | 3 | 5 | 15 | Cao | Đang theo dõi |
 | R17 | Thiếu số liệu cho RQ1, RQ2 vì chủ kèo không nhập khoản chi / không đánh dấu đã trả | Nghiên cứu | 3 | 4 | 12 | Trung bình | Đang theo dõi |
+| R18 | Ảnh người dùng tải lên: ảnh không phù hợp, lộ vị trí qua EXIF, file độc hại, đầy ổ đĩa | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
@@ -62,6 +63,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
 - **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
 - **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
+- **Ghi nhận (24/11/2026, lần 3):** thêm 4.9 icon và ảnh đại diện / ảnh bìa (12 giờ) theo yêu cầu, làm xong trong ngày; tổng giai đoạn 1 thành 262 giờ, phần việc còn lại không đổi.
 
 ### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Đóng 24/11/2026)
 - **Đóng:** bộ trích xuất bị bỏ khi đổi trọng tâm nghiên cứu (Charter 2.0). Nội dung dưới đây giữ lại để đối chiếu.
@@ -77,7 +79,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 
 ### R6 — Vi phạm quy định bảo vệ dữ liệu cá nhân (Trung bình, 10 điểm)
 - **Mô tả:** thu thập bài đăng hoặc thông tin người dùng trái Nghị định 13/2023/NĐ-CP và Luật Bảo vệ dữ liệu cá nhân.
-- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác. **Số tài khoản nhận tiền** (WBS 4.8.1) do người dùng tự nhập và tự xóa được, không bắt buộc, chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15, TC-Q2-09); hệ thống không lưu giao dịch chuyển tiền.
+- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác. **Ảnh đại diện / ảnh bìa** (WBS 4.9) không bắt buộc, xóa được, server bỏ toàn bộ EXIF kể cả vị trí GPS (R18). **Số tài khoản nhận tiền** (WBS 4.8.1) do người dùng tự nhập và tự xóa được, không bắt buộc, chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15, TC-Q2-09); hệ thống không lưu giao dịch chuyển tiền.
 
 ### R7 — Mã QR chuyển khoản sai (Thấp, 6 điểm)
 - **Mô tả:** chủ kèo nhập sai số tài khoản hoặc mã QR sinh sai số tiền / nội dung, người chơi chuyển nhầm (gói 4.8). Thay cho rủi ro chi phí API LLM trước đây (đã bỏ LLM ngày 24/11/2026).
@@ -132,6 +134,11 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Dấu hiệu sớm:** sau tuần thử nghiệm đầu, dưới 5 kèo có khoản chi.
 - **Phòng ngừa:** nhắc chủ kèo trên trang kèo; nhập khoản chi được bất cứ lúc nào; tự tổ chức một số kèo thật trong thử nghiệm.
 - **Dự phòng:** bổ sung bằng câu hỏi trong khảo sát cuối thử nghiệm; trình bày RQ1 bằng số liệu khảo sát nếu số kèo quá ít, ghi rõ giới hạn.
+
+### R18 — Ảnh người dùng tải lên (Thấp, 6 điểm)
+- **Mô tả:** ảnh đại diện / ảnh bìa (WBS 4.9) có thể chứa vị trí GPS của người chụp, là file giả dạng ảnh, quá lớn làm đầy ổ đĩa, hoặc có nội dung không phù hợp.
+- **Phòng ngừa:** kiểm tra định dạng theo nội dung file (chỉ JPEG / PNG / WebP), tối đa 5 MB ở cả Nginx và backend, giới hạn số điểm ảnh khi giải mã; server vẽ lại ảnh thành WebP kích thước cố định nên metadata (EXIF, GPS) và dữ liệu thừa bị bỏ; tên file ngẫu nhiên, chỉ xóa đúng dạng tên do server tạo; ảnh cũ bị xóa khi đổi nên mỗi người chỉ chiếm 1 ảnh đại diện, mỗi kèo 1 ảnh bìa (~20–100 KB). Test: `backend/tests/images.test.js`.
+- **Dự phòng:** ảnh không phù hợp trong thời gian thử nghiệm: xóa file trong `UPLOAD_DIR` và đặt trường `avatar` / `cover` về `null`; chưa làm chức năng báo cáo ảnh vì quy mô thử nghiệm nhỏ.
 
 ## 4. Cập nhật sổ rủi ro
 

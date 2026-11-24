@@ -2,9 +2,10 @@ import { useState, type FormEvent } from 'react';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import type { CostMember, ExpenseKind, MemberRef, PostDetail } from '../types';
-import { EXPENSE_KINDS, expenseName, previewDues } from '../utils/costs';
+import { EXPENSE_ICONS, EXPENSE_KINDS, expenseName, previewDues } from '../utils/costs';
+import Icon from './Icon';
 import { formatMoney } from '../utils/format';
-import { Alert } from './ui';
+import { Alert, CardTitle } from './ui';
 
 const STATUS_TEXT: Record<string, (diff: number) => string> = {
   unpaid: () => 'Chưa trả',
@@ -315,7 +316,9 @@ export default function CostsCard({
   return (
     <section className="card stack" aria-label="Chi phí kèo">
       <div className="action-card__status">
-        <h2 className="card__title mt-0">Chi phí kèo</h2>
+        <CardTitle icon="receipt" className="mt-0">
+          Chi phí kèo
+        </CardTitle>
         {costs.expenses.length > 0 && <strong className="costs-total">{formatMoney(costs.total)}</strong>}
       </div>
 
@@ -341,7 +344,10 @@ export default function CostsCard({
               <ul className="expense-list">
                 {costs.expenses.map((e, i) => (
                   <li key={i}>
-                    <div>
+                    <span className="icon-chip">
+                      <Icon name={EXPENSE_ICONS[e.kind]} size={18} />
+                    </span>
+                    <div className="expense-list__body">
                       <p className="expense-list__name">{expenseName(e)}</p>
                       <p className="people__info">
                         {e.everyone
@@ -411,7 +417,9 @@ export function AttendanceCard({ post, onSaved }: { post: PostDetail; onSaved: (
 
   return (
     <section className="card stack" aria-label="Điểm danh">
-      <h2 className="card__title mt-0">Điểm danh</h2>
+      <CardTitle icon="check" className="mt-0">
+        Điểm danh
+      </CardTitle>
       <p className="hint">
         Bỏ tích người không đến. Muốn họ vẫn chịu tiền sân thì giữ họ trong khoản đó ở phần chi phí.
       </p>

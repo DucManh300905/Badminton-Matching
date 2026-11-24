@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PostCard from '../components/PostCard';
-import { Alert, Spinner } from '../components/ui';
+import Icon from '../components/Icon';
+import { Alert, CardTitle, IconText, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostFilter, PostSummary } from '../types';
 import { HANOI_AREAS } from '../utils/constants';
@@ -126,11 +127,11 @@ export default function HomePage() {
 
       <div className="with-sidebar">
         <aside className="card sticky filters-panel" aria-label="Bộ lọc">
-          <h2 className="card__title">Bộ lọc</h2>
+          <CardTitle icon="filter">Bộ lọc</CardTitle>
           <div className="filters">
             <div className="field">
               <label htmlFor="f-district" className="label">
-                Khu vực
+                <IconText icon="mapPin">Khu vực</IconText>
               </label>
               <select
                 id="f-district"
@@ -146,7 +147,7 @@ export default function HomePage() {
             </div>
             <div className="field">
               <label htmlFor="f-date" className="label">
-                Ngày
+                <IconText icon="calendar">Ngày</IconText>
               </label>
               <input
                 id="f-date"
@@ -185,7 +186,10 @@ export default function HomePage() {
           {loading && <Spinner />}
           {posts && posts.length === 0 && (
             <div className="card empty">
-              Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+              <Icon name="shuttle" size={40} className="empty__icon" />
+              <p>
+                Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+              </p>
             </div>
           )}
           {posts && posts.length > 0 && (

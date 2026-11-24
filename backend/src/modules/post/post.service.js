@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Post = require('./post.model');
 const rules = require('./post.rules');
 const costs = require('./post.costs');
+const { saveImage, removeImage } = require('../../utils/images');
 const AppError = require('../../utils/AppError');
 const { SKILL_LEVELS, levelIndex } = require('../../utils/skillLevel');
 const { vnDayRange } = require('../../utils/vnTime');
@@ -13,10 +14,10 @@ const LIST_LIMIT = 100;
 
 const notFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy kèo');
 
-const AUTHOR_FIELDS = 'displayName';
-const PARTICIPANT_FIELDS = 'displayName gender level';
+const AUTHOR_FIELDS = 'displayName avatar';
+const PARTICIPANT_FIELDS = 'displayName gender level avatar';
 // Trang chi tiết cần thêm tài khoản nhận tiền của chủ kèo; serializer chỉ đưa cho người trong kèo (BR-15)
-const AUTHOR_DETAIL_FIELDS = 'displayName bankAccount';
+const AUTHOR_DETAIL_FIELDS = 'displayName avatar bankAccount';
 
 /** Đọc kèo kèm tên chủ kèo + thông tin người tham gia */
 const findDetail = (id) =>
@@ -265,7 +266,32 @@ const setAttendance = async (postId, actorId, input, now) => {
     return getPost(postId);
 };
 
+/**
+ * Chủ kèo đổi / xóa ảnh bìa (WBS 4.9). Chỉ chủ kèo, kèo chưa hủy. Ảnh cũ bị xóa.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {Buffer | null} buffer  null = xóa ảnh bìa
+ */
+const setCover = async (postId, actorId, buffer) => {
+    const post = await Post.findById(postId).select('author status cover');
+    if (!post) {
+        throw notFound();
+    }
+    if (String(post.author) !== actorId) {
+        throw new AppError(403, 'NOT_AUTHOR', 'Chỉ chủ kèo mới đổi được ảnh bìa');
+    }
+    if (post.status === 'closed') {
+        throw new AppError(409, 'POST_NOT_OPEN', 'Kèo đã bị hủy');
+    }
+
+    const fileName = buffer === null ? null : await saveImage('covers', buffer);
+    await Post.updateOne({ _id: postId }, { $set: { cover: fileName } });
+    await removeImage('covers', post.cover);
+    return getPost(postId);
+};
+
 module.exports = {
+    setCover,
     updateCosts,
     setAttendance,
     setPaid,

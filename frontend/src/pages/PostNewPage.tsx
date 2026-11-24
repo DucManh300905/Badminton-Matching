@@ -2,8 +2,10 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
+import Icon, { type IconName } from '../components/Icon';
 import PageHeader from '../components/PageHeader';
-import { Alert, FieldError } from '../components/ui';
+import { CoverPicker } from '../components/PostCover';
+import { Alert, FieldError, IconText } from '../components/ui';
 import { HANOI_AREAS, LEVEL_LABELS, SKILL_LEVELS, type SkillLevel } from '../utils/constants';
 import { emptyPostForm, formToInput, type PostFormValues } from '../utils/postForm';
 
@@ -13,10 +15,21 @@ const SLOT_INPUTS = [
   ['slotsAny', 'Nam hoặc nữ'],
 ] as const;
 
+/** Tiêu đề từng phần của biểu mẫu, kèm icon */
+function SectionTitle({ icon, children, as: Tag = 'h2' }: { icon: IconName; children: string; as?: 'h2' | 'legend' }) {
+  return (
+    <Tag className="form-section__title icon-text">
+      <Icon name={icon} size={18} />
+      {children}
+    </Tag>
+  );
+}
+
 export default function PostNewPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<PostFormValues>(() => emptyPostForm(new Date()));
 
+  const [cover, setCover] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -32,6 +45,8 @@ export default function PostNewPage() {
     setFields({});
     try {
       const post = await postsApi.create(formToInput(form));
+      // Kèo đã tạo; ảnh bìa lỗi (mạng, ảnh hỏng…) thì vẫn vào trang kèo, chủ kèo thêm lại ở đó
+      if (cover) await postsApi.uploadCover(post.id, cover).catch(() => undefined);
       navigate(`/keo/${post.id}`);
     } catch (err) {
       const info = toApiError(err);
@@ -58,7 +73,7 @@ export default function PostNewPage() {
         )}
 
         <section className="form-section">
-          <h2 className="form-section__title">Sân và thời gian</h2>
+          <SectionTitle icon="court">Sân và thời gian</SectionTitle>
           <div className="grid-2">
             <div className="field">
               <label htmlFor="courtName" className="label">
@@ -150,7 +165,7 @@ export default function PostNewPage() {
         </section>
 
         <section className="form-section">
-          <h2 className="form-section__title">Trình độ và chi phí</h2>
+          <SectionTitle icon="level">Trình độ và chi phí</SectionTitle>
           <div className="grid-3">
             <div className="field">
               <label htmlFor="levelMin" className="label">
@@ -207,7 +222,9 @@ export default function PostNewPage() {
 
         <section className="form-section">
           <fieldset>
-            <legend className="form-section__title">Cần thêm bao nhiêu người?</legend>
+            <SectionTitle icon="users" as="legend">
+              Cần thêm bao nhiêu người?
+            </SectionTitle>
             <div className="grid-3 grid-3--even">
               {SLOT_INPUTS.map(([key, label]) => (
                 <div key={key} className="field">
@@ -231,9 +248,14 @@ export default function PostNewPage() {
         </section>
 
         <section className="form-section">
+          <SectionTitle icon="image">Ảnh bìa</SectionTitle>
+          <CoverPicker file={cover} onChange={setCover} />
+        </section>
+
+        <section className="form-section">
           <div className="field">
             <label htmlFor="note" className="label">
-              Ghi chú
+              <IconText icon="note">Ghi chú</IconText>
             </label>
             <textarea
               id="note"

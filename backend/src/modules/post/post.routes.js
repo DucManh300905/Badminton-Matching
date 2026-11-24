@@ -6,7 +6,8 @@ const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance } = require('./post.controller');
+const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover } = require('./post.controller');
+const { receiveImage } = require('../../utils/images');
 
 const router = express.Router();
 
@@ -99,5 +100,9 @@ router.put(
     validate,
     setAttendance
 );
+
+// Ảnh bìa (WBS 4.9): kiểm tra quyền trong service; nhận file trước để trả lỗi kích thước rõ ràng
+router.put('/:id/cover', authenticate, receiveImage, setCover);
+router.delete('/:id/cover', authenticate, deleteCover);
 
 module.exports = router;

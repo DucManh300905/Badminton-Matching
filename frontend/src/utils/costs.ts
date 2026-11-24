@@ -1,4 +1,5 @@
 // Chi phí theo từng khoản (WBS 4.8.2). Cách tính phải khớp backend/src/modules/post/post.costs.js (BR-17)
+import type { IconName } from '../components/Icon';
 import type { ExpenseKind, MemberRef } from '../types';
 
 export const EXPENSE_KINDS: { kind: ExpenseKind; label: string }[] = [
@@ -8,6 +9,15 @@ export const EXPENSE_KINDS: { kind: ExpenseKind; label: string }[] = [
   { kind: 'food', label: 'Tiền ăn' },
   { kind: 'other', label: 'Khác' },
 ];
+
+/** Icon nét mảnh cho từng loại khoản */
+export const EXPENSE_ICONS: Record<ExpenseKind, IconName> = {
+  court: 'court',
+  shuttle: 'shuttle',
+  water: 'water',
+  food: 'food',
+  other: 'dots',
+};
 
 /** Tên hiển thị của một khoản: khoản "Khác" dùng tên chủ kèo đặt */
 export const expenseName = (e: { kind: ExpenseKind; label?: string | null }) =>

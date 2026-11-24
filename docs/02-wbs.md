@@ -3,7 +3,7 @@
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
 Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Phương pháp: phân rã theo **giai đoạn → gói công việc**. Mỗi gói công việc có sản phẩm đầu ra, ước lượng công và mức ưu tiên rõ ràng.
 
-**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 250 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
+**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 262 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
 
 **Ưu tiên (MoSCoW):** M = Must · S = Should · C = Could (chỉ làm nếu còn thời gian)
 **Trạng thái:** Xong · Đang làm · Chưa (chưa bắt đầu)
@@ -38,7 +38,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Xong |
 | 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Xong |
 | 3.4 | Wireframe các màn hình chính (từ giao diện đã làm) | Wireframe (Figma / giấy) | M | 3 | 4.5.1, 4.5.2 | Chưa |
-| **4** | **PHÁT TRIỂN** | | | **104** | | |
+| **4** | **PHÁT TRIỂN** | | | **116** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
 | 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
@@ -58,6 +58,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.8.3 | Cài web lên màn hình chính (PWA: manifest, biểu tượng) | `manifest.webmanifest`, biểu tượng | S | 2 | 4.5.2 | Xong |
 | 4.8.4 | Tin nhắn tổng kết kèo để sao chép / chia sẻ sang Zalo, Facebook | Nút "Sao chép" ở chi tiết kèo (US-35, gộp US-14) | S | 1 | 4.8.1 | Chưa |
 | 4.8.5 | Lịch sử chi tiêu theo tháng | Mục trong "Kèo của tôi" (US-36) | C | 1 | 4.8.2 | Chưa |
+| 4.9 | Icon nét mảnh cạnh chữ khắp giao diện; **ảnh đại diện** và **ảnh bìa kèo** (tải lên, cắt, đổi WebP, xóa EXIF / GPS; chưa có ảnh thì dùng chữ cái đầu / dải màu xanh) | `Icon.tsx`, `utils/images.js`, API `/users/me/avatar`, `/posts/:id/cover` | S | 12 | 4.5.3, 4.5.4 | Xong |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **28** | | |
 | 5.1 | Unit test (liên tục, coverage ≥ 80%) | `backend/tests/` (Jest), test frontend (Vitest) | M | 12 | 4.1.2 | Đang làm |
 | 5.2 | Integration / API test | Jest + Supertest + MongoDB trong RAM | M | 6 | 4.4.2 | Xong |
@@ -71,7 +72,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.5, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | Chưa |
-| | **TỔNG GIAI ĐOẠN 1** | | | **250** | | |
+| | **TỔNG GIAI ĐOẠN 1** | | | **262** | | |
 
 ## 3. Tổng hợp khối lượng
 
@@ -79,7 +80,7 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 
 | | Giờ công |
 |---|---:|
-| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 250 |
+| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 262 |
 | Còn lại tính từ 24/11 (không tính 7.3 Bảo vệ) | ~106 |
 | Số tuần còn lại (24/11/2026 → 15/12/2026) | 3 |
 | **Trung bình cần làm** | **~35 giờ/tuần** |
@@ -92,6 +93,8 @@ Cỡ mẫu đã giảm so với kế hoạch ban đầu: khảo sát ≥ 30 ph�
 
 **Đổi trọng tâm 24/11/2026 (Charter 2.0):** bỏ bộ trích xuất bài đăng và phần nghiên cứu đi kèm: 2.2.1–2.2.3 bộ dữ liệu 100 bài (12h), 4.3.1 tinh chỉnh luật (12h), 5.4 đánh giá trích xuất (6h). Thêm 4.3 gỡ bộ trích xuất (2h), mở rộng 4.8.2 thành chi phí theo từng khoản (+5h), mở rộng 6.3 xuất và phân tích số liệu (+3h); 5.5 đổi từ A/B "dán bài" sang usability test chia tiền. Tổng **250 giờ**.
 
+**Bổ sung 24/11/2026:** thêm 4.9 Icon và ảnh (12h: icon 3h, ảnh đại diện / ảnh bìa 9h) theo yêu cầu, đã làm xong trong ngày nên **không** làm tăng phần việc còn lại. Tổng **262 giờ**; ghi nhận ở [RISKS.md](RISKS.md) R3, rủi ro mới R18.
+
 Nếu trễ so với lịch, cắt theo thứ tự: 4.7 Uy tín → 4.8.5 Lịch sử chi tiêu → 4.6 Thông báo email → 5.3 E2E test → 3.4 Wireframe (dùng ảnh chụp giao diện). Xem [Gantt](03-gantt.md) mục 5.
 
 Giai đoạn 2 (app di động, mục 5) **không** nằm trong khối lượng trên và **không** được bắt đầu trước mốc M5.
@@ -103,6 +106,8 @@ Giai đoạn 2 (app di động, mục 5) **không** nằm trong khối lượng 
 **4.3 Bộ trích xuất (đã bỏ 24/11/2026).** Phần mô tả dưới đây giữ lại để đối chiếu với Charter 1.x. Nhận văn bản bài đăng, trả về dữ liệu có cấu trúc để điền form. Chỉ dùng phương pháp **dựa trên luật** (regex + từ điển, chạy ngay trên máy chủ, không tốn chi phí, không gửi dữ liệu ra ngoài); phương án LLM / hybrid đã bỏ ngày 24/11/2026. Luật được tinh chỉnh trên 70 bài phát triển, không dùng 30 bài kiểm tra. **Tiêu chí chấp nhận:** đạt chỉ tiêu F1 trong Charter trên tập kiểm tra giữ kín, kèm bảng phân loại lỗi.
 
 **4.8 Thu tiền và chi phí kèo (trọng tâm nghiên cứu từ Charter 2.0).** Mỗi kèo có danh sách khoản chi; mỗi khoản chia đều cho những người chủ kèo chọn (gồm chủ kèo, người tham gia qua app, bạn của chủ kèo không dùng app); mỗi người trả tổng các phần của mình, làm tròn lên 1.000đ. Phần mô tả cũ: Giúp chủ kèo thu tiền người chơi vãng lai mà không phải nhắc nợ. Hệ thống **chỉ hiển thị mã QR chuyển khoản** theo chuẩn VietQR (số tài khoản do chủ kèo nhập, số tiền, nội dung có mã kèo), tiền chuyển thẳng giữa hai tài khoản ngân hàng, hệ thống không giữ tiền (đúng Charter mục 5.2). Sau buổi chơi, chủ kèo nhập chi phí thực tế và đánh dấu người có mặt; số tiền chia lại cho người có mặt, đồng thời ghi nhận người không đến (dữ liệu cho E9 trong [user stories](04-user-stories.md) và RQ3).
+
+**4.9 Icon và ảnh.** Icon SVG nét mảnh (một bộ tự vẽ trong `Icon.tsx`, không dùng thư viện icon, không emoji) đặt cạnh chữ ở tiêu đề thẻ, dòng thông tin kèo, loại khoản chi, bộ lọc, số liệu tài khoản. Ảnh do người dùng tải lên được xử lý hoàn toàn ở máy chủ: kiểm tra định dạng theo nội dung file (JPEG / PNG / WebP, ≤ 5 MB), xoay theo EXIF, cắt (ảnh đại diện 256×256, ảnh bìa 1200×630), đổi WebP, **bỏ toàn bộ metadata gồm vị trí GPS**, đặt tên ngẫu nhiên; ảnh cũ bị xóa khi đổi. Ảnh lưu trên ổ đĩa máy chủ (ngoài thư mục code), Nginx phục vụ trực tiếp, sao lưu cùng database. **Tiêu chí chấp nhận:** test API cho định dạng sai, quá cỡ, sai quyền, EXIF GPS bị xóa; e2e trên trình duyệt ở 1366 px và 390 px.
 
 **5.1 Unit test.** Mọi logic nghiệp vụ và bộ trích xuất phải có unit test. CI chạy typecheck + test + coverage trên mỗi lần push và Pull Request. Không merge vào `main` khi CI đỏ. Backend dùng Jest + Supertest với MongoDB chạy trong RAM (dạng replica set để test được transaction); frontend dùng Vitest. Ngưỡng coverage backend: lines/functions/statements ≥ 80%, branches ≥ 70%.
 

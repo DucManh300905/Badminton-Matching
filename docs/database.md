@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu — Badminton Matching
 
-> Cập nhật: 13/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
+> Cập nhật: 24/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
 > Tài liệu liên quan: [API.md](API.md) · [project.md](project.md) (quy tắc BR-xx)
 
 ## 1. Nguyên tắc thiết kế
@@ -34,6 +34,7 @@ erDiagram
         number tokenVersion "select false"
         date passwordChangedAt
         object bankAccount "bankBin, accountNumber, accountName"
+        string avatar "tên file ảnh, null = chưa có"
     }
     POST {
         ObjectId _id
@@ -50,6 +51,7 @@ erDiagram
         array guests "bạn không dùng app: name"
         array expenses "kind, label, amount, everyone, sharedBy"
         date costsUpdatedAt
+        string cover "tên file ảnh bìa, null = chưa có"
     }
     PARTICIPANT {
         ObjectId user FK
@@ -79,6 +81,7 @@ Model: `backend/src/modules/user/user.model.js`
 | `bankAccount.bankBin` | String | thuộc danh sách ngân hàng (`utils/banks.js`) | Tài khoản nhận tiền (WBS 4.8.1), **không bắt buộc**; cả object không có khi chưa nhập |
 | `bankAccount.accountNumber` | String | 6 – 19 chữ số | Chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15) |
 | `bankAccount.accountName` | String | 2 – 50 chữ cái **in hoa không dấu** | Server tự chuẩn hóa khi lưu |
+| `avatar` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh đại diện (WBS 4.9). Chỉ lưu **tên file**; API trả `avatarUrl = /uploads/avatars/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
 **Vì sao dùng `tokenVersion`, không so thời gian:** JWT chỉ ghi thời điểm cấp chính xác tới giây. Nếu so "đổi mật khẩu sau thời điểm cấp token", token cũ dùng trong cùng giây đổi mật khẩu vẫn lọt qua. So số phiên bản thì không phụ thuộc đồng hồ.
@@ -103,7 +106,10 @@ Model: `backend/src/modules/post/post.model.js`
 | `guests[]` | `{ _id, name }` | tối đa 20, tên 1 – 30 ký tự | Bạn của chủ kèo **không dùng app** (WBS 4.8.2), chỉ có tên, vẫn được tính khi chia tiền |
 | `expenses[]` | xem 3.4 | tối đa 30 | Các khoản chi; chỉ chủ kèo sửa (BR-16) |
 | `costsUpdatedAt` | Date | | Lần sửa chi phí gần nhất (số liệu RQ1, RQ2) |
+| `cover` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh bìa (WBS 4.9); API trả `coverUrl = /uploads/covers/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |
+
+**Ảnh không nằm trong CSDL.** File WebP nằm ở thư mục `UPLOAD_DIR` (`avatars/`, `covers/`), CSDL chỉ giữ tên file. Đổi hoặc xóa ảnh thì server xóa luôn file cũ; sao lưu phải gồm cả thư mục này ([DEPLOY.md](DEPLOY.md) mục 6).
 
 Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` trong `post.rules.js`) từ `slots` và `participants`, để không bao giờ lệch nhau.
 
@@ -160,6 +166,7 @@ Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi �
 - Tạo 4 tài khoản `minh`, `lan`, `hung`, `thu` `@example.com` (mật khẩu `DEMO_PASSWORD`, mặc định `Demo@123`) và 5 kèo trong 3 ngày tới.
 - **Chỉ xóa và tạo lại tài khoản `@example.com` cùng kèo của họ**; tài khoản khác giữ nguyên.
 - Từ chối chạy khi `NODE_ENV=production`.
+- Không xóa file ảnh của tài khoản / kèo mẫu cũ; khi cần dọn, xóa thư mục `backend/uploads/` (đã nằm trong `.gitignore`).
 
 ## 7. Dữ liệu nghiên cứu
 
