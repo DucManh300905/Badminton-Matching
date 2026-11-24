@@ -148,6 +148,13 @@ const PATHS = {
   ),
   trash: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />,
   filter: <path d="M4 5h16l-6 7.5V19l-4 2v-8.5L4 5Z" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
+  userPlus: (
+    <>
+      <circle cx="10" cy="8" r="3.5" />
+      <path d="M3.5 20c.6-3.6 3.2-5.5 6.5-5.5 1.3 0 2.5.3 3.5.9M18 14v6M15 17h6" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;
