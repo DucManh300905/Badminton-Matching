@@ -1,20 +1,32 @@
 import { Fragment, type ReactNode } from 'react';
 import { Link } from 'react-router';
+import Icon from './Icon';
 
 interface Props {
   title: string;
   subtitle?: ReactNode;
-  /** Đường dẫn phía trên tiêu đề, vd [{ to: '/', label: 'Danh sách kèo' }] */
+  /** Đường dẫn phía trên tiêu đề, vd [{ to: '/', label: 'Danh sách kèo' }]. Mục cuối là đích của nút quay lại. */
   breadcrumbs?: { to: string; label: string }[];
   /** Nút hành động bên phải tiêu đề */
   actions?: ReactNode;
 }
 
-/** Tiêu đề trang kiểu web: đường dẫn + tiêu đề + mô tả + nút hành động */
+/**
+ * Tiêu đề trang.
+ * Máy tính: đường dẫn + tiêu đề lớn + mô tả + nút hành động (kiểu web).
+ * Điện thoại: thanh tiêu đề gọn dính trên cùng, có nút quay lại về mục cuối của `breadcrumbs` (kiểu app).
+ */
 export default function PageHeader({ title, subtitle, breadcrumbs, actions }: Props) {
+  const back = breadcrumbs?.[breadcrumbs.length - 1];
+
   return (
     <header className="page-header">
-      <div>
+      {back && (
+        <Link to={back.to} className="page-header__back" aria-label={`Quay lại ${back.label}`}>
+          <Icon name="back" size={24} />
+        </Link>
+      )}
+      <div className="page-header__main">
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav className="breadcrumb" aria-label="Đường dẫn">
             {breadcrumbs.map((b) => (

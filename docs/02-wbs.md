@@ -3,7 +3,7 @@
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
 Phiên bản 1.4 – 24/11/2026 · Phương pháp: phân rã theo **giai đoạn → gói công việc**. Mỗi gói công việc có sản phẩm đầu ra, ước lượng công và mức ưu tiên rõ ràng.
 
-**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 262 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
+**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 270 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
 
 **Ưu tiên (MoSCoW):** M = Must · S = Should · C = Could (chỉ làm nếu còn thời gian)
 **Trạng thái:** Xong · Đang làm · Chưa (chưa bắt đầu)
@@ -41,7 +41,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Xong |
 | 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Xong |
 | 3.4 | Wireframe các màn hình chính (từ giao diện đã làm) | Wireframe (Figma / giấy) | M | 3 | 4.5.1, 4.5.2 | Chưa |
-| **4** | **PHÁT TRIỂN** | | | **101** | | |
+| **4** | **PHÁT TRIỂN** | | | **109** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
 | 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
@@ -53,11 +53,12 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.5.1 | Màn hình đăng kèo + dán-tự-điền | UI đăng kèo | M | 12 | 4.3.1 | Xong |
 | 4.5.2 | Danh sách kèo + bộ lọc | UI tìm kèo | M | 10 | 4.4.3 | Xong |
 | 4.5.3 | Trang cá nhân | UI profile | S | 5 | 4.4.1 | Xong |
+| 4.5.4 | Giao diện kiểu app trên điện thoại / máy tính bảng (dưới 1024px): thanh tab đáy, thanh tiêu đề có nút quay lại, chip lọc, nút hành động dính ở đáy; máy tính giữ bố cục web | `TabBar`, `PageHeader`, CSS | S | 8 | 4.5.2 | Xong |
 | 4.6 | Thông báo qua email | Module notify | S | 4 | 4.4.2 | Chưa |
 | 4.7 | Đánh giá uy tín sau kèo | API + UI rating | C | 6 | 4.4.2 | Chưa |
 | 4.8.1 | Thu tiền kèo bằng mã QR chuyển khoản (VietQR): số tài khoản trong hồ sơ, QR đúng giá mỗi người, chủ kèo đánh dấu đã trả | API + UI thanh toán kèo (US-32) | S | 6 | 4.4.2 | Xong |
 | 4.8.2 | Chốt chi phí sau buổi: nhập tiền sân / cầu / nước, đánh dấu người có mặt, chia đều cho người có mặt | API + UI chốt chi phí (US-33, gồm điểm danh của US-28) | S | 5 | 4.8.1 | Xong |
-| 4.8.3 | Cài web lên màn hình chính (PWA: manifest, biểu tượng) | `manifest.webmanifest`, biểu tượng | S | 2 | 4.5.2 | Chưa |
+| 4.8.3 | Cài web lên màn hình chính (PWA: manifest, biểu tượng) | `manifest.webmanifest`, biểu tượng | S | 2 | 4.5.2 | Xong |
 | 4.8.4 | Tin nhắn tổng kết kèo để sao chép / chia sẻ sang Zalo, Facebook | Nút "Sao chép" ở chi tiết kèo (US-35, gộp US-14) | S | 1 | 4.8.1 | Chưa |
 | 4.8.5 | Lịch sử chi tiêu theo tháng | Mục trong "Kèo của tôi" (US-36) | C | 1 | 4.8.2 | Chưa |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **34** | | |
@@ -74,7 +75,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.4, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | Chưa |
-| | **TỔNG GIAI ĐOẠN 1** | | | **262** | | |
+| | **TỔNG GIAI ĐOẠN 1** | | | **270** | | |
 
 ## 3. Tổng hợp khối lượng
 
@@ -82,7 +83,7 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 
 | | Giờ công |
 |---|---:|
-| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 262 |
+| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 270 |
 | Đã hoàn thành đến 17/11 | ~101 |
 | Còn lại (gói "Đang làm" chỉ tính phần dở; không tính 7.3 Bảo vệ) | ~137 |
 | Số tuần còn lại (17/11/2026 → 15/12/2026) | 4 |
@@ -91,6 +92,8 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 Cỡ mẫu đã giảm so với kế hoạch ban đầu: bộ dữ liệu 100 bài (trước 200), khảo sát ≥ 30 phản hồi (trước 50), thử nghiệm thực tế ≥ 15 người dùng / ≥ 10 kèo (trước 30 / 20), usability test ≥ 8 người (trước 10).
 
 **Điều chỉnh 24/11/2026:** bỏ bộ trích xuất LLM (4.3.2, 8h) và hybrid (4.3.3, 5h); thêm gói 4.8 Thu tiền và chi phí kèo (15h). RQ1 chỉ đánh giá bộ trích xuất dựa trên luật (Charter mục 4). Tổng tăng 2 giờ.
+
+**Bổ sung 24/11/2026:** thêm 4.5.4 Giao diện kiểu app trên điện thoại (8h) theo yêu cầu, làm cùng 4.8.3 PWA. Tổng tăng 8 giờ (270h); ghi nhận ở [RISKS.md](RISKS.md) R3.
 
 Nếu trễ so với lịch, cắt theo thứ tự: 4.7 Uy tín → 4.8.5 Lịch sử chi tiêu → 4.6 Thông báo email → 5.3 E2E test → 3.4 Wireframe (dùng ảnh chụp giao diện). Xem [Gantt](03-gantt.md) mục 5.
 

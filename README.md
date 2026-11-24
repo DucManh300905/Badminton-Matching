@@ -29,7 +29,7 @@ Nền tảng web kết nối người chơi cầu lông vãng lai, có tính nă
 | Phần | Công nghệ |
 |---|---|
 | Backend | Node.js 24 LTS · Express 5 (CommonJS) · MongoDB + Mongoose · JWT · express-validator · helmet · express-rate-limit |
-| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios (gọi API qua `VITE_API_URL`, JWT lưu `localStorage`) · CSS thuần (`src/styles.css`, giao diện web responsive, màu xanh lá) |
+| Frontend | React 19 · Vite · TypeScript · React Router 7 · Axios (gọi API qua `VITE_API_URL`, JWT lưu `localStorage`) · CSS thuần (`src/styles.css`, giao diện **kiểu app trên điện thoại / máy tính bảng** (dưới 1024px: thanh tab đáy, thanh tiêu đề có nút quay lại, chip lọc, nút hành động dính ở đáy) và **kiểu web trên máy tính**; cài lên màn hình chính được (PWA), màu xanh lá) |
 | Kiểm thử | Jest + Supertest + MongoDB chạy trong RAM (backend) · Vitest + React Testing Library (frontend) |
 | CI | GitHub Actions: `backend-test`, `frontend-build` |
 
@@ -52,7 +52,7 @@ Badminton-Matching/
 ├─ frontend/                React + TypeScript (package.json riêng)
 │  └─ src/
 │     ├─ api/               client.ts (axios + JWT + dịch mã lỗi) và mỗi tài nguyên một file
-│     ├─ components/        Layout, Navbar, AccountLayout, PageHeader, PostCard, Menu, Icon…
+│     ├─ components/        Layout, Navbar (máy tính), TabBar (điện thoại), AccountLayout, PageHeader, PostCard, Menu, Icon…
 │     ├─ context/  pages/
 │     ├─ utils/             Hằng số, định dạng, chuyển đổi form
 │     ├─ types.ts           Kiểu dữ liệu dùng chung
@@ -104,6 +104,7 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 | Thu tiền kèo bằng mã QR chuyển khoản (VietQR): tài khoản nhận tiền trong Hồ sơ, mã QR đúng giá cho người tham gia, chủ kèo đánh dấu đã trả (`/users/me/bank-account`, `PATCH /posts/:id/participants/:userId/payment`) | Xong |
 | Chốt chi phí thật sau buổi + điểm danh: chia theo tổng số người chơi, làm tròn lên 1.000đ, chủ kèo chọn người vắng có phải trả không (`PUT /posts/:id/settlement`) | Xong |
 | Giao diện web responsive (CSS thuần): thanh điều hướng trên cùng, bộ lọc cột trái, lưới kèo, khu Tài khoản có menu dọc (Tổng quan, Kèo của tôi, Hồ sơ, Đổi mật khẩu; `GET /api/users/me/posts`) | Xong |
+| Giao diện kiểu app trên điện thoại (dưới 1024px): thanh tab đáy 5 mục, thanh tiêu đề có nút quay lại, chip lọc nhanh, nút hành động dính ở đáy; cài lên màn hình chính (PWA: manifest, biểu tượng) | Xong |
 
 ## Định dạng API
 

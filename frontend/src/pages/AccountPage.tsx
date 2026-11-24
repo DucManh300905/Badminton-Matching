@@ -53,25 +53,28 @@ export default function AccountPage() {
         </Link>
       </div>
 
-      <div className="results-header">
-        <h2 className="section-title">Kèo sắp diễn ra</h2>
-        {upcoming && upcoming.length > UPCOMING_LIMIT && <Link to="/keo-cua-toi">Xem tất cả</Link>}
-      </div>
-      {!upcoming && <Spinner />}
-      {upcoming && upcoming.length === 0 && (
-        <div className="card empty">
-          Bạn chưa có kèo nào sắp diễn ra. <Link to="/">Tìm kèo</Link> hoặc <Link to="/keo/moi">đăng kèo mới</Link>.
+      {/* Điện thoại ẩn phần này: đã có tab "Kèo của tôi" ở thanh tab đáy */}
+      <div className="account-upcoming">
+        <div className="results-header">
+          <h2 className="section-title">Kèo sắp diễn ra</h2>
+          {upcoming && upcoming.length > UPCOMING_LIMIT && <Link to="/keo-cua-toi">Xem tất cả</Link>}
         </div>
-      )}
-      {upcoming && upcoming.length > 0 && (
-        <ul className="post-grid">
-          {upcoming.slice(0, UPCOMING_LIMIT).map((p) => (
-            <li key={p.id}>
-              <PostCard post={p} now={now} />
-            </li>
-          ))}
-        </ul>
-      )}
+        {!upcoming && <Spinner />}
+        {upcoming && upcoming.length === 0 && (
+          <div className="card empty">
+            Bạn chưa có kèo nào sắp diễn ra. <Link to="/">Tìm kèo</Link> hoặc <Link to="/keo/moi">đăng kèo mới</Link>.
+          </div>
+        )}
+        {upcoming && upcoming.length > 0 && (
+          <ul className="post-grid">
+            {upcoming.slice(0, UPCOMING_LIMIT).map((p) => (
+              <li key={p.id}>
+                <PostCard post={p} now={now} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </>
   );
 }

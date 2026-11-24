@@ -40,7 +40,11 @@ export default function ProfilePage() {
 
   return (
     <>
-      <PageHeader title="Hồ sơ cá nhân" subtitle="Thông tin dùng để ghép bạn vào kèo phù hợp" />
+      <PageHeader
+        breadcrumbs={[{ to: '/tai-khoan', label: 'Tài khoản' }]}
+        title="Hồ sơ cá nhân"
+        subtitle="Thông tin dùng để ghép bạn vào kèo phù hợp"
+      />
       <div className="stack">
         <form onSubmit={handleSubmit} className="card form-card stack" aria-label="Thông tin cá nhân">
           {message && <Alert tone={message.tone}>{message.text}</Alert>}

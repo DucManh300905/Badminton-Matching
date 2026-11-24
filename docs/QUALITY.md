@@ -10,7 +10,7 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 17/17 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 218 test backend + 53 test frontend; 17/17 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 17/17 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 218 test backend + 54 test frontend; 17/17 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 128,3 KB (thêm thư viện vẽ mã QR) |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
@@ -90,7 +90,8 @@
 ## Q4 — Dễ dùng
 
 **Biện pháp QA:**
-- Giao diện web responsive: thanh điều hướng trên cùng (thu thành nút "Menu" trên màn hình hẹp), nội dung rộng tối đa 1200 px, bố cục nhiều cột co về một cột trên điện thoại; nút chính lớn, dễ bấm.
+- Giao diện theo thiết bị: **máy tính** (từ 1024 px) dùng bố cục web (thanh điều hướng trên cùng, nội dung rộng tối đa 1200 px, nhiều cột); **điện thoại / máy tính bảng** dùng giao diện kiểu app: thanh tab đáy 5 mục, thanh tiêu đề gọn có nút quay lại, chip lọc nhanh cuộn ngang (chọn ngày / khu vực bằng bộ chọn của điện thoại), nút hành động chính dính ở đáy; vùng bấm ≥ 44 px; chừa vùng tai thỏ / thanh home (safe-area).
+- Cài lên màn hình chính như một app (PWA): manifest, biểu tượng 192 / 512 px (có bản maskable), chế độ `standalone`. Không dùng service worker để tránh người dùng bị kẹt ở bản cũ khi cập nhật.
 - Mọi lỗi hiển thị bằng tiếng Việt theo `code` (bảng ở [API.md](API.md) mục 4).
 - "Dán bài → tự điền": ô được điền tự động có nền vàng để người dùng kiểm tra lại.
 - Bộ lọc nằm trên URL: tải lại trang hoặc gửi link vẫn giữ bộ lọc.
@@ -104,6 +105,8 @@
 | TC-Q4-03 | Mở bản chạy thật https://sv22.bcse-vju.com ở 1366 px và 390 px: trang chủ, gọi API danh sách kèo, mở thẳng `/dang-ky` | 6/6 bước đạt, 0 lỗi JavaScript của ứng dụng (23/11/2026) |
 | TC-Q4-04 | Chủ kèo nhập tài khoản nhận tiền → người tham gia thấy mã QR, số tài khoản, nội dung → chủ kèo đánh dấu đã trả → người tham gia thấy "Đã trả" → khách không thấy gì | 11/11 bước đạt, 0 lỗi JavaScript (24/11/2026) |
 | TC-Q4-06 | Sau giờ chơi: chủ kèo bỏ tích một người (vắng), nhập chi phí, xem trước, chốt → người có mặt thấy chi phí và mã QR số tiền mới → người vắng thấy "không phải trả" → chủ kèo chọn "người vắng vẫn phải trả" → người vắng có mã QR | 10/10 bước đạt, 0 lỗi JavaScript; giải mã mã QR của người vắng ra đúng 53.000đ (24/11/2026) |
+| TC-Q4-07 | Điện thoại 390 px: thanh tab đáy 5 mục (Tìm kèo, Hôm nay, Đăng kèo, Kèo của tôi, Tài khoản), thanh điều hướng trên bị ẩn, bấm tab chuyển trang, trang con có nút quay lại; chụp 12 màn hình ở 390 px và 1366 px | Đạt, không trang nào bị cuộn ngang, 0 lỗi JavaScript (24/11/2026) |
+| TC-Q4-08 | Kiểm tra điều kiện cài như app bằng Chrome (`Page.getInstallabilityErrors`, `Page.getAppManifest`) | 0 lỗi installability, manifest không lỗi (24/11/2026) |
 | TC-Q4-05 | Quét mã QR bằng **2 ứng dụng ngân hàng khác nhau** (không cần chuyển tiền thật) | Ứng dụng điền sẵn đúng ngân hàng, số tài khoản, tên, số tiền, nội dung. **Chưa làm**: chờ kiểm tra bằng điện thoại thật (rủi ro R7) |
 
 **Việc còn lại:**

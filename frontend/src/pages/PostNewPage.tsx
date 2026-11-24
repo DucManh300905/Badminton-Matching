@@ -324,7 +324,7 @@ export default function PostNewPage() {
             </div>
           </section>
 
-          <div className="form-footer">
+          <div className="form-footer form-footer--sticky">
             <button type="button" className="btn btn--outline" onClick={() => navigate(-1)}>
               Hủy
             </button>

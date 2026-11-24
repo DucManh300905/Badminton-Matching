@@ -59,6 +59,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Ghi nhận:** giai đoạn khởi tạo đã thêm trang Tài khoản, Kèo của tôi, Hủy kèo (khoảng 6 giờ công) — chấp nhận vì là phần cốt lõi của trải nghiệm; đã ghi vào [project.md](project.md).
 - **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
 - **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
+- **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
 
 ### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Trung bình, 9 điểm)
 - **Mô tả:** cách viết bài đăng quá đa dạng, F1 của phương pháp luật dưới 0,75.
