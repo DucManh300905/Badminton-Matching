@@ -1,7 +1,7 @@
 # User stories và use case — Badminton Matching
 
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
-Phiên bản 1.1 – 23/11/2026 · Mã WBS: **2.4.1** (product backlog). Phạm vi và mức ưu tiên lấy từ [Charter](01-project-charter.md) mục 5; quy tắc nghiệp vụ BR-xx và chức năng F-xx ở [project.md](project.md).
+Phiên bản 1.2 – 24/11/2026 · Mã WBS: **2.4.1** (product backlog). Phạm vi và mức ưu tiên lấy từ [Charter](01-project-charter.md) mục 5; quy tắc nghiệp vụ BR-xx và chức năng F-xx ở [project.md](project.md).
 
 ## 1. Cách đọc
 
@@ -38,8 +38,8 @@ Phiên bản 1.1 – 23/11/2026 · Mã WBS: **2.4.1** (product backlog). Phạm 
 |---|---|---|:-:|---|---|
 | US-11 | Là **chủ kèo**, tôi muốn đăng kèo gồm sân, khu vực, thời gian, trình độ, chi phí và số chỗ theo giới tính để tuyển đúng người còn thiếu. | Giờ bắt đầu ở tương lai; thời lượng ≤ 6 giờ; trình độ từ ≤ trình độ đến; giá 0 – 1.000.000đ; tổng 1 – 20 chỗ (BR-01 → BR-05); lỗi chỉ rõ ô sai. | M | F4 | Xong |
 | US-12 | Là **chủ kèo**, tôi muốn dán bài tuyển người đã viết sẵn (như trên Facebook) để form tự điền, khỏi gõ lại. | Nhận ra thời gian, giá, số chỗ nam / nữ / chung, trình độ; ô tự điền có nền vàng và sửa được; không nhận ra gì thì báo và cho điền tay; khách cũng dùng thử được. | M | F4 | Xong (dựa trên luật) |
-| US-13 | Là **chủ kèo**, tôi muốn phần tự điền đúng cả với bài viết tắt, sai chính tả, nhiều cách ghi giờ để ít phải sửa tay. | Phương pháp kết hợp (luật + LLM) đạt F1 trung bình ≥ 0,90 trên 30 bài kiểm tra (RQ1, H1); LLM lỗi hoặc quá 5 giây thì dùng kết quả của luật; không gửi tên, số điện thoại sang dịch vụ LLM. | M | F7, WBS 4.3.2–4.3.3 | Chưa |
-| US-14 | Là **chủ kèo**, tôi muốn chia sẻ link kèo lên Facebook / Zalo để người trong nhóm cũ vào tham gia. | Nút chia sẻ mở hộp chia sẻ; link mở thẳng trang chi tiết kèo. | S | Charter 5.1 | Chưa |
+| US-13 | Là **chủ kèo**, tôi muốn phần tự điền đúng cả với bài viết tắt, sai chính tả, nhiều cách ghi giờ để ít phải sửa tay. | Bộ trích xuất dựa trên luật đạt F1 trung bình ≥ 0,75 trên 30 bài kiểm tra, không nhóm trường nào dưới 0,60 (RQ1, H1); luật được tinh chỉnh theo phân tích lỗi trên 70 bài phát triển. (Phương án LLM / hybrid đã bỏ ngày 24/11/2026.) | M | WBS 4.3.1, 5.4 | Đang làm |
+| US-14 | Là **chủ kèo**, tôi muốn chia sẻ link kèo lên Facebook / Zalo để người trong nhóm cũ vào tham gia. | Nút chia sẻ mở hộp chia sẻ; link mở thẳng trang chi tiết kèo. | S | WBS 4.8.4 (làm cùng US-35) | Chưa |
 
 ### E3 — Tham gia kèo
 
@@ -92,7 +92,7 @@ Nền tảng mở cho mọi người đăng kèo nên có thể bị: đăng hà
 
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
-| US-28 | Là **chủ kèo**, tôi muốn điểm danh người tham gia sau buổi chơi để ghi nhận ai đã không đến. | Từ giờ kết thúc tới **24 giờ sau**, chủ kèo đánh dấu từng người "Có đến / Không đến" (mặc định "Có đến"); người bị đánh dấu "Không đến" được báo và có thể **phản hồi** nếu đánh dấu sai (chuyển cho quản trị viên); người tham gia cũng có thể báo "**Kèo không diễn ra**", tính như một báo cáo kèo giả (US-25). | S | WBS 4.7, RQ3 | Chưa |
+| US-28 | Là **chủ kèo**, tôi muốn điểm danh người tham gia sau buổi chơi để ghi nhận ai đã không đến. | Từ giờ kết thúc tới **24 giờ sau**, chủ kèo đánh dấu từng người "Có đến / Không đến" (mặc định "Có đến"); người bị đánh dấu "Không đến" được báo và có thể **phản hồi** nếu đánh dấu sai (chuyển cho quản trị viên); người tham gia cũng có thể báo "**Kèo không diễn ra**", tính như một báo cáo kèo giả (US-25). Phần đánh dấu có mặt làm chung màn hình với chốt chi phí (US-33). | S | WBS 4.8.2 (đánh dấu có mặt), 4.7 (phản hồi), RQ3 | Chưa |
 | US-29 | Là **chủ kèo**, tôi muốn thấy độ tin cậy của người tham gia để biết ai thường đến đúng hẹn. | Hồ sơ và danh sách người tham gia hiện "đã chơi N kèo · có mặt X%"; chỉ hiện khi đã có ít nhất **3 kèo được điểm danh**, tránh đánh giá oan người mới; không hiện ai đã đánh dấu. | C | WBS 4.7, cùng nhóm US-21 | Chưa |
 | US-30 | Là **chủ kèo**, tôi muốn người hay bùng kèo bị hạn chế để kèo của tôi ít bị thiếu người phút chót. | **2 lần "Không đến" trong 30 ngày** thì tạm không tham gia kèo mới trong **7 ngày**; khi bấm tham gia thấy rõ lý do và ngày được mở lại; lần đánh dấu đã được quản trị viên gỡ (US-28 phản hồi) thì không tính. | C | Quy tắc mới (BR-16) | Chưa |
 | US-31 | Là **chủ kèo**, tôi muốn biết khi có người rời kèo sát giờ để kịp tìm người thay. | Rời trong vòng **2 giờ trước giờ bắt đầu** được ghi là "rời sát giờ" (tính vào độ tin cậy như nửa lần không đến); chủ kèo nhận email ngay (cùng cơ chế US-19); kèo mở lại chỗ như bình thường (BR-12). | C | F8, BR-12 | Chưa |
@@ -101,20 +101,34 @@ Biện pháp **đã có hoặc đã lên kế hoạch** cũng giúp giảm bùng
 
 **Quy tắc nghiệp vụ mới đề xuất** (thêm vào [project.md](project.md) mục 6 khi làm): **BR-14** giới hạn và chống trùng khi đăng kèo (US-24) · **BR-15** kèo bị 3 người báo cáo thì tạm ẩn (US-25) · **BR-16** tạm hạn chế tham gia sau 2 lần không đến trong 30 ngày (US-30).
 
+### E10 — Thu tiền và chi phí kèo
+
+Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ, và chịu thiệt khi có người bùng kèo. Nhóm này giúp **ghép kèo xong thì lo luôn phần tiền**. Hệ thống **chỉ hiển thị mã QR chuyển khoản** theo chuẩn VietQR; tiền đi thẳng giữa hai tài khoản ngân hàng, hệ thống không giữ tiền ([Charter](01-project-charter.md) mục 5.2).
+
+| Mã | User story | AC | Mức | Liên kết | Trạng thái |
+|---|---|---|:-:|---|---|
+| US-32 | Là **người chơi đã tham gia kèo**, tôi muốn quét mã QR để chuyển đúng số tiền cho chủ kèo mà không phải hỏi số tài khoản. | Chủ kèo lưu ngân hàng, số tài khoản, tên chủ tài khoản trong hồ sơ (chỉ người đã tham gia kèo mới thấy); trang chi tiết kèo hiện mã QR VietQR có **đúng giá mỗi người** và nội dung chuyển khoản gồm mã kèo; hiện tên chủ tài khoản để đối chiếu; chủ kèo chưa nhập số tài khoản thì ẩn mã QR và nhắc chủ kèo; chủ kèo đánh dấu "Đã trả" cho từng người, người chơi thấy trạng thái của mình. | S | WBS 4.8.1, R7 | Chưa |
+| US-33 | Là **chủ kèo**, tôi muốn nhập chi phí thực tế sau buổi chơi (tiền sân, cầu, nước) và đánh dấu ai có mặt để chia lại cho đúng. | Mở được từ giờ kết thúc tới 24 giờ sau; nhập từng khoản bằng bàn phím số; số tiền mỗi người = tổng chi phí chia đều cho **người có mặt** (gồm cả chủ kèo), làm tròn lên 1.000đ; mã QR của US-32 cập nhật theo số tiền mới; người "Không đến" không bị chia tiền và được ghi nhận cho E9. | S | WBS 4.8.2, US-28 | Chưa |
+| US-34 | Là **người chơi**, tôi muốn thêm trang web vào màn hình chính điện thoại để mở nhanh như một ứng dụng. | Trình duyệt hiện gợi ý "Thêm vào màn hình chính" (Android Chrome); mở lên không có thanh địa chỉ, có biểu tượng và tên riêng của Badminton Matching. | S | WBS 4.8.3 | Chưa |
+| US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Chưa |
+| US-36 | Là **người chơi**, tôi muốn xem tổng tiền đã chi cho cầu lông theo từng tháng. | Trong "Kèo của tôi": tổng chi theo tháng, tính theo số tiền đã chốt (US-33), nếu chưa chốt thì theo giá mỗi người. | C | WBS 4.8.5 | Chưa |
+
 ### Ngoài phạm vi (Won't)
 
-Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài từ Facebook; thanh toán trực tuyến và đặt sân với chủ sân; chat thời gian thực (dùng link Zalo / Messenger); thông báo đẩy trên trình duyệt; app di động (giai đoạn 2).
+Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài từ Facebook; thanh toán trực tuyến (cổng thanh toán, ví, thu hộ) và đặt sân với chủ sân; chat thời gian thực (dùng link Zalo / Messenger); thông báo đẩy trên trình duyệt; app di động (giai đoạn 2); **bộ trích xuất LLM / hybrid** (bỏ ngày 24/11/2026); quỹ nhóm, kho cầu, gộp nợ chéo giữa nhiều người ứng tiền, chia tiền theo số trận.
 
 ## 4. Tổng hợp
 
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
-| Must | 12 | 10 | 1 (US-22) | 1 (US-13) |
-| Should | 8 | 0 | 1 (US-24) | 7 (US-14, US-19, US-20, US-23, US-25, US-26, US-28) |
-| Could | 6 | 0 | 0 | 6 (US-10, US-21, US-27, US-29, US-30, US-31) |
-| **Tổng** | **26** | **10** | **2** | **14** |
+| Must | 12 | 10 | 2 (US-13, US-22) | 0 |
+| Should | 12 | 0 | 1 (US-24) | 11 (US-14, US-19, US-20, US-23, US-25, US-26, US-28, US-32, US-33, US-34, US-35) |
+| Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
+| **Tổng** | **31** | **10** | **3** | **18** |
 
-Hai story **Must** còn lại nằm trên đường găng: **US-13** (bộ trích xuất LLM và kết hợp, trước M2 30/11) và **US-22** (xuất số liệu thử nghiệm, trước 6.3 ngày 08/12).
+Hai story **Must** còn lại nằm trên đường găng: **US-13** (tinh chỉnh bộ trích xuất dựa trên luật và đánh giá RQ1, trước 5.4 ngày 01/12) và **US-22** (xuất số liệu thử nghiệm, trước 6.3 ngày 08/12).
+
+Nhóm **E10 (thu tiền và chi phí kèo)** là phần thêm ngày 24/11/2026, đổi lấy bộ trích xuất LLM / hybrid đã bỏ. Nên làm **US-32 và US-33 trước tiên** (trước M2 30/11), để người dùng thử nghiệm dùng được ngay trong tuần thử nghiệm đầu.
 
 Nhóm E8, E9 (chống spam, bùng kèo) **chưa có trong phạm vi Charter** ngoài mục "Đánh giá uy tín" (Could). Để không phình phạm vi ([RISKS.md](RISKS.md) R3), thứ tự làm đề xuất:
 1. **Trước khi mở thử nghiệm rộng:** US-24 (giới hạn đăng kèo, chống trùng): ít công, chặn được phần lớn kèo rác.
@@ -146,6 +160,8 @@ flowchart LR
         UC10["UC-10 Báo cáo kèo giả"]
         UC11["UC-11 Điểm danh sau buổi chơi"]
         UC12["UC-12 Xử lý báo cáo, khóa tài khoản"]
+        UC13["UC-13 Thu tiền bằng mã QR"]
+        UC14["UC-14 Chốt chi phí sau buổi"]
     end
 
     Khach --- UC01
@@ -163,6 +179,10 @@ flowchart LR
     NguoiChoi --- UC10
     ChuKeo --- UC11
     QuanTri --- UC12
+    NguoiChoi --- UC13
+    ChuKeo --- UC13
+    ChuKeo --- UC14
+    UC14 -. "gồm" .-> UC11
 ```
 
 "Chủ kèo" là người chơi đã đăng kèo đó, nên có mọi use case của người chơi. UC-04 dùng được độc lập (khách dùng thử) hoặc là bước tùy chọn của UC-05.
@@ -207,3 +227,4 @@ flowchart LR
 |---|---|
 | 23/11/2026 | Phiên bản đầu: story từ phạm vi Charter và các chức năng đã làm; sẽ xem lại mức ưu tiên sau khi phân tích khảo sát (WBS 2.1.3, dự kiến 01–02/12) |
 | 23/11/2026 | 1.1: bỏ nhóm Tài khoản khỏi danh sách; thêm E8 chống spam và kèo giả (US-24 → US-27), E9 xử lý bùng kèo (US-28 → US-31), vai trò Quản trị viên, UC-10 → UC-12; đề xuất BR-14 → BR-16 |
+| 24/11/2026 | 1.2: bỏ bộ trích xuất LLM / hybrid (US-13 chỉ còn đánh giá phương pháp luật); thêm E10 Thu tiền và chi phí kèo (US-32 → US-36), UC-13, UC-14; US-14 làm cùng US-35, US-28 làm chung màn hình với US-33 |
