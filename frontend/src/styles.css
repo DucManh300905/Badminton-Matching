@@ -1221,63 +1221,363 @@ textarea.input {
 }
 
 .expense-edit {
-  padding: 14px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--bg);
+  background: #fff;
 }
 
 .expense-edit > * + * {
-  margin-top: 12px;
+  margin-top: 10px;
+}
+
+.expense-edit__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.expense-edit__name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.expense-edit__label {
+  flex: 1;
+  min-width: 0;
+}
+
+.expense-edit__amount {
+  width: 140px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.expense-edit__share {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
 }
 
 .expense-edit__remove {
   color: var(--danger);
 }
 
-.sharers__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 6px 12px;
-  margin-top: 8px;
+.expense-edit__remove:hover {
+  background: var(--danger-soft);
 }
 
-.sharers__all {
-  margin-top: 6px;
+/* Khung sửa chi phí: tích người, ô thêm khoản */
+.costs-editor section > * + * {
+  margin-top: 10px;
+}
+
+.costs-editor__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.costs-editor__title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.costs-editor__swipe-hint {
+  display: none;
+}
+
+.people-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+.person-tile {
+  position: relative;
+}
+
+.person-tile__main,
+.person-tile--add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 12px 6px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.person-tile--on .person-tile__main {
+  border-color: var(--green-500);
+  background: var(--green-50);
+}
+
+.person-tile:not(.person-tile--on) .person-tile__main {
+  color: var(--muted);
+}
+
+.person-tile:not(.person-tile--on) .avatar {
+  opacity: 0.45;
+}
+
+.person-tile--add {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.person-tile--add:hover,
+.person-tile__main:hover {
+  border-color: var(--green-400);
+}
+
+.person-tile__avatar {
+  position: relative;
+}
+
+.person-tile__avatar--add {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.tick {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--green-600);
+}
+
+.tick .icon {
+  stroke-width: 3;
+}
+
+.person-tile__name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.person-tile__tag {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.person-tile__remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.person-tile__remove:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.kind-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kind-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 4px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.kind-tile .icon {
+  color: var(--green-600);
+}
+
+.kind-tile:hover {
+  border-color: var(--green-400);
+  background: var(--green-50);
+}
+
+.kind-tile:active {
+  transform: scale(0.97);
+}
+
+.kind-tile__count {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  line-height: 18px;
+  color: var(--green-700);
+  background: var(--green-100);
+}
+
+.empty-box {
+  padding: 22px 16px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.sharer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sharer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 3px 10px 3px 4px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.sharer-chip--all {
+  padding-left: 10px;
   font-weight: 600;
 }
 
-.checkbox--muted {
-  opacity: 0.55;
+.sharer-chip:not(.sharer-chip--on) .avatar {
+  opacity: 0.45;
 }
 
-.chip-list {
+.sharer-chip--on {
+  border-color: var(--green-500);
+  color: var(--green-800);
+  background: var(--green-50);
+}
+
+.sharer-chip--on.sharer-chip--all {
+  color: #fff;
+  background: var(--green-600);
+  border-color: var(--green-600);
+}
+
+/* Vuốt trái để xóa (điện thoại) */
+.swipe-row {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.swipe-row__delete {
+  position: absolute;
+  inset: 0 0 0 auto;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0;
-}
-
-.chip-tag {
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 4px 6px 4px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  font-size: 14px;
+  justify-content: center;
+  gap: 2px;
+  width: 88px;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--danger);
+  cursor: pointer;
 }
 
-.chip-tag button {
-  padding: 2px 8px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--danger-soft);
-  color: var(--danger);
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
+.swipe-row__content {
+  position: relative;
+  background: #fff;
+  transition: transform 0.2s ease;
+  touch-action: pan-y;
+}
+
+@media (max-width: 1023.98px) {
+  .costs-editor__swipe-hint {
+    display: inline;
+  }
+
+  /* Điện thoại đã có vuốt trái; vẫn giữ nút thùng rác cho người không quen vuốt */
+  .expense-edit__amount {
+    width: 112px;
+  }
+}
+
+@media (max-width: 600px) {
+  .kind-tiles {
+    gap: 6px;
+  }
+
+  .kind-tile {
+    padding: 12px 2px 8px;
+    font-size: 13px;
+  }
+
+  .people-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
+  }
 }
 
 .inline-add {
