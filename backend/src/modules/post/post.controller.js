@@ -67,7 +67,21 @@ const setPaid = asyncHandler(async (req, res) => {
     });
 });
 
+// PUT /api/posts/:id/settlement — chủ kèo chốt chi phí thật và điểm danh (BR-16, BR-17)
+const settlePost = asyncHandler(async (req, res) => {
+    const { courtFee, shuttleFee, otherFee, headcount, chargeAbsent, attendance } = req.body;
+    const post = await postService.settlePost(
+        req.params.id,
+        req.user.userId,
+        { courtFee, shuttleFee, otherFee, headcount, chargeAbsent, attendance },
+        new Date()
+    );
+
+    res.json({ success: true, message: 'Đã chốt chi phí', data: toPostDetail(post, req.user.userId) });
+});
+
 module.exports = {
+    settlePost,
     setPaid,
     listPosts,
     listMyPosts,

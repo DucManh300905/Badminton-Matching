@@ -48,12 +48,14 @@ erDiagram
         object slots "male, female, any"
         string status "open, full, closed"
         string rawText "không trả ra API"
+        object settlement "chi phí đã chốt, có thể không có"
     }
     PARTICIPANT {
         ObjectId user FK
         string slot "male, female, any"
         date joinedAt
         date paidAt "null = chưa trả"
+        boolean attended "null = chưa điểm danh"
     }
 ```
 
@@ -97,6 +99,11 @@ Model: `backend/src/modules/post/post.model.js`
 | `status` | String | `open` / `full` / `closed`, mặc định `open` | Vòng đời: [project.md](project.md) mục 6 |
 | `note` | String | ≤ 1000 | |
 | `rawText` | String | ≤ 5000 | Nội dung bài gốc người dùng dán vào; dùng đánh giá bộ trích xuất (RQ1), **không trả ra API** |
+| `settlement.courtFee`, `.shuttleFee`, `.otherFee` | Number | số nguyên ≥ 0 | Chi phí thật sau buổi (WBS 4.8.2); cả object không có khi chưa chốt |
+| `settlement.headcount` | Number | ≥ 2 | Tổng số người chơi trong buổi, gồm bạn của chủ kèo không dùng app |
+| `settlement.chargeAbsent` | Boolean | mặc định `false` | Người vắng có phải trả phần của mình không |
+| `settlement.perPerson` | Number | ≥ 0 | Server tính: tổng ÷ `headcount`, làm tròn lên 1.000đ (BR-17) |
+| `settlement.settledAt` | Date | | Lần chốt gần nhất |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
 Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` trong `post.rules.js`) từ `slots` và `participants`, để không bao giờ lệch nhau.
@@ -109,6 +116,7 @@ Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` tr
 | `slot` | String | Loại chỗ người này đang giữ: `male` / `female` / `any` (BR-10) |
 | `joinedAt` | Date | Thời điểm tham gia, giữ nguyên khi người khác vào / rời |
 | `paidAt` | Date \| null | Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); `null` = chưa trả. Giữ nguyên khi người khác vào / rời; ghi bằng toán tử vị trí `participants.$.paidAt` (một lệnh, không cần transaction) |
+| `attended` | Boolean \| null | Điểm danh khi chủ kèo chốt chi phí (BR-16): `true` có mặt, `false` vắng, `null` chưa điểm danh. Đây cũng là số liệu bùng kèo và cho biết kèo có thật sự diễn ra (RQ3) |
 
 Không có `_id` riêng (`_id: false`). Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
 

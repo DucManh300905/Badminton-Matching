@@ -7,7 +7,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 /** 50000 → "50.000đ"; 0 → "Miễn phí" */
 export function formatPrice(vnd: number): string {
-  return vnd === 0 ? 'Miễn phí' : `${vnd.toLocaleString('vi-VN')}đ`;
+  return vnd === 0 ? 'Miễn phí' : formatMoney(vnd);
+}
+
+/** Số tiền thuần (0 → "0đ"), dùng cho tổng đã thu / phải thu */
+export function formatMoney(vnd: number): string {
+  return `${vnd.toLocaleString('vi-VN')}đ`;
 }
 
 /** "T6, 14/11 · 19:00–21:00" */

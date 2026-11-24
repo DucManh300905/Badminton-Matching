@@ -64,8 +64,35 @@ export interface Participant extends PublicUser {
   level: SkillLevel | null;
   slot: SlotKind;
   joinedAt: string;
-  /** Chỉ có khi người xem là chủ kèo hoặc người trong kèo */
+  /** Ba trường dưới chỉ có khi người xem là chủ kèo hoặc người trong kèo */
   paid?: boolean;
+  /** Điểm danh khi chốt chi phí: true có mặt, false vắng, null chưa điểm danh */
+  attended?: boolean | null;
+  /** Số tiền người này phải trả (0 = vắng và chủ kèo không thu của người vắng) */
+  amountDue?: number;
+}
+
+/** Chi phí thật đã chốt sau buổi (WBS 4.8.2) */
+export interface Settlement {
+  courtFee: number;
+  shuttleFee: number;
+  otherFee: number;
+  total: number;
+  /** Tổng số người chơi trong buổi (gồm chủ kèo và bạn của chủ kèo không dùng app) */
+  headcount: number;
+  /** Người vắng vẫn phải trả phần của mình */
+  chargeAbsent: boolean;
+  perPerson: number;
+  settledAt: string;
+}
+
+export interface SettleInput {
+  courtFee: number;
+  shuttleFee: number;
+  otherFee: number;
+  headcount: number;
+  chargeAbsent: boolean;
+  attendance: { userId: string; attended: boolean }[];
 }
 
 /** Thanh toán kèo: chỉ có khi người xem là chủ kèo hoặc người đã tham gia */
@@ -76,16 +103,22 @@ export interface PostPayment {
   bank: { bin: string; shortName: string } | null;
   accountNumber: string | null;
   accountName: string | null;
+  /** participantCount = số người phải trả (không tính người vắng không bị thu) */
   summary: { paidCount: number; participantCount: number; collected: number; expected: number };
-  /** Ba trường dưới chỉ có với người tham gia (không có với chủ kèo) */
+  /** Chỉ có với chủ kèo: đang trong khung được chốt chi phí (từ giờ bắt đầu tới 24 giờ sau giờ kết thúc) */
+  canSettle?: boolean;
+  /** Các trường dưới chỉ có với người tham gia (không có với chủ kèo) */
   content?: string;
   qr?: string | null;
   paid?: boolean;
+  attended?: boolean | null;
 }
 
 /** Kèo ở trang chi tiết */
 export interface PostDetail extends PostSummary {
   participants: Participant[];
+  /** Chỉ người trong kèo; null = chưa chốt */
+  settlement?: Settlement | null;
   payment?: PostPayment;
 }
 

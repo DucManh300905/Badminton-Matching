@@ -89,6 +89,7 @@ const CODE_MESSAGES: Record<string, string> = {
   LEVEL_MISMATCH: 'Trình độ của bạn không nằm trong khoảng kèo yêu cầu.',
   NO_SLOT: 'Kèo không còn chỗ phù hợp với giới tính của bạn.',
   NOT_AUTHOR: 'Chỉ chủ kèo mới làm được thao tác này.',
+  SETTLEMENT_CLOSED: 'Chỉ chốt chi phí được từ giờ bắt đầu tới 24 giờ sau giờ kết thúc.',
   NETWORK: 'Không kết nối được máy chủ. Kiểm tra mạng hoặc backend.',
 };
 
