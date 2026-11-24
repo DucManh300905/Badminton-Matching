@@ -16,7 +16,9 @@ const ALLOWED_FORMATS = ['jpeg', 'png', 'webp'];
 /** Kích thước đầu ra theo loại ảnh */
 const KINDS = {
     avatars: { width: 256, height: 256 },
-    covers: { width: 1200, height: 630 }
+    covers: { width: 1200, height: 630 },
+    // Ảnh bill / hóa đơn (WBS 4.11): giữ nguyên tỉ lệ để đọc được chữ, cạnh dài tối đa 1600
+    bills: { width: 1600, height: 1600, fit: 'inside' }
 };
 
 const FILE_NAME = /^[a-f0-9]{32}\.webp$/;
@@ -46,7 +48,7 @@ const receiveImage = (req, res, next) => {
 
 /**
  * Kiểm tra, xử lý và lưu ảnh. Trả về tên file mới.
- * @param {'avatars' | 'covers'} kind
+ * @param {'avatars' | 'covers' | 'bills'} kind
  * @param {Buffer | undefined} buffer
  */
 const saveImage = async (kind, buffer) => {
@@ -64,10 +66,10 @@ const saveImage = async (kind, buffer) => {
         throw new AppError(400, 'INVALID_IMAGE', 'Chỉ nhận ảnh JPEG, PNG hoặc WebP');
     }
 
-    const { width, height } = KINDS[kind];
+    const { width, height, fit = 'cover' } = KINDS[kind];
     const output = await sharp(buffer, { limitInputPixels: 40_000_000 })
         .rotate()
-        .resize(width, height, { fit: 'cover', position: 'attention' })
+        .resize(width, height, fit === 'cover' ? { fit, position: 'attention' } : { fit, withoutEnlargement: true })
         .webp({ quality: 80 })
         .toBuffer();
 

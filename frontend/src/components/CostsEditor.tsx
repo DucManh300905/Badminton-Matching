@@ -1,8 +1,9 @@
-import { useRef, useState, type FormEvent, type TouchEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type TouchEvent } from 'react';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
-import type { ExpenseKind, MemberRef, PostDetail } from '../types';
-import { EXPENSE_ICONS, EXPENSE_KINDS, previewDues } from '../utils/costs';
+import { shuttlesApi } from '../api/shuttles';
+import type { ExpenseKind, MemberRef, PostDetail, Shuttle } from '../types';
+import { EXPENSE_ICONS, EXPENSE_KINDS, previewDues, shuttleAmount } from '../utils/costs';
 import { formatMoney } from '../utils/format';
 import Icon from './Icon';
 import { Alert, Avatar } from './ui';
@@ -14,6 +15,13 @@ interface DraftRow {
   amount: string;
   everyone: boolean;
   sharedBy: MemberRef[];
+  /** Khoản "Cầu" tính theo số quả (WBS 4.10); false = khoản cầu cũ nhập thẳng số tiền */
+  byCount: boolean;
+  quantity: string;
+  unitPrice: string;
+  /** Loại cầu trong kho; null = nhập giá tay */
+  shuttleId: string | null;
+  shuttleName: string | null;
 }
 
 interface Member {
@@ -135,8 +143,26 @@ export default function CostsEditor({
       amount: String(e.amount),
       everyone: e.everyone,
       sharedBy: e.sharedBy,
+      byCount: e.kind === 'shuttle' && e.quantity != null,
+      quantity: e.quantity != null ? String(e.quantity) : '',
+      unitPrice: e.unitPrice != null ? String(e.unitPrice) : '',
+      shuttleId: e.shuttleId ?? null,
+      shuttleName: e.shuttleName ?? null,
     })),
   );
+  // Kho cầu của chủ kèo (chọn loại cầu cho khoản "Cầu")
+  const [stock, setStock] = useState<Shuttle[]>([]);
+  useEffect(() => {
+    shuttlesApi
+      .list()
+      .then(setStock)
+      .catch(() => setStock([]));
+  }, []);
+  // Số quả mỗi loại cầu đã trừ ở lần lưu trước: được tính lại vào "còn trong kho" khi sửa
+  const savedUsage = new Map<string, number>();
+  for (const e of costs.expenses) {
+    if (e.shuttleId && e.quantity) savedUsage.set(e.shuttleId, (savedUsage.get(e.shuttleId) ?? 0) + e.quantity);
+  }
   // "Ai chơi hôm nay": người được chọn sẵn cho khoản thêm mới (không phải điểm danh)
   const [unticked, setUnticked] = useState<Set<MemberRef>>(() => new Set());
   const [focusId, setFocusId] = useState<string | null>(null);
@@ -157,11 +183,29 @@ export default function CostsEditor({
   const refs = members.map((m) => m.ref);
   const ticked = refs.filter((r) => !unticked.has(r));
 
+  const amountOf = (r: DraftRow) => {
+    if (!r.byCount) return Number(r.amount) || 0;
+    const q = Number(r.quantity);
+    const u = Number(r.unitPrice);
+    return q > 0 && u >= 0 ? shuttleAmount(q, u) : 0;
+  };
+
+  /** Số quả cần thêm so với kho (kể cả các khoản cầu khác cùng loại); > 0 thì cảnh báo nhỏ, không chặn lưu */
+  const shortOf = (r: DraftRow) => {
+    const s = r.shuttleId ? stock.find((x) => x.id === r.shuttleId) : undefined;
+    if (!s) return null;
+    const used = rows
+      .filter((x) => x.byCount && x.shuttleId === s.id)
+      .reduce((n, x) => n + (Number(x.quantity) || 0), 0);
+    const available = s.quantity + (savedUsage.get(s.id) ?? 0);
+    return used > available ? available : null;
+  };
+
   const dues = previewDues(
     refs,
-    rows.map((r) => ({ amount: Number(r.amount) || 0, everyone: r.everyone, sharedBy: r.sharedBy })),
+    rows.map((r) => ({ amount: amountOf(r), everyone: r.everyone, sharedBy: r.sharedBy })),
   );
-  const total = rows.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+  const total = rows.reduce((sum, r) => sum + amountOf(r), 0);
 
   const setRow = (id: string, patch: Partial<DraftRow>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
@@ -180,7 +224,23 @@ export default function CostsEditor({
   function addRow(kind: ExpenseKind) {
     const id = newKey();
     const all = ticked.length === refs.length;
-    setRows((rs) => [...rs, { id, kind, label: '', amount: '', everyone: all, sharedBy: all ? [] : ticked }]);
+    const first = kind === 'shuttle' ? stock[0] : undefined;
+    setRows((rs) => [
+      ...rs,
+      {
+        id,
+        kind,
+        label: '',
+        amount: '',
+        everyone: all,
+        sharedBy: all ? [] : ticked,
+        byCount: kind === 'shuttle',
+        quantity: '',
+        unitPrice: first ? String(first.unitPrice) : '',
+        shuttleId: first?.id ?? null,
+        shuttleName: first?.name ?? null,
+      },
+    ]);
     setFocusId(id);
   }
 
@@ -215,9 +275,12 @@ export default function CostsEditor({
         expenses: rows.map((r) => ({
           kind: r.kind,
           label: r.kind === 'other' ? r.label.trim() : undefined,
-          amount: Number(r.amount) || 0,
           everyone: r.everyone,
           sharedBy: r.everyone ? [] : r.sharedBy.filter((x) => refs.includes(x)),
+          // Khoản "Cầu" theo số quả: server tự tính số tiền
+          ...(r.byCount
+            ? { quantity: Number(r.quantity), unitPrice: Number(r.unitPrice), shuttleId: r.shuttleId }
+            : { amount: Number(r.amount) || 0 }),
         })),
       });
       onSaved(updated);
@@ -353,7 +416,9 @@ export default function CostsEditor({
           <div className="stack stack--tight">
             {rows.map((r, i) => {
               const sharers = sharersOf(r);
-              const amount = Number(r.amount) || 0;
+              const amount = amountOf(r);
+              const short = r.byCount ? shortOf(r) : null;
+              const inStock = r.shuttleId ? stock.some((s) => s.id === r.shuttleId) : false;
               const kindLabel = EXPENSE_KINDS.find((k) => k.kind === r.kind)!.label;
               return (
                 <SwipeRow
@@ -380,20 +445,26 @@ export default function CostsEditor({
                       ) : (
                         <span className="expense-edit__name">{kindLabel}</span>
                       )}
-                      <input
-                        id={`amount-${i}`}
-                        type="number"
-                        inputMode="numeric"
-                        min={0}
-                        step={1000}
-                        required
-                        aria-label={`Số tiền ${kindLabel.toLowerCase()} (đồng)`}
-                        placeholder="Số tiền"
-                        className="input expense-edit__amount"
-                        autoFocus={r.id === focusId}
-                        value={r.amount}
-                        onChange={(e) => setRow(r.id, { amount: e.target.value })}
-                      />
+                      {r.byCount ? (
+                        <strong className="expense-edit__computed" aria-live="polite">
+                          {formatMoney(amount)}
+                        </strong>
+                      ) : (
+                        <input
+                          id={`amount-${i}`}
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          step={1000}
+                          required
+                          aria-label={`Số tiền ${kindLabel.toLowerCase()} (đồng)`}
+                          placeholder="Số tiền"
+                          className="input expense-edit__amount"
+                          autoFocus={r.id === focusId}
+                          value={r.amount}
+                          onChange={(e) => setRow(r.id, { amount: e.target.value })}
+                        />
+                      )}
                       <button
                         type="button"
                         className="icon-btn expense-edit__remove"
@@ -403,6 +474,76 @@ export default function CostsEditor({
                         <Icon name="trash" size={18} />
                       </button>
                     </div>
+                    {r.byCount && (
+                      <div className="shuttle-pick">
+                        <select
+                          id={`shuttle-${i}`}
+                          className="input"
+                          aria-label="Loại cầu"
+                          value={r.shuttleId ?? 'manual'}
+                          onChange={(e) => {
+                            const s = stock.find((x) => x.id === e.target.value);
+                            if (s)
+                              setRow(r.id, { shuttleId: s.id, shuttleName: s.name, unitPrice: String(s.unitPrice) });
+                            else setRow(r.id, { shuttleId: null, shuttleName: null });
+                          }}
+                        >
+                          {stock.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name} · {formatMoney(s.unitPrice)}/quả · còn {s.quantity}
+                            </option>
+                          ))}
+                          {r.shuttleId && !inStock && (
+                            <option value={r.shuttleId}>{r.shuttleName ?? 'Loại cầu'} (đã xóa khỏi kho)</option>
+                          )}
+                          <option value="manual">Nhập giá tay (không trừ kho)</option>
+                        </select>
+                        <label className="shuttle-pick__field">
+                          <input
+                            id={`qty-${i}`}
+                            type="number"
+                            inputMode="numeric"
+                            min={1}
+                            max={500}
+                            required
+                            className="input"
+                            placeholder="0"
+                            autoFocus={r.id === focusId}
+                            value={r.quantity}
+                            onChange={(e) => setRow(r.id, { quantity: e.target.value })}
+                          />
+                          <span>quả</span>
+                        </label>
+                        {!r.shuttleId && (
+                          <label className="shuttle-pick__field">
+                            <input
+                              id={`unit-${i}`}
+                              type="number"
+                              inputMode="numeric"
+                              min={0}
+                              step={500}
+                              required
+                              className="input"
+                              placeholder="Giá"
+                              value={r.unitPrice}
+                              onChange={(e) => setRow(r.id, { unitPrice: e.target.value })}
+                            />
+                            <span>đ/quả</span>
+                          </label>
+                        )}
+                        {Number(r.quantity) > 0 && r.unitPrice !== '' && (
+                          <p className="shuttle-pick__calc">
+                            {r.quantity} quả × {formatMoney(Number(r.unitPrice))} = {formatMoney(amount)}
+                          </p>
+                        )}
+                        {short !== null && (
+                          <p className="shuttle-pick__warn" role="status">
+                            <Icon name="info" size={14} />
+                            Kho chỉ còn {short} quả, có thể bạn chưa cập nhật. Vẫn lưu được; kho dừng ở 0.
+                          </p>
+                        )}
+                      </div>
+                    )}
                     <div className="sharer-chips" role="group" aria-label="Ai cùng chịu">
                       <button
                         type="button"

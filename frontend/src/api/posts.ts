@@ -35,6 +35,17 @@ export const postsApi = {
   },
 
   /** Chỉ chủ kèo, bất cứ lúc nào (trừ kèo đã hủy): lưu toàn bộ khoản chi + bạn không dùng app */
+  /** Chủ kèo thêm ảnh bill (tối đa 7) */
+  async addBill(id: string, file: File) {
+    const res = await client.post<ApiResponse<PostDetail>>(`/posts/${id}/bills`, ...imageForm(file));
+    return res.data.data;
+  },
+
+  async removeBill(id: string, file: string) {
+    const res = await client.delete<ApiResponse<PostDetail>>(`/posts/${id}/bills/${encodeURIComponent(file)}`);
+    return res.data.data;
+  },
+
   async updateCosts(id: string, input: CostsInput) {
     const res = await client.put<ApiResponse<PostDetail>>(`/posts/${id}/costs`, input);
     return res.data.data;

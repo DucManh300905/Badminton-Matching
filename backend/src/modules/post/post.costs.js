@@ -18,6 +18,14 @@ const MAX_GUESTS = 20;
 const MAX_GUEST_NAME = 30;
 const MAX_LABEL = 40;
 const ROUND_TO = 1000;
+// Khoản "Cầu" theo số quả (WBS 4.10)
+const MAX_SHUTTLES = 500;
+const MAX_UNIT_PRICE = 1_000_000;
+// Ảnh bill mỗi kèo (WBS 4.11)
+const MAX_BILLS = 7;
+
+/** Tiền cầu = số quả × giá mỗi quả, làm tròn lên 1.000đ (12 quả × 23.333đ = 279.996đ → 280.000đ) */
+const shuttleAmount = (quantity, unitPrice) => Math.ceil(Math.round(quantity * unitPrice) / ROUND_TO) * ROUND_TO;
 
 const HOST = 'host';
 const userRef = (userId) => `u:${userId}`;
@@ -25,7 +33,8 @@ const guestRef = (guestId) => `g:${guestId}`;
 
 /**
  * @typedef {{ id: string, name: string }} Guest
- * @typedef {{ kind: string, label?: string, amount: number, everyone: boolean, sharedBy: string[] }} Expense
+ * @typedef {{ kind: string, label?: string, amount: number, everyone: boolean, sharedBy: string[],
+ *   quantity?: number, unitPrice?: number, shuttle?: string | null, shuttleName?: string }} Expense
  * @typedef {{ participantIds: string[], guests: Guest[], expenses: Expense[] }} CostPost
  */
 
@@ -41,7 +50,11 @@ const toCostPost = (post) => ({
         label: e.label,
         amount: e.amount,
         everyone: e.everyone,
-        sharedBy: [...(e.sharedBy ?? [])]
+        sharedBy: [...(e.sharedBy ?? [])],
+        quantity: e.quantity ?? undefined,
+        unitPrice: e.unitPrice ?? undefined,
+        shuttle: e.shuttle ? String(e.shuttle) : null,
+        shuttleName: e.shuttleName ?? undefined
     }))
 });
 
@@ -134,6 +147,24 @@ const normalizeCosts = (post, actorId, input, newId) => {
     expensesIn.forEach((e, i) => {
         const field = `expenses[${i}]`;
         if (!EXPENSE_KINDS.includes(e.kind)) errors.push({ field, msg: 'Loại chi phí không hợp lệ' });
+
+        // Khoản "Cầu" gửi số quả → server tự tính số tiền (bỏ qua amount client gửi)
+        const byCount = e.kind === 'shuttle' && e.quantity !== undefined && e.quantity !== null;
+        let shuttle = null;
+        if (byCount) {
+            if (!Number.isInteger(e.quantity) || e.quantity < 1 || e.quantity > MAX_SHUTTLES) {
+                errors.push({ field, msg: `Số quả phải là số nguyên từ 1 đến ${MAX_SHUTTLES}` });
+            }
+            if (typeof e.unitPrice !== 'number' || !Number.isFinite(e.unitPrice) || e.unitPrice < 0 || e.unitPrice > MAX_UNIT_PRICE) {
+                errors.push({ field, msg: 'Giá mỗi quả không hợp lệ' });
+            }
+            if (e.shuttleId !== undefined && e.shuttleId !== null) {
+                if (!/^[a-f0-9]{24}$/i.test(String(e.shuttleId))) errors.push({ field, msg: 'Loại cầu không hợp lệ' });
+                else shuttle = String(e.shuttleId);
+            }
+            e = { ...e, amount: errors.some((x) => x.field === field) ? 0 : shuttleAmount(e.quantity, e.unitPrice) };
+        }
+
         if (!Number.isInteger(e.amount) || e.amount < 0 || e.amount > MAX_EXPENSE) {
             errors.push({ field, msg: `Số tiền phải là số nguyên từ 0 đến ${MAX_EXPENSE.toLocaleString('vi-VN')}đ` });
         }
@@ -154,7 +185,14 @@ const normalizeCosts = (post, actorId, input, newId) => {
         }
         if (!everyone && sharedBy.length === 0) errors.push({ field, msg: 'Chọn ít nhất một người cùng chịu khoản này' });
 
-        expenses.push({ kind: e.kind, label: label || undefined, amount: e.amount, everyone, sharedBy: everyone ? [] : sharedBy });
+        expenses.push({
+            kind: e.kind,
+            label: label || undefined,
+            amount: e.amount,
+            everyone,
+            sharedBy: everyone ? [] : sharedBy,
+            ...(byCount && { quantity: e.quantity, unitPrice: Math.round(e.unitPrice), shuttle })
+        });
     });
 
     if (errors.length > 0) {
@@ -188,6 +226,10 @@ const normalizeAttendance = (post, actorId, input, now) => {
 module.exports = {
     EXPENSE_KINDS,
     MAX_EXPENSE,
+    MAX_SHUTTLES,
+    MAX_UNIT_PRICE,
+    MAX_BILLS,
+    shuttleAmount,
     MAX_EXPENSES,
     MAX_GUESTS,
     HOST,

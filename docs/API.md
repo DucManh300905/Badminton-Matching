@@ -1,6 +1,6 @@
 # Đặc tả API — Badminton Matching
 
-> Cập nhật: 24/11/2026. Địa chỉ gốc khi chạy trên máy: `http://localhost:8080/api`.
+> Cập nhật: 25/11/2026. Địa chỉ gốc khi chạy trên máy: `http://localhost:8080/api`.
 > Tài liệu liên quan: [project.md](project.md) (quy tắc BR-xx) · [database.md](database.md)
 
 ## 1. Quy ước chung
@@ -195,6 +195,14 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | PUT | `/posts/:id/attendance` | Có | Điểm danh, từ giờ bắt đầu (chỉ chủ kèo) |
 | PUT | `/posts/:id/cover` | Có | Tải ảnh bìa (multipart, chỉ chủ kèo) |
 | DELETE | `/posts/:id/cover` | Có | Xóa ảnh bìa (chỉ chủ kèo) |
+| POST | `/posts/:id/bills` | Có | Thêm ảnh bill (multipart, chỉ chủ kèo, tối đa 7) |
+| DELETE | `/posts/:id/bills/:file` | Có | Xóa ảnh bill (chỉ chủ kèo) |
+| GET | `/shuttles` | Có | Kho cầu của tôi |
+| GET | `/shuttles/stats` | Có | Số quả đã dùng theo tuần / tháng |
+| POST | `/shuttles` | Có | Thêm loại cầu + lần nhập đầu |
+| POST | `/shuttles/:id/restock` | Có | Nhập thêm cầu |
+| PATCH | `/shuttles/:id` | Có | Đổi tên / kiểm kê số quả |
+| DELETE | `/shuttles/:id` | Có | Xóa loại cầu |
 
 Ảnh tải lên được phục vụ tĩnh tại `/uploads/avatars/<file>` và `/uploads/covers/<file>` (không qua `/api`; máy chủ chạy thật do Nginx phục vụ).
 
@@ -332,6 +340,11 @@ Lưu **toàn bộ** chi phí của kèo trong một lần (thay danh sách cũ):
 | `expenses[].amount` | Số nguyên 0 – 10.000.000; tối đa 30 khoản |
 | `expenses[].everyone` | `true` = "Chọn tất cả" (gồm cả người vào sau) |
 | `expenses[].sharedBy` | Khi `everyone: false`: ít nhất 1 mã người, đều phải có trong kèo |
+| `expenses[].quantity` | Chỉ khoản `shuttle` (WBS 4.10): số quả 1 – 500. Có trường này thì **server tự tính** `amount` = số quả × `unitPrice`, làm tròn lên 1.000đ (bỏ qua `amount` client gửi) |
+| `expenses[].unitPrice` | Bắt buộc khi có `quantity`: giá mỗi quả 0 – 1.000.000đ |
+| `expenses[].shuttleId` | Không bắt buộc: loại cầu trong kho **của chủ kèo**. Có thì kho bị **trừ / hoàn** theo chênh lệch số quả so với lần lưu trước (kho không đủ thì dừng ở 0, vẫn lưu); mã của người khác bị bỏ qua (coi như nhập giá tay) |
+
+Ví dụ khoản cầu theo số quả: `{ "kind": "shuttle", "quantity": 6, "unitPrice": 23333, "shuttleId": "6650…", "everyone": true }` → `amount: 140000`. Trong `costs.expenses[]` trả về có thêm `quantity`, `unitPrice`, `shuttleId`, `shuttleName` (tên chép lúc lưu, vẫn còn khi loại cầu bị xóa khỏi kho); khoản thường các trường này là `null`.
 
 - Chỉ chủ kèo, **bất cứ lúc nào** (trước, trong, sau buổi chơi), trừ kèo đã hủy (BR-16).
 - `200` → `data: PostDetail` (có `costs`, `payment` theo số tiền mới)
@@ -350,6 +363,53 @@ Gửi `multipart/form-data`, một file ở trường **`image`**; ràng buộc 
 #### `DELETE /posts/:id/cover`
 - `200` → `data: PostDetail` (`coverUrl: null`) · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` · `401` · `404 NOT_FOUND`
 
+#### `POST /posts/:id/bills`
+Gửi `multipart/form-data`, một file ở trường **`image`** (JPEG / PNG / WebP, ≤ 5 MB). Ảnh giữ nguyên tỉ lệ, cạnh dài tối đa 1600 px (không phóng to ảnh nhỏ), đổi WebP, xóa EXIF / GPS.
+- Chỉ chủ kèo, kèo chưa hủy; tối đa **7 ảnh** mỗi kèo (kiểm tra ngay trong lệnh ghi).
+- `PostDetail.bills` = `[{ "file": "<32 hex>.webp", "url": "/uploads/bills/<file>" }]`, **chỉ trả cho người trong kèo** (như `costs`).
+- `200` → `data: PostDetail` · `409 BILL_LIMIT` · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` · `400 INVALID_IMAGE` · `413 FILE_TOO_LARGE` · `401` · `404 NOT_FOUND`
+
+#### `DELETE /posts/:id/bills/:file`
+- `200` → `data: PostDetail` (đã bỏ ảnh, xóa file) · `404 NOT_FOUND` (tên không có trong kèo) · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` · `401`
+
+### 3.4 Kho cầu (WBS 4.10)
+
+**Shuttle**
+```json
+{ "id": "6650…", "name": "Thành Công 77", "quantity": 18, "unitPrice": 23333, "fullLevel": 24, "updatedAt": "2026-11-25T08:00:00.000Z" }
+```
+- `quantity`: số quả còn (không âm); `unitPrice`: giá mỗi quả (đồng, bình quân); `fullLevel`: số quả ngay sau lần nhập gần nhất (100% của thanh mức cầu).
+- Chỉ chủ kho xem / sửa; loại cầu của người khác trả `404 NOT_FOUND`.
+
+#### `GET /shuttles`
+`200` → `data: Shuttle[]` (cũ → mới)
+
+#### `GET /shuttles/stats`
+`200` → `data: { thisWeek, thisMonth, weeks: [{ start: "YYYY-MM-DD", quantity }] × 8, months: [{ month: "YYYY-MM", quantity }] × 6 }`
+- Cộng số quả của khoản `shuttle` có `quantity` trong các kèo **mình làm chủ**, **đã bắt đầu**, **chưa hủy**, theo ngày diễn ra (lịch Việt Nam, tuần bắt đầu thứ Hai). Khoản cầu nhập thẳng số tiền không có số quả nên không được tính.
+
+#### `POST /shuttles`
+Body: `{ "name": "Thành Công 77", "quantity": 24, "totalPrice": 560000 }`
+| Trường | Ràng buộc |
+|---|---|
+| `name` | 1 – 40 ký tự (bỏ khoảng trắng hai đầu) |
+| `quantity` | Số nguyên 1 – 1.000 (giao diện có nút 12 / 24 / 36) |
+| `totalPrice` | Tổng tiền đã trả, số nguyên 0 – 100.000.000 |
+- Giá mỗi quả = `round(totalPrice / quantity)` (560.000 / 24 = 23.333đ). Tối đa 20 loại cầu mỗi người.
+- `201` → `data: Shuttle` · `400 VALIDATION_ERROR` · `409 SHUTTLE_LIMIT` · `401`
+
+#### `POST /shuttles/:id/restock`
+Body: `{ "quantity": 12, "totalPrice": 300000 }` (ràng buộc như trên).
+- Số quả cộng thêm (tối đa 10.000); giá mới = `round((giá cũ × số còn + totalPrice) / tổng số quả)`; kho đang hết thì lấy giá của lần nhập này. `fullLevel` = số quả mới.
+- `200` → `data: Shuttle` · `400` · `404` · `401`
+
+#### `PATCH /shuttles/:id`
+Body (đều không bắt buộc): `{ name?, quantity? }` — kiểm kê lại số quả thực tế (0 – 10.000); giá giữ nguyên.
+- `200` → `data: Shuttle` · `400` · `404` · `401`
+
+#### `DELETE /shuttles/:id`
+- `200` · `404` · `401`. Khoản cầu đã lưu trong kèo giữ nguyên tên và giá.
+
 ## 4. Mã lỗi
 
 | `code` | HTTP | Ý nghĩa | Thông báo hiển thị ở frontend |
@@ -360,7 +420,7 @@ Gửi `multipart/form-data`, một file ở trường **`image`**; ràng buộc 
 | `UNAUTHORIZED` | 401 | Không gửi token | Vui lòng đăng nhập để tiếp tục. |
 | `TOKEN_EXPIRED` | 401 | Token sai, hết hạn, hoặc đã đổi mật khẩu | Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại. |
 | `INVALID_CREDENTIALS` | 401 | Sai email hoặc mật khẩu | Email hoặc mật khẩu không đúng. |
-| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả, sửa chi phí, điểm danh, ảnh bìa) | Chỉ chủ kèo mới làm được thao tác này. |
+| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả, sửa chi phí, điểm danh, ảnh bìa, ảnh bill) | Chỉ chủ kèo mới làm được thao tác này. |
 | `NOT_FOUND` | 404 | Không tìm thấy / đường dẫn sai | Không tìm thấy dữ liệu. |
 | `DUPLICATE` | 409 | Trùng dữ liệu duy nhất (email) | Email này đã được đăng ký. |
 | `POST_NOT_OPEN` | 409 | Kèo đủ người hoặc đã hủy | Kèo đã đủ người hoặc đã bị hủy. |
@@ -374,6 +434,8 @@ Gửi `multipart/form-data`, một file ở trường **`image`**; ràng buộc 
 | `SYSTEM_BUSY` | 409 | Xung đột ghi CSDL | Hệ thống đang bận, vui lòng thử lại. |
 | `PAYLOAD_TOO_LARGE` | 413 | Body quá lớn | Nội dung gửi lên quá lớn. |
 | `FILE_TOO_LARGE` | 413 | Ảnh lớn hơn 5 MB | Ảnh tối đa 5 MB. |
+| `SHUTTLE_LIMIT` | 409 | Đã có 20 loại cầu | Tối đa 20 loại cầu. |
+| `BILL_LIMIT` | 409 | Kèo đã có 7 ảnh bill | Tối đa 7 ảnh bill mỗi kèo. |
 | `RATE_LIMITED` | 429 | Thử quá nhiều lần | Bạn thử quá nhiều lần, vui lòng đợi ít phút rồi thử lại. |
 | `INTERNAL_ERROR` | 500 | Lỗi không lường trước | Máy chủ gặp lỗi, vui lòng thử lại sau. |
 

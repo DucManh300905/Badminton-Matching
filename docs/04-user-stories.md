@@ -108,20 +108,22 @@ Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ
 | US-33 | Là **chủ kèo**, tôi muốn ghi từng khoản chi của kèo (sân, cầu, nước, ăn, khác) và chọn ai cùng chịu từng khoản, để người chỉ đến đánh không phải chịu tiền ăn uống và bạn của tôi không dùng app cũng được tính. | Chủ kèo thêm / sửa / xóa khoản chi **bất cứ lúc nào**; mỗi khoản có loại, tên (khoản "Khác"), số tiền và danh sách người cùng chịu, có nút **"Chọn tất cả"**; danh sách người gồm chủ kèo, người tham gia qua app và **bạn không dùng app** (chủ kèo thêm bằng tên); mỗi người trả tổng các phần của mình (khoản chia đều cho người được chọn), làm tròn lên 1.000đ; **mọi người trong kèo xem được toàn bộ khoản chi và số tiền của từng người**, chỉ chủ kèo sửa; mã QR của từng người cập nhật theo số tiền mới; người đã trả mà chi phí tăng thấy **"còn thiếu"** và mã QR cho phần còn thiếu. | M | WBS 4.8.2, RQ1, RQ2 | Xong |
 | US-34 | Là **người chơi**, tôi muốn thêm trang web vào màn hình chính điện thoại để mở nhanh như một ứng dụng. | Trình duyệt hiện gợi ý "Thêm vào màn hình chính" (Android Chrome); mở lên không có thanh địa chỉ, có biểu tượng và tên riêng của Badminton Matching. | S | WBS 4.8.3, 4.5.4 | Xong |
 | US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Chưa |
+| US-37 | Là **người chơi hay làm chủ kèo**, tôi muốn lưu số cầu mình đang có để tiền cầu trong kèo tự tính theo số quả và biết lúc nào sắp hết. | Trang "Kho cầu": nhiều loại cầu, mỗi loại có tên, số quả, giá mỗi quả; nhập cầu bằng nút **12 / 24 / 36 quả** hoặc tự nhập, kèm tổng tiền, hệ thống tự chia ra giá mỗi quả (nhập thêm thì giá bình quân); **thanh mức cầu** giảm dần khi dùng; khoản "Cầu" trong kèo chọn loại cầu và số quả, tiền = số quả × giá (làm tròn lên 1.000đ), kho **tự trừ / hoàn**; kho không đủ chỉ cảnh báo nhỏ, vẫn lưu; thống kê số quả đã dùng **theo tuần / tháng**. | S | WBS 4.10 | Xong |
+| US-38 | Là **người trong kèo**, tôi muốn xem ảnh bill và tải hóa đơn của kèo để đối chiếu và lưu lại. | Chủ kèo tải tối đa **7 ảnh bill** (ảnh được thu nhỏ, xóa vị trí GPS), mọi người trong kèo bấm để xem lớn, khách không thấy; nút **"Xuất hóa đơn"** ngay dưới chi phí kèo mở trang hóa đơn (thông tin kèo, từng khoản, mỗi người phải trả, trạng thái đã trả, ảnh bill) và **lưu PDF** bằng chức năng in của trình duyệt. | S | WBS 4.11 | Xong |
 | US-36 | Là **người chơi**, tôi muốn xem tổng tiền đã chi cho cầu lông theo từng tháng. | Trong "Kèo của tôi": tổng chi theo tháng, tính theo số tiền đã chốt (US-33), nếu chưa chốt thì theo giá mỗi người. | C | WBS 4.8.5 | Chưa |
 
 ### Ngoài phạm vi (Won't)
 
-Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài từ Facebook; thanh toán trực tuyến (cổng thanh toán, ví, thu hộ) và đặt sân với chủ sân; chat thời gian thực (dùng link Zalo / Messenger); thông báo đẩy trên trình duyệt; app di động (giai đoạn 2); **bộ trích xuất bài đăng** ("dán bài → tự điền", cả luật lẫn LLM, bỏ ngày 24/11/2026 theo Charter 2.0; các story US-12, US-13, US-23 đã xóa); quỹ nhóm, kho cầu, gộp nợ chéo giữa nhiều người ứng tiền, chia tiền theo số trận.
+Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài từ Facebook; thanh toán trực tuyến (cổng thanh toán, ví, thu hộ) và đặt sân với chủ sân; chat thời gian thực (dùng link Zalo / Messenger); thông báo đẩy trên trình duyệt; app di động (giai đoạn 2); **bộ trích xuất bài đăng** ("dán bài → tự điền", cả luật lẫn LLM, bỏ ngày 24/11/2026 theo Charter 2.0; các story US-12, US-13, US-23 đã xóa); quỹ nhóm, gộp nợ chéo giữa nhiều người ứng tiền, chia tiền theo số trận (kho cầu chuyển vào phạm vi ngày 25/11/2026: US-37).
 
 ## 4. Tổng hợp
 
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
 | Must | 12 | 11 | 1 (US-22) | 0 |
-| Should | 9 | 1 | 2 (US-24, US-28) | 6 (US-14, US-19, US-20, US-25, US-26, US-35) |
+| Should | 11 | 3 | 2 (US-24, US-28) | 6 (US-14, US-19, US-20, US-25, US-26, US-35) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **28** | **12** | **3** | **13** |
+| **Tổng** | **30** | **14** | **3** | **13** |
 
 Story **Must** còn lại nằm trên đường găng: **US-22** (xuất số liệu thử nghiệm cho RQ1–RQ3, trước 6.3).
 
@@ -225,3 +227,4 @@ flowchart LR
 | 24/11/2026 | 1.2: bỏ bộ trích xuất LLM / hybrid (US-13 chỉ còn đánh giá phương pháp luật); thêm E10 Thu tiền và chi phí kèo (US-32 → US-36), UC-13, UC-14; US-14 làm cùng US-35, US-28 làm chung màn hình với US-33 |
 | 24/11/2026 | 2.0 (Charter 2.0): xóa US-12, US-13, US-23 (bộ trích xuất bài đăng); US-33 viết lại thành chi phí theo từng khoản; US-32, US-33 lên mức Must |
 | 25/11/2026 | 2.1: US-33 xong (chi phí theo từng khoản); đánh số lại quy tắc đề xuất BR-19 → BR-21; UC-04, UC-05, UC-14 theo cách mới |
+| 25/11/2026 | 2.2: thêm US-37 kho cầu, US-38 ảnh bill và hóa đơn (đã xong); kho cầu không còn ngoài phạm vi |

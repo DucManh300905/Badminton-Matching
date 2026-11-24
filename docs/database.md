@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu — Badminton Matching
 
-> Cập nhật: 24/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
+> Cập nhật: 25/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
 > Tài liệu liên quan: [API.md](API.md) · [project.md](project.md) (quy tắc BR-xx)
 
 ## 1. Nguyên tắc thiết kế
@@ -52,6 +52,15 @@ erDiagram
         array expenses "kind, label, amount, everyone, sharedBy"
         date costsUpdatedAt
         string cover "tên file ảnh bìa, null = chưa có"
+        array bills "tên file ảnh bill, tối đa 7"
+    }
+    SHUTTLE {
+        ObjectId _id
+        ObjectId owner FK
+        string name
+        number quantity "số quả còn"
+        number unitPrice "giá mỗi quả, bình quân"
+        number fullLevel "số quả sau lần nhập gần nhất"
     }
     PARTICIPANT {
         ObjectId user FK
@@ -107,6 +116,7 @@ Model: `backend/src/modules/post/post.model.js`
 | `expenses[]` | xem 3.4 | tối đa 30 | Các khoản chi; chỉ chủ kèo sửa (BR-16) |
 | `costsUpdatedAt` | Date | | Lần sửa chi phí gần nhất (số liệu RQ1, RQ2) |
 | `cover` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh bìa (WBS 4.9); API trả `coverUrl = /uploads/covers/<tên>` |
+| `bills[]` | [String] | tối đa 7, dạng `<32 hex>.webp` | Ảnh bill (WBS 4.11); chỉ người trong kèo thấy, file ở `UPLOAD_DIR/bills/` |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
 **Ảnh không nằm trong CSDL.** File WebP nằm ở thư mục `UPLOAD_DIR` (`avatars/`, `covers/`), CSDL chỉ giữ tên file. Đổi hoặc xóa ảnh thì server xóa luôn file cũ; sao lưu phải gồm cả thư mục này ([DEPLOY.md](DEPLOY.md) mục 6).
@@ -135,8 +145,27 @@ Không có `_id` riêng (`_id: false`).
 | `amount` | Number | Số nguyên 0 – 10.000.000 |
 | `everyone` | Boolean | "Chọn tất cả": luôn tính theo danh sách người hiện tại |
 | `sharedBy` | [String] | Mã người cùng chịu khi `everyone = false`: `host`, `u:<userId>`, `g:<guestId>` |
+| `quantity` | Number | Khoản `shuttle` theo số quả (WBS 4.10): 1 – 500; khi có thì `amount` = số quả × `unitPrice`, làm tròn lên 1.000đ (server tính) |
+| `unitPrice` | Number | Giá mỗi quả lúc lưu (chép từ kho hoặc nhập tay) |
+| `shuttle` | ObjectId → `shuttles` | Loại cầu trong kho của chủ kèo; không có = nhập giá tay (không trừ kho) |
+| `shuttleName` | String | Tên loại cầu chép lúc lưu, vẫn hiện khi loại cầu bị xóa khỏi kho |
 
 Số tiền mỗi người **không lưu** mà tính khi đọc (`computeDues` trong `post.costs.js`), để luôn đúng khi có người vào / rời hoặc chi phí thay đổi. Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
+
+### 3.5 `shuttles` (kho cầu, WBS 4.10)
+
+Model: `backend/src/modules/shuttle/shuttle.model.js`. Mỗi document là **một loại cầu** của một người; tối đa 20 loại mỗi người.
+
+| Trường | Kiểu | Ràng buộc | Ghi chú |
+|---|---|---|---|
+| `owner` | ObjectId → `users` | bắt buộc, có index | Chủ kho; mọi truy vấn đều lọc theo `owner` |
+| `name` | String | 1 – 40 ký tự | |
+| `quantity` | Number | số nguyên 0 – 10.000 | Số quả còn; trừ quá thì dừng ở 0 |
+| `unitPrice` | Number | số nguyên 0 – 1.000.000 | Giá mỗi quả, bình quân theo số quả sau mỗi lần nhập |
+| `fullLevel` | Number | số nguyên 0 – 10.000 | Số quả ngay sau lần nhập gần nhất (100% thanh mức cầu) |
+| `createdAt`, `updatedAt` | Date | tự động | |
+
+Kho bị trừ / hoàn **trong cùng transaction** với lần chủ kèo lưu chi phí (`post.service.js → updateCosts`): so số quả từng loại cầu giữa khoản "Cầu" cũ và mới của kèo, rồi cập nhật `quantity` bằng một lệnh pipeline `max(0, quantity − chênh lệch)`. Kèo bị hủy không tự hoàn kho (chỉnh bằng kiểm kê).
 
 ## 4. Index
 
@@ -147,6 +176,7 @@ Số tiền mỗi người **không lưu** mà tính khi đọc (`computeDues` t
 | `posts` | `{ status: 1, startsAt: 1 }` | Danh sách kèo sắp diễn ra, chưa hủy |
 | `posts` | `{ district: 1, startsAt: 1 }` | Lọc theo khu vực |
 | `posts` | `{ 'participants.user': 1 }` | "Kèo tôi đã tham gia" |
+| `shuttles` | `{ owner: 1 }` | Kho cầu của một người |
 
 Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi động (`config/database.js`).
 

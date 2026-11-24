@@ -82,6 +82,12 @@ export default function CostsCard({
                     </span>
                     <div className="expense-list__body">
                       <p className="expense-list__name">{expenseName(e)}</p>
+                      {e.quantity != null && e.unitPrice != null && (
+                        <p className="people__info">
+                          {e.shuttleName ? `${e.shuttleName} · ` : ''}
+                          {e.quantity} quả × {formatMoney(e.unitPrice)}
+                        </p>
+                      )}
                       <p className="people__info">
                         {e.everyone
                           ? `Tất cả (${e.sharers.length} người)`
