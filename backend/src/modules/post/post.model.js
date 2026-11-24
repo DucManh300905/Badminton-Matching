@@ -29,6 +29,11 @@ const participantSchema = new mongoose.Schema(
         joinedAt: {
             type: Date,
             default: Date.now
+        },
+        // Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); null = chưa trả
+        paidAt: {
+            type: Date,
+            default: null
         }
     },
     { _id: false }

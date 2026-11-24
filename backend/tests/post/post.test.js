@@ -187,7 +187,8 @@ describe('Tham gia / rời kèo', () => {
 
         let res = await join(nam.token, post.id).expect(200);
         expect(res.body.data.participants).toEqual([
-            { id: nam.user.id, displayName: 'An', gender: 'male', level: 'TB', slot: 'male', joinedAt: expect.any(String) }
+            // Người trong kèo thấy thêm trạng thái đã trả (WBS 4.8.1)
+            { id: nam.user.id, displayName: 'An', gender: 'male', level: 'TB', slot: 'male', joinedAt: expect.any(String), paid: false }
         ]);
         expect(res.body.data.status).toBe('open');
 

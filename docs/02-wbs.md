@@ -55,7 +55,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.5.3 | Trang cá nhân | UI profile | S | 5 | 4.4.1 | Xong |
 | 4.6 | Thông báo qua email | Module notify | S | 4 | 4.4.2 | Chưa |
 | 4.7 | Đánh giá uy tín sau kèo | API + UI rating | C | 6 | 4.4.2 | Chưa |
-| 4.8.1 | Thu tiền kèo bằng mã QR chuyển khoản (VietQR): số tài khoản trong hồ sơ, QR đúng giá mỗi người, chủ kèo đánh dấu đã trả | API + UI thanh toán kèo (US-32) | S | 6 | 4.4.2 | Chưa |
+| 4.8.1 | Thu tiền kèo bằng mã QR chuyển khoản (VietQR): số tài khoản trong hồ sơ, QR đúng giá mỗi người, chủ kèo đánh dấu đã trả | API + UI thanh toán kèo (US-32) | S | 6 | 4.4.2 | Xong |
 | 4.8.2 | Chốt chi phí sau buổi: nhập tiền sân / cầu / nước, đánh dấu người có mặt, chia đều cho người có mặt | API + UI chốt chi phí (US-33, gồm điểm danh của US-28) | S | 5 | 4.8.1 | Chưa |
 | 4.8.3 | Cài web lên màn hình chính (PWA: manifest, biểu tượng) | `manifest.webmanifest`, biểu tượng | S | 2 | 4.5.2 | Chưa |
 | 4.8.4 | Tin nhắn tổng kết kèo để sao chép / chia sẻ sang Zalo, Facebook | Nút "Sao chép" ở chi tiết kèo (US-35, gộp US-14) | S | 1 | 4.8.1 | Chưa |

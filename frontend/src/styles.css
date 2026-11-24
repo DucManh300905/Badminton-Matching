@@ -1110,7 +1110,7 @@ textarea.input {
 
 .people {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -1133,6 +1133,120 @@ textarea.input {
 .people__info {
   font-size: 13px;
   color: var(--muted);
+}
+
+.people__body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ================= Thanh toán kèo (mã QR) ================= */
+.pay-summary {
+  margin-bottom: 12px;
+  color: var(--muted);
+}
+
+.pay-summary strong {
+  color: var(--green-700);
+}
+
+.paid-toggle {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.paid-toggle:hover:not(:disabled) {
+  border-color: var(--green-600);
+  color: var(--green-700);
+}
+
+.paid-toggle--on {
+  border-color: var(--green-600);
+  background: var(--green-600);
+  color: #fff;
+}
+
+.paid-toggle--on:hover:not(:disabled) {
+  color: #fff;
+}
+
+.paid-toggle:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pay-card > * + * {
+  margin-top: 12px;
+}
+
+.pay-card__qr {
+  display: flex;
+  justify-content: center;
+}
+
+.pay-card__qr img,
+.pay-card__qr-loading {
+  width: 220px;
+  height: 220px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.pay-card__qr-loading {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.pay-card__amount {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--green-700);
+}
+
+.pay-list {
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.pay-row dt {
+  color: var(--muted);
+}
+
+.pay-row dd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.pay-row__copy {
+  min-height: 0;
+  padding: 0;
+  font-size: 13px;
 }
 
 /* ================= Tab chuyển ================= */

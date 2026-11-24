@@ -106,7 +106,7 @@ frontend/src/
 | F4 | Đăng kèo + dán bài tự điền (dựa trên luật) | Đăng kèo | `POST /posts`, `POST /parse` | Xong |
 | F5 | Chi tiết, tham gia, rời, hủy kèo | Chi tiết kèo | `/posts/:id/…` | Xong |
 | F6 | Kèo của tôi (đã đăng / đã tham gia) | Kèo của tôi, Tài khoản | `GET /users/me/posts` | Xong |
-| F7 | Thu tiền kèo bằng mã QR, chốt chi phí sau buổi (đánh dấu người có mặt), tin nhắn tổng kết, lịch sử chi tiêu | Chi tiết kèo, Kèo của tôi, Hồ sơ | Bổ sung khi làm (WBS 4.8) | Chưa (Should) |
+| F7 | Thu tiền kèo bằng mã QR, chốt chi phí sau buổi (đánh dấu người có mặt), tin nhắn tổng kết, lịch sử chi tiêu | Chi tiết kèo, Kèo của tôi, Hồ sơ | `PUT/DELETE /users/me/bank-account`, `PATCH /posts/:id/participants/:userId/payment` | Một phần: thu tiền QR (4.8.1) xong; chốt chi phí, PWA, tin nhắn, lịch sử chưa |
 | F8 | Thông báo email | — | — | Chưa (Should) |
 | F9 | Đánh giá uy tín sau kèo | — | — | Chưa (Could) |
 | F10 | App di động Android / iOS (React Native + Expo): toàn bộ F1–F6 + thông báo đẩy | App | Dùng lại API hiện có | Giai đoạn 2, sau đồ án |
@@ -130,6 +130,8 @@ Mỗi quy tắc có mã **BR-xx**. Mã này xuất hiện trong code (`backend/s
 | BR-11 | Hết chỗ → kèo tự chuyển `full` | — | `post.rules.test.js`, `post.test.js` (5 người cùng lúc) |
 | BR-12 | Chỉ rời kèo trước giờ bắt đầu; kèo `full` có người rời → mở lại `open` | 409 `POST_STARTED` / `NOT_JOINED` | `post.rules.test.js`, `post.test.js` |
 | BR-13 | Chỉ chủ kèo được hủy kèo, chỉ trước giờ bắt đầu; kèo đã hủy ẩn khỏi danh sách, không ai tham gia / rời được | 403 `NOT_AUTHOR`, 409 `POST_STARTED` / `POST_NOT_OPEN` | `post.rules.test.js`, `post.test.js` |
+| BR-14 | Chỉ chủ kèo đánh dấu người tham gia đã / chưa trả tiền; người đó phải đang trong kèo; kèo đã hủy thì không đánh dấu được | 403 `NOT_AUTHOR`, 409 `NOT_JOINED` / `POST_NOT_OPEN` | `tests/post/payment.test.js` |
+| BR-15 | Tài khoản nhận tiền của chủ kèo và trạng thái đã trả chỉ hiện cho chủ kèo và người đã tham gia kèo đó | Không trả trường `payment`, `paid` | `tests/post/payment.test.js` |
 
 ### Vòng đời một kèo
 

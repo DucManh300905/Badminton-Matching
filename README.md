@@ -101,6 +101,7 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 | Đăng ký, đăng nhập, đổi mật khẩu, hồ sơ (`/api/auth`, `/api/users`) | Xong |
 | API kèo: danh sách có lọc, chi tiết, tạo, tham gia / rời (transaction), hủy (`/api/posts`), dán bài → tự điền (`/api/parse`) | Xong |
 | Frontend: danh sách + lọc, đăng kèo + dán-tự-điền, chi tiết, tham gia / rời / hủy, đăng nhập JWT | Xong |
+| Thu tiền kèo bằng mã QR chuyển khoản (VietQR): tài khoản nhận tiền trong Hồ sơ, mã QR đúng giá cho người tham gia, chủ kèo đánh dấu đã trả (`/users/me/bank-account`, `PATCH /posts/:id/participants/:userId/payment`) | Xong |
 | Giao diện web responsive (CSS thuần): thanh điều hướng trên cùng, bộ lọc cột trái, lưới kèo, khu Tài khoản có menu dọc (Tổng quan, Kèo của tôi, Hồ sơ, Đổi mật khẩu; `GET /api/users/me/posts`) | Xong |
 
 ## Định dạng API

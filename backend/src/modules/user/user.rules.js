@@ -3,6 +3,8 @@
 const { body } = require('express-validator');
 const { GENDERS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
+const { BANK_BINS } = require('../../utils/banks');
+const { toBankText } = require('../../utils/vietqr');
 
 const emailRule = () =>
     body('email')
@@ -40,9 +42,29 @@ const levelRule = ({ optional = false } = {}) => {
     return (optional ? chain.optional() : chain).isIn(SKILL_LEVELS).withMessage('Trình độ không hợp lệ');
 };
 
+/** Tài khoản nhận tiền: số tài khoản bỏ khoảng trắng, tên đổi sang in hoa không dấu */
+const bankAccountRules = () => [
+    body('bankBin').isIn(BANK_BINS).withMessage('Chọn ngân hàng trong danh sách'),
+    body('accountNumber')
+        .isString()
+        .withMessage('Số tài khoản chỉ gồm 6 đến 19 chữ số')
+        .bail()
+        .customSanitizer((value) => value.replace(/[\s.-]/g, ''))
+        .matches(/^\d{6,19}$/)
+        .withMessage('Số tài khoản chỉ gồm 6 đến 19 chữ số'),
+    body('accountName')
+        .isString()
+        .withMessage('Tên chủ tài khoản từ 2 đến 50 chữ cái')
+        .bail()
+        .customSanitizer((value) => toBankText(value).replace(/[0-9]/g, '').replace(/\s+/g, ' ').trim())
+        .matches(/^[A-Z ]{2,50}$/)
+        .withMessage('Tên chủ tài khoản từ 2 đến 50 chữ cái')
+];
+
 module.exports = {
     emailRule,
     displayNameRule,
     genderRule,
-    levelRule
+    levelRule,
+    bankAccountRules
 };

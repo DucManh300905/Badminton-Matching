@@ -33,6 +33,7 @@ erDiagram
         string level
         number tokenVersion "select false"
         date passwordChangedAt
+        object bankAccount "bankBin, accountNumber, accountName"
     }
     POST {
         ObjectId _id
@@ -52,6 +53,7 @@ erDiagram
         ObjectId user FK
         string slot "male, female, any"
         date joinedAt
+        date paidAt "null = chưa trả"
     }
 ```
 
@@ -70,6 +72,9 @@ Model: `backend/src/modules/user/user.model.js`
 | `level` | String | 7 mức `YEU` … `GIOI` | Kiểm tra khoảng trình độ (BR-09) |
 | `tokenVersion` | Number | mặc định 0, `select: false` | Tăng 1 mỗi lần đổi mật khẩu; JWT mang số cũ bị từ chối |
 | `passwordChangedAt` | Date | | Lần đổi mật khẩu gần nhất (tham khảo) |
+| `bankAccount.bankBin` | String | thuộc danh sách ngân hàng (`utils/banks.js`) | Tài khoản nhận tiền (WBS 4.8.1), **không bắt buộc**; cả object không có khi chưa nhập |
+| `bankAccount.accountNumber` | String | 6 – 19 chữ số | Chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15) |
+| `bankAccount.accountName` | String | 2 – 50 chữ cái **in hoa không dấu** | Server tự chuẩn hóa khi lưu |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
 **Vì sao dùng `tokenVersion`, không so thời gian:** JWT chỉ ghi thời điểm cấp chính xác tới giây. Nếu so "đổi mật khẩu sau thời điểm cấp token", token cũ dùng trong cùng giây đổi mật khẩu vẫn lọt qua. So số phiên bản thì không phụ thuộc đồng hồ.
@@ -103,6 +108,7 @@ Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` tr
 | `user` | ObjectId → `users` | Người tham gia |
 | `slot` | String | Loại chỗ người này đang giữ: `male` / `female` / `any` (BR-10) |
 | `joinedAt` | Date | Thời điểm tham gia, giữ nguyên khi người khác vào / rời |
+| `paidAt` | Date \| null | Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); `null` = chưa trả. Giữ nguyên khi người khác vào / rời; ghi bằng toán tử vị trí `participants.$.paidAt` (một lệnh, không cần transaction) |
 
 Không có `_id` riêng (`_id: false`). Mỗi người chỉ xuất hiện một lần trong một kèo (BR-08, kiểm tra trong transaction).
 

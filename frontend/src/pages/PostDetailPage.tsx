@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
+import PaymentCard from '../components/PaymentCard';
 import { Alert, Avatar, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostDetail } from '../types';
@@ -50,6 +51,18 @@ export default function PostDetailPage() {
     }
   }
 
+  async function togglePaid(userId: string, paid: boolean) {
+    setBusy(true);
+    setActionError(null);
+    try {
+      setPost(await postsApi.setPaid(id, userId, paid));
+    } catch (e) {
+      setActionError(toApiError(e).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (loadError || !post) {
     return (
       <>
@@ -60,6 +73,7 @@ export default function PostDetailPage() {
   }
 
   const isAuthor = user?.id === post.author.id;
+  const payment = post.payment;
   const hasJoined = !!user && post.participants.some((p) => p.id === user.id);
   const started = new Date(post.startsAt).getTime() <= openedAt;
   const total = post.slots.male + post.slots.female + post.slots.any;
@@ -118,6 +132,20 @@ export default function PostDetailPage() {
             <h2 className="card__title">
               Người tham gia ({post.participants.length}/{total})
             </h2>
+            {isAuthor && payment && payment.amount > 0 && post.participants.length > 0 && (
+              <p className="pay-summary">
+                Đã thu {payment.summary.paidCount}/{payment.summary.participantCount} người ·{' '}
+                <strong>{formatPrice(payment.summary.collected)}</strong> / {formatPrice(payment.summary.expected)}
+              </p>
+            )}
+            {isAuthor && payment && payment.amount > 0 && !payment.bank && post.status !== 'closed' && (
+              <div className="notice">
+                <Alert tone="info">
+                  Thêm số tài khoản để người chơi chuyển tiền bằng mã QR:{' '}
+                  <Link to="/tai-khoan/ho-so">mở Hồ sơ cá nhân</Link>.
+                </Alert>
+              </div>
+            )}
             {post.participants.length === 0 ? (
               <p className="hint">Chưa có ai. Hãy là người đầu tiên!</p>
             ) : (
@@ -125,13 +153,30 @@ export default function PostDetailPage() {
                 {post.participants.map((p) => (
                   <li key={p.id}>
                     <Avatar name={p.displayName} size="sm" />
-                    <div>
+                    <div className="people__body">
                       <p className="people__name">{p.displayName}</p>
                       <p className="people__info">
                         {p.gender ? GENDER_LABELS[p.gender] : '—'} · {p.level ? LEVEL_LABELS[p.level] : '—'} ·{' '}
                         {SLOT_LABELS[p.slot]}
                       </p>
                     </div>
+                    {p.paid !== undefined &&
+                      post.pricePerPerson > 0 &&
+                      (isAuthor && post.status !== 'closed' ? (
+                        <button
+                          type="button"
+                          className={`paid-toggle${p.paid ? ' paid-toggle--on' : ''}`}
+                          aria-pressed={p.paid}
+                          disabled={busy}
+                          onClick={() => togglePaid(p.id, !p.paid)}
+                        >
+                          {p.paid ? 'Đã trả' : 'Chưa trả'}
+                        </button>
+                      ) : (
+                        <span className={`badge badge--${p.paid ? 'open' : 'full'}`}>
+                          {p.paid ? 'Đã trả' : 'Chưa trả'}
+                        </span>
+                      ))}
                   </li>
                 ))}
               </ul>
@@ -139,66 +184,69 @@ export default function PostDetailPage() {
           </section>
         </div>
 
-        <aside className="card sticky" aria-label="Tham gia kèo">
-          <div className="action-card__status">
-            <strong>Tình trạng</strong>
-            <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
-          </div>
-          <p className="action-card__price">
-            {formatPrice(post.pricePerPerson)} <span>/ người</span>
-          </p>
-          <dl className="slot-list">
-            {SLOT_ROWS.filter(([k]) => post.slots[k] > 0).map(([k, label]) => (
-              <div key={k}>
-                <dt>{label}</dt>
-                <dd>
-                  còn {post.remaining[k]}/{post.slots[k]}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          {actionError && (
-            <div className="notice">
-              <Alert>{actionError}</Alert>
+        <div className="stack sticky">
+          <aside className="card" aria-label="Tham gia kèo">
+            <div className="action-card__status">
+              <strong>Tình trạng</strong>
+              <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
             </div>
-          )}
+            <p className="action-card__price">
+              {formatPrice(post.pricePerPerson)} <span>/ người</span>
+            </p>
+            <dl className="slot-list">
+              {SLOT_ROWS.filter(([k]) => post.slots[k] > 0).map(([k, label]) => (
+                <div key={k}>
+                  <dt>{label}</dt>
+                  <dd>
+                    còn {post.remaining[k]}/{post.slots[k]}
+                  </dd>
+                </div>
+              ))}
+            </dl>
 
-          {post.status === 'closed' ? (
-            <p className="hint">Chủ kèo đã hủy kèo này.</p>
-          ) : started ? (
-            <p className="hint">Kèo đã bắt đầu.</p>
-          ) : !user ? (
-            <Link to="/dang-nhap" state={{ from: `/keo/${post.id}` }} className="btn btn--primary btn--block btn--lg">
-              Đăng nhập để tham gia
-            </Link>
-          ) : isAuthor ? (
-            <div className="stack">
-              <p className="hint">Đây là kèo của bạn.</p>
+            {actionError && (
+              <div className="notice">
+                <Alert>{actionError}</Alert>
+              </div>
+            )}
+
+            {post.status === 'closed' ? (
+              <p className="hint">Chủ kèo đã hủy kèo này.</p>
+            ) : started ? (
+              <p className="hint">Kèo đã bắt đầu.</p>
+            ) : !user ? (
+              <Link to="/dang-nhap" state={{ from: `/keo/${post.id}` }} className="btn btn--primary btn--block btn--lg">
+                Đăng nhập để tham gia
+              </Link>
+            ) : isAuthor ? (
+              <div className="stack">
+                <p className="hint">Đây là kèo của bạn.</p>
+                <button
+                  type="button"
+                  className="btn btn--danger btn--block"
+                  disabled={busy}
+                  onClick={() => act('cancel')}
+                >
+                  Hủy kèo
+                </button>
+              </div>
+            ) : hasJoined ? (
+              <button type="button" className="btn btn--danger btn--block" disabled={busy} onClick={() => act('leave')}>
+                Rời kèo
+              </button>
+            ) : (
               <button
                 type="button"
-                className="btn btn--danger btn--block"
-                disabled={busy}
-                onClick={() => act('cancel')}
+                className="btn btn--primary btn--block btn--lg"
+                disabled={busy || post.status !== 'open'}
+                onClick={() => act('join')}
               >
-                Hủy kèo
+                {post.status === 'open' ? 'Tham gia kèo' : 'Đã đủ người'}
               </button>
-            </div>
-          ) : hasJoined ? (
-            <button type="button" className="btn btn--danger btn--block" disabled={busy} onClick={() => act('leave')}>
-              Rời kèo
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="btn btn--primary btn--block btn--lg"
-              disabled={busy || post.status !== 'open'}
-              onClick={() => act('join')}
-            >
-              {post.status === 'open' ? 'Tham gia kèo' : 'Đã đủ người'}
-            </button>
-          )}
-        </aside>
+            )}
+          </aside>
+          {hasJoined && payment && post.status !== 'closed' && <PaymentCard payment={payment} postId={post.id} />}
+        </div>
       </div>
     </>
   );
