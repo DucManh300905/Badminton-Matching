@@ -50,7 +50,7 @@ export default function RegisterPage() {
           <p className="auth-intro__text">Tạo tài khoản miễn phí, chỉ cần email, không cần số điện thoại.</p>
           <ul className="auth-intro__list">
             <li>Tìm kèo còn chỗ theo khu vực, ngày và trình độ</li>
-            <li>Dán bài đăng sẵn có, hệ thống tự điền thông tin kèo</li>
+            <li>Chia tiền theo từng khoản, thu tiền bằng mã QR</li>
             <li>Tham gia hoặc rời kèo chỉ với một lần bấm</li>
           </ul>
         </section>

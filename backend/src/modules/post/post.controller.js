@@ -67,21 +67,24 @@ const setPaid = asyncHandler(async (req, res) => {
     });
 });
 
-// PUT /api/posts/:id/settlement — chủ kèo chốt chi phí thật và điểm danh (BR-16, BR-17)
-const settlePost = asyncHandler(async (req, res) => {
-    const { courtFee, shuttleFee, otherFee, headcount, chargeAbsent, attendance } = req.body;
-    const post = await postService.settlePost(
-        req.params.id,
-        req.user.userId,
-        { courtFee, shuttleFee, otherFee, headcount, chargeAbsent, attendance },
-        new Date()
-    );
+// PUT /api/posts/:id/costs — chủ kèo lưu các khoản chi + bạn không dùng app (BR-16, BR-17)
+const updateCosts = asyncHandler(async (req, res) => {
+    const { guests, expenses } = req.body;
+    const post = await postService.updateCosts(req.params.id, req.user.userId, { guests, expenses }, new Date());
 
-    res.json({ success: true, message: 'Đã chốt chi phí', data: toPostDetail(post, req.user.userId) });
+    res.json({ success: true, message: 'Đã lưu chi phí', data: toPostDetail(post, req.user.userId) });
+});
+
+// PUT /api/posts/:id/attendance — chủ kèo điểm danh, từ giờ bắt đầu
+const setAttendance = asyncHandler(async (req, res) => {
+    const post = await postService.setAttendance(req.params.id, req.user.userId, { attendance: req.body.attendance }, new Date());
+
+    res.json({ success: true, message: 'Đã lưu điểm danh', data: toPostDetail(post, req.user.userId) });
 });
 
 module.exports = {
-    settlePost,
+    updateCosts,
+    setAttendance,
     setPaid,
     listPosts,
     listMyPosts,

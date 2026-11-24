@@ -1,5 +1,5 @@
 import client, { type ApiResponse } from './client';
-import type { CreatePostInput, PostDetail, PostFilter, PostSummary, SettleInput } from '../types';
+import type { CreatePostInput, PostDetail, PostFilter, PostSummary, CostsInput } from '../types';
 
 export const postsApi = {
   /** Kèo sắp diễn ra (không cần đăng nhập) */
@@ -34,9 +34,15 @@ export const postsApi = {
     return res.data.data;
   },
 
-  /** Chỉ chủ kèo, từ giờ bắt đầu tới 24 giờ sau giờ kết thúc: chốt chi phí thật + điểm danh */
-  async settle(id: string, input: SettleInput) {
-    const res = await client.put<ApiResponse<PostDetail>>(`/posts/${id}/settlement`, input);
+  /** Chỉ chủ kèo, bất cứ lúc nào (trừ kèo đã hủy): lưu toàn bộ khoản chi + bạn không dùng app */
+  async updateCosts(id: string, input: CostsInput) {
+    const res = await client.put<ApiResponse<PostDetail>>(`/posts/${id}/costs`, input);
+    return res.data.data;
+  },
+
+  /** Chỉ chủ kèo, từ giờ bắt đầu: điểm danh có mặt / vắng */
+  async setAttendance(id: string, attendance: { userId: string; attended: boolean }[]) {
+    const res = await client.put<ApiResponse<PostDetail>>(`/posts/${id}/attendance`, { attendance });
     return res.data.data;
   },
 

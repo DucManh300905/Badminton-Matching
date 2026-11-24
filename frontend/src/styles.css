@@ -342,13 +342,6 @@ legend {
   gap: 24px;
 }
 
-.split-layout {
-  display: grid;
-  grid-template-columns: 380px minmax(0, 1fr);
-  align-items: start;
-  gap: 24px;
-}
-
 .sticky {
   position: sticky;
   top: calc(var(--navbar-height) + 20px);
@@ -356,8 +349,7 @@ legend {
 
 @media (max-width: 1023.98px) {
   .with-sidebar,
-  .detail-layout,
-  .split-layout {
+  .detail-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -669,11 +661,6 @@ textarea.input {
 }
 
 /* Ô được bộ trích xuất điền sẵn → nền vàng nhạt để người dùng kiểm tra lại */
-.input--autofilled {
-  border-color: var(--gold);
-  background: var(--amber-soft);
-}
-
 .field-error {
   margin-top: 4px;
   font-size: 13px;
@@ -759,12 +746,6 @@ textarea.input {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
-}
-
-/* Khối "Dán bài → tự điền" */
-.paste-box {
-  border: 1.5px dashed var(--green-400);
-  background: var(--green-50);
 }
 
 /* ================= Bộ lọc ================= */
@@ -1191,9 +1172,140 @@ textarea.input {
   overflow-wrap: anywhere;
 }
 
-/* Chốt chi phí sau buổi */
-.settle-absent {
-  align-self: center;
+/* ================= Chi phí theo từng khoản (WBS 4.8.2) ================= */
+.costs-total {
+  font-size: 18px;
+  color: var(--green-700);
+}
+
+.expense-list,
+.due-list,
+.due-preview,
+.chip-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.expense-list li,
+.due-list li,
+.due-preview li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.expense-list li:last-child,
+.due-list li:last-child,
+.due-preview li:last-child {
+  border-bottom: 0;
+}
+
+.expense-list__name {
+  font-weight: 600;
+}
+
+.due-list__right {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.due-preview li {
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.expense-edit {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.expense-edit > * + * {
+  margin-top: 12px;
+}
+
+.expense-edit__remove {
+  color: var(--danger);
+}
+
+.sharers__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px 12px;
+  margin-top: 8px;
+}
+
+.sharers__all {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.checkbox--muted {
+  opacity: 0.55;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.chip-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+}
+
+.chip-tag button {
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.inline-add {
+  display: flex;
+  gap: 8px;
+}
+
+.inline-add .input {
+  flex: 1;
+}
+
+.paid-toggle--owe {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.pay-card__line strong {
+  color: var(--green-700);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .settle-preview {
@@ -1239,6 +1351,11 @@ textarea.input {
 .tabs button[aria-selected='true'] {
   border-bottom-color: var(--green-600);
   color: var(--green-700);
+}
+
+/* Form không kéo quá rộng trên máy tính */
+.form-narrow {
+  max-width: 860px;
 }
 
 /* Form trong khu tài khoản không kéo quá rộng */

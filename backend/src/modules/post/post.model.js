@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { HANOI_AREAS, POST_STATUSES, SLOT_KINDS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
+const { EXPENSE_KINDS, MAX_EXPENSE } = require('./post.costs');
 
 const slotCount = {
     type: Number,
@@ -35,7 +36,12 @@ const participantSchema = new mongoose.Schema(
             type: Date,
             default: null
         },
-        // Điểm danh khi chốt chi phí (BR-16): true có mặt, false vắng, null chưa điểm danh
+        // Số tiền phải trả tại lúc được đánh dấu đã trả (BR-18): so với số hiện tại để biết "còn thiếu" / "trả dư"
+        paidAmount: {
+            type: Number,
+            default: null
+        },
+        // Điểm danh sau giờ bắt đầu: true có mặt, false vắng, null chưa điểm danh
         attended: {
             type: Boolean,
             default: null
@@ -44,19 +50,26 @@ const participantSchema = new mongoose.Schema(
     { _id: false }
 );
 
-// Kết quả chốt chi phí (BR-17). perPerson do server tính, client không gửi lên.
-const fee = { type: Number, required: true, min: 0, validate: { validator: Number.isInteger, message: 'Chi phí phải là số nguyên' } };
-const settlementSchema = new mongoose.Schema(
+// Bạn của chủ kèo không dùng app: chỉ có tên, vẫn được tính trong phần chia tiền (WBS 4.8.2)
+const guestSchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, minlength: 1, maxlength: 30 }
+});
+
+// Một khoản chi của kèo (BR-17). sharedBy là mã người: "host", "u:<userId>", "g:<guestId>"
+const expenseSchema = new mongoose.Schema(
     {
-        courtFee: fee,
-        shuttleFee: fee,
-        otherFee: fee,
-        // Tổng số người chơi trong buổi (gồm chủ kèo và bạn của chủ kèo không dùng app)
-        headcount: { type: Number, required: true, min: 2 },
-        // Người vắng có phải trả phần của mình không (chủ kèo chọn mỗi lần chốt)
-        chargeAbsent: { type: Boolean, default: false },
-        perPerson: { type: Number, required: true, min: 0 },
-        settledAt: { type: Date, required: true }
+        kind: { type: String, enum: EXPENSE_KINDS, required: true },
+        label: { type: String, trim: true, maxlength: 40 },
+        amount: {
+            type: Number,
+            required: true,
+            min: 0,
+            max: MAX_EXPENSE,
+            validate: { validator: Number.isInteger, message: 'Số tiền phải là số nguyên' }
+        },
+        // "Chọn tất cả": luôn tính theo danh sách người hiện tại của kèo
+        everyone: { type: Boolean, default: false },
+        sharedBy: { type: [String], default: [] }
     },
     { _id: false }
 );
@@ -131,16 +144,11 @@ const postSchema = new mongoose.Schema(
             trim: true,
             maxlength: 1000
         },
-        // Nội dung gốc người dùng dán vào ô "tự điền" — dùng để đánh giá bộ trích xuất (RQ1)
-        rawText: {
-            type: String,
-            maxlength: 5000
-        },
-        // Chi phí thật đã chốt sau buổi (WBS 4.8.2); không có = chưa chốt, mọi người trả theo pricePerPerson
-        settlement: {
-            type: settlementSchema,
-            default: undefined
-        }
+        // Chi phí theo từng khoản (WBS 4.8.2); chỉ chủ kèo sửa (BR-16)
+        guests: { type: [guestSchema], default: [] },
+        expenses: { type: [expenseSchema], default: [] },
+        // Lần sửa chi phí gần nhất (số liệu cho RQ1, RQ2)
+        costsUpdatedAt: { type: Date, default: null }
     },
     { timestamps: true }
 );

@@ -6,7 +6,7 @@ const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, settlePost } = require('./post.controller');
+const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance } = require('./post.controller');
 
 const router = express.Router();
 
@@ -54,8 +54,7 @@ const createRules = [
     slotRule('male'),
     slotRule('female'),
     slotRule('any'),
-    body('note').optional({ values: 'falsy' }).isString().trim().isLength({ max: 1000 }).withMessage('Ghi chú tối đa 1000 ký tự'),
-    body('rawText').optional({ values: 'falsy' }).isString().isLength({ max: 5000 }).withMessage('Nội dung bài đăng tối đa 5000 ký tự')
+    body('note').optional({ values: 'falsy' }).isString().trim().isLength({ max: 1000 }).withMessage('Ghi chú tối đa 1000 ký tự')
 ];
 
 // :id sai định dạng ObjectId → Mongoose báo CastError → errorHandler trả 404 NOT_FOUND
@@ -75,23 +74,30 @@ router.patch(
     setPaid
 );
 
-// Chỉ kiểm tra kiểu dữ liệu ở đây; ràng buộc nghiệp vụ (BR-16, BR-17) nằm trong post.settlement.js
-const feeRule = (field) => body(field).default(0).isInt().withMessage('Chi phí phải là số nguyên').bail().toInt();
+// Chỉ kiểm tra kiểu dữ liệu ở đây; ràng buộc nghiệp vụ (BR-16, BR-17) nằm trong post.costs.js
 router.put(
-    '/:id/settlement',
+    '/:id/costs',
     authenticate,
     [
-        feeRule('courtFee'),
-        feeRule('shuttleFee'),
-        feeRule('otherFee'),
-        body('headcount').isInt().withMessage('Số người chơi phải là số nguyên').bail().toInt(),
-        body('chargeAbsent').default(false).isBoolean({ strict: true }).withMessage('chargeAbsent phải là true hoặc false'),
+        body('guests').default([]).isArray({ max: 50 }).withMessage('Danh sách bạn không dùng app không hợp lệ'),
+        body('expenses').default([]).isArray({ max: 50 }).withMessage('Danh sách khoản chi không hợp lệ'),
+        body('expenses.*.amount').isInt().withMessage('Số tiền phải là số nguyên').bail().toInt(),
+        body('expenses.*.everyone').default(false).isBoolean({ strict: true }).withMessage('everyone phải là true hoặc false'),
+        body('expenses.*.sharedBy').default([]).isArray({ max: 100 }).withMessage('Người cùng chịu không hợp lệ')
+    ],
+    validate,
+    updateCosts
+);
+router.put(
+    '/:id/attendance',
+    authenticate,
+    [
         body('attendance').isArray({ max: 50 }).withMessage('Điểm danh không hợp lệ'),
         body('attendance.*.userId').isString().withMessage('Điểm danh không hợp lệ'),
         body('attendance.*.attended').isBoolean({ strict: true }).withMessage('Điểm danh không hợp lệ')
     ],
     validate,
-    settlePost
+    setAttendance
 );
 
 module.exports = router;

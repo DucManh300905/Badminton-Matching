@@ -96,37 +96,63 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 **PostDetail** = PostSummary + danh sách người tham gia:
 ```json
 "participants": [
-  { "id": "665f…", "displayName": "Lan", "gender": "female", "level": "TB_MINUS", "slot": "female", "joinedAt": "2026-11-13T08:00:00.000Z", "paid": false, "attended": null, "amountDue": 50000 }
+  { "id": "665f…", "displayName": "Lan", "gender": "female", "level": "TB_MINUS", "slot": "female", "joinedAt": "2026-11-13T08:00:00.000Z", "paid": false, "attended": null, "amountDue": 80000, "paymentStatus": "unpaid" }
 ]
 ```
-- `paid`, `attended` (điểm danh: `true` / `false` / `null` = chưa điểm danh), `amountDue` (số tiền người đó phải trả), `settlement` và `payment` (bên dưới) **chỉ có khi người xem là chủ kèo hoặc người đã tham gia** (gửi kèm token); khách và người ngoài kèo không thấy (BR-15).
+- `paid`, `attended` (điểm danh: `true` / `false` / `null` = chưa điểm danh), `amountDue` (số tiền người đó phải trả; `null` = chủ kèo chưa nhập khoản chi nào), `paymentStatus`, `costs` và `payment` (bên dưới) **chỉ có khi người xem là chủ kèo hoặc người đã tham gia** (gửi kèm token); khách và người ngoài kèo không thấy (BR-15).
+- `pricePerPerson` là **chi phí dự kiến** chủ kèo nhập khi đăng, để tham khảo; số tiền thật tính theo các khoản chi.
 
-**Settlement** (`settlement` trong PostDetail, WBS 4.8.2; `null` = chưa chốt):
+**PostCosts** (`costs` trong PostDetail, WBS 4.8.2):
 ```json
-"settlement": { "courtFee": 320000, "shuttleFee": 80000, "otherFee": 20000, "total": 420000,
-                "headcount": 8, "chargeAbsent": false, "perPerson": 53000, "settledAt": "2026-11-24T15:00:00.000Z" }
+"costs": {
+  "updatedAt": "2026-11-25T15:00:00.000Z",
+  "total": 620000,
+  "guests": [{ "id": "6b05…", "name": "Tuấn" }],
+  "expenses": [
+    { "kind": "court", "label": null, "amount": 320000, "everyone": true, "sharedBy": [],
+      "sharers": ["host", "u:665f…", "u:6660…", "g:6b05…"], "share": 80000 },
+    { "kind": "food", "label": null, "amount": 300000, "everyone": false, "sharedBy": ["host", "u:665f…", "g:6b05…"],
+      "sharers": ["host", "u:665f…", "g:6b05…"], "share": 100000 }
+  ],
+  "members": [
+    { "ref": "host", "type": "host", "name": "Minh", "due": 180000 },
+    { "ref": "u:665f…", "type": "user", "userId": "665f…", "name": "Lan", "due": 180000, "status": "unpaid", "diff": 0, "attended": null },
+    { "ref": "u:6660…", "type": "user", "userId": "6660…", "name": "Hùng", "due": 80000, "status": "paid", "diff": 0, "attended": true },
+    { "ref": "g:6b05…", "type": "guest", "name": "Tuấn", "due": 180000 }
+  ]
+}
 ```
-- `headcount`: tổng số người chơi trong buổi (gồm chủ kèo và bạn của chủ kèo không dùng app). `perPerson` = `total` ÷ `headcount`, làm tròn **lên** 1.000đ.
-- Chưa chốt: mỗi người trả `pricePerPerson`. Đã chốt: mỗi người trả `perPerson`; người vắng (`attended: false`) trả 0, trừ khi `chargeAbsent: true`.
+- **Mã người** (`ref`): `host` (chủ kèo), `u:<userId>` (người tham gia qua app), `g:<id>` (bạn của chủ kèo **không dùng app**, chủ kèo thêm bằng tên).
+- `kind`: `court` (tiền sân), `shuttle` (tiền cầu), `water` (tiền nước), `food` (tiền ăn), `other` (khác, có `label`).
+- `everyone: true` ("Chọn tất cả") luôn tính theo danh sách người **hiện tại**, nên tự gồm người vào sau; người đã rời kèo tự bị loại khỏi phần chia.
+- `due` của mỗi người = tổng (`amount` ÷ số người cùng chịu) của các khoản có người đó, làm tròn **lên** 1.000đ (BR-17). `null` khi chưa có khoản chi nào.
+- `status` (người tham gia): `none` (không phải trả) · `unpaid` · `paid` · `owe` (còn thiếu `diff`) · `overpaid` (trả dư `diff`), BR-18.
 
 **PostPayment** (`payment` trong PostDetail, WBS 4.8.1):
 ```json
 "payment": {
-  "amount": 50000,
-  "available": true,
+  "hasCosts": true,
+  "estimate": 50000,
   "bank": { "bin": "970436", "shortName": "Vietcombank" },
   "accountNumber": "0123456789",
   "accountName": "NGUYEN VAN MINH",
-  "summary": { "paidCount": 1, "participantCount": 2, "collected": 50000, "expected": 100000 },
+  "summary": { "paidCount": 1, "participantCount": 2, "collected": 80000, "expected": 260000 },
+  "amount": 180000,
+  "status": "owe",
+  "toPay": 10000,
+  "diff": 10000,
+  "paid": true,
+  "paidAmount": 170000,
+  "available": true,
   "content": "BM 70FB8C LAN",
-  "qr": "00020101021238540010A000000727…6304ABCD",
-  "paid": false
+  "qr": "00020101021238540010A000000727…6304ABCD"
 }
 ```
-- `available`: kèo có thu tiền (`amount > 0`), chưa hủy và chủ kèo đã nhập tài khoản. Khi `false` thì `bank`, `accountNumber`, `accountName`, `qr` là `null`.
-- `amount`: số tiền người xem phải trả (chủ kèo: tiền mỗi người). `summary` chỉ tính người phải trả (người vắng không bị thu thì không tính).
-- `canSettle` chỉ có với **chủ kèo**: đang trong khung được chốt chi phí (BR-16).
-- `content`, `qr`, `paid`, `attended` chỉ có với **người tham gia** (không có với chủ kèo). `qr` là chuỗi theo chuẩn **VietQR** (NAPAS / EMVCo), client vẽ thành mã QR; ứng dụng ngân hàng quét sẽ điền sẵn ngân hàng, số tài khoản, số tiền, nội dung.
+- `hasCosts: false` (chủ kèo chưa nhập khoản chi nào) → **chưa có mã QR**; `estimate` là chi phí dự kiến để tham khảo.
+- `summary` chỉ tính **người tham gia qua app** phải trả > 0; `collected` = tổng `paidAmount` của người đã được đánh dấu.
+- Chỉ có với **chủ kèo**: `canEditCosts` (kèo chưa hủy), `canMarkAttendance` (kèo chưa hủy và đã tới giờ bắt đầu).
+- Chỉ có với **người tham gia**: `amount` (phần của mình), `status`, `toPay` (số còn phải chuyển), `diff`, `paid`, `paidAmount` (số tiền lúc được đánh dấu đã trả), `attended`, `available`, `content`, `qr`.
+- `available`: còn tiền phải chuyển, kèo chưa hủy, chủ kèo đã nhập tài khoản. `qr` là chuỗi theo chuẩn **VietQR** (NAPAS / EMVCo) cho đúng số `toPay`; ứng dụng ngân hàng quét sẽ điền sẵn ngân hàng, số tài khoản, số tiền, nội dung.
 - `content`: `BM <6 ký tự cuối mã kèo> <tên người chơi không dấu>`, tối đa 25 ký tự.
 - Hệ thống **không giữ tiền và không tự biết ai đã chuyển**: chủ kèo đối chiếu tài khoản rồi đánh dấu bằng `PATCH …/payment`.
 
@@ -159,8 +185,8 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | DELETE | `/posts/:id/join` | Có | Rời kèo |
 | POST | `/posts/:id/cancel` | Có | Hủy kèo (chỉ chủ kèo) |
 | PATCH | `/posts/:id/participants/:userId/payment` | Có | Đánh dấu đã / chưa trả tiền (chỉ chủ kèo) |
-| PUT | `/posts/:id/settlement` | Có | Chốt chi phí thật sau buổi + điểm danh (chỉ chủ kèo) |
-| POST | `/parse` | | Trích thông tin từ nội dung bài đăng |
+| PUT | `/posts/:id/costs` | Có | Lưu các khoản chi + bạn không dùng app (chỉ chủ kèo) |
+| PUT | `/posts/:id/attendance` | Có | Điểm danh, từ giờ bắt đầu (chỉ chủ kèo) |
 
 ## 3. Chi tiết endpoint
 
@@ -238,10 +264,9 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 | `address` | | ≤ 200 ký tự |
 | `startsAt`, `endsAt` | Có | ISO 8601; BR-01, BR-02 |
 | `levelMin`, `levelMax` | Có | Danh mục trình độ; BR-03 |
-| `pricePerPerson` | Có | Số nguyên 0 – 1.000.000; BR-04 |
+| `pricePerPerson` | Có | Số nguyên 0 – 1.000.000; BR-04. Là **chi phí dự kiến** mỗi người (để tham khảo) |
 | `slots.male`, `slots.female`, `slots.any` | | Số nguyên 0 – 20, mặc định 0; tổng 1 – 20 (BR-05) |
 | `note` | | ≤ 1000 ký tự |
-| `rawText` | | ≤ 5000 ký tự: nội dung bài gốc đã dán (lưu để đánh giá bộ trích xuất, **không** trả ra API) |
 
 - `201` → `data: PostDetail` (`status: "open"`, `participants: []`)
 - `400 VALIDATION_ERROR` · `401`
@@ -264,47 +289,39 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 
 #### `PATCH /posts/:id/participants/:userId/payment`
 Body: `{ "paid": true }` hoặc `{ "paid": false }` (đúng kiểu boolean).
-- Chủ kèo đánh dấu người tham gia `userId` đã / chưa chuyển tiền (BR-14). Làm được cả sau giờ chơi, trừ khi kèo đã hủy.
+- Chủ kèo đánh dấu người tham gia `userId` đã / chưa chuyển tiền (BR-14). Làm được cả sau giờ chơi, trừ khi kèo đã hủy. Khi đánh dấu đã trả, server lưu số tiền phải trả lúc đó (`paidAmount`) để sau này tính "còn thiếu" / "trả dư" (BR-18).
 - `200` → `data: PostDetail` (đã cập nhật `paid`, `payment.summary`)
 - `403 NOT_AUTHOR` · `409 NOT_JOINED` (người đó không tham gia kèo) · `409 POST_NOT_OPEN` (kèo đã hủy) · `400 VALIDATION_ERROR` · `401` · `404 NOT_FOUND`
 
-#### `PUT /posts/:id/settlement`
-| Trường | Bắt buộc | Ràng buộc |
-|---|:-:|---|
-| `courtFee`, `shuttleFee`, `otherFee` | | Số nguyên 0 – 10.000.000, mặc định 0; tổng > 0 |
-| `headcount` | Có | Số nguyên, từ (số người phải trả + 1) tới 50 |
-| `chargeAbsent` | | `true` / `false`, mặc định `false`: người vắng có phải trả không |
-| `attendance` | Có | `[{ userId, attended }]`, gồm **đúng** những người đang tham gia, mỗi người một lần |
-
-- Chỉ chủ kèo; từ **giờ bắt đầu** tới **24 giờ sau giờ kết thúc**; kèo chưa hủy (BR-16). Chốt lại được trong khung giờ đó; trạng thái đã trả giữ nguyên.
-- `200` → `data: PostDetail` (có `settlement`, `participants[].attended`, `payment` theo số tiền mới)
-- `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` (kèo đã hủy) · `409 SETTLEMENT_CLOSED` (ngoài khung giờ) · `400 VALIDATION_ERROR` (BR-17) · `401` · `404 NOT_FOUND`
-
-### 3.4 Bộ trích xuất
-
-#### `POST /parse`
-Body: `{ "text": "Tối nay 19h-21h sân Cầu Giấy thiếu 2 nam 1 nữ TB- đến TB+, 50k/ng" }` (1 – 5000 ký tự)
-
-`200`:
+#### `PUT /posts/:id/costs`
+Lưu **toàn bộ** chi phí của kèo trong một lần (thay danh sách cũ):
 ```json
 {
-  "success": true,
-  "data": {
-    "dayOffset": 0,
-    "start": { "hour": 19, "minute": 0 },
-    "end": { "hour": 21, "minute": 0 },
-    "slots": { "male": 2, "female": 1, "any": 0 },
-    "levelMin": "TB_MINUS",
-    "levelMax": "TB_PLUS",
-    "pricePerPerson": 50000,
-    "confidence": 1
-  }
+  "guests": [{ "key": "6b05…", "name": "Tuấn" }, { "key": "moi-1", "name": "Hòa" }],
+  "expenses": [
+    { "kind": "court", "amount": 320000, "everyone": true },
+    { "kind": "food", "amount": 300000, "everyone": false, "sharedBy": ["host", "u:665f…", "g:moi-1"] },
+    { "kind": "other", "label": "Gửi xe", "amount": 20000, "everyone": true }
+  ]
 }
 ```
-- Chỉ trả các trường trích được. `dayOffset`: 0 hôm nay, 1 mai, 2 ngày kia. `weekday`: 0 Chủ nhật … 6 Thứ bảy.
-- `confidence`: số nhóm trường trích được (thời gian, chi phí, số chỗ, trình độ) chia 4.
-- Nội dung không được lưu lại.
-- `400 VALIDATION_ERROR`
+| Trường | Ràng buộc |
+|---|---|
+| `guests[].key` | Id cũ (giữ nguyên) hoặc khóa tạm do client đặt cho người mới thêm; khoản chi tham chiếu bằng `g:<key>`, server cấp id thật và đổi lại tham chiếu |
+| `guests[].name` | 1 – 30 ký tự; tối đa 20 người |
+| `expenses[].kind` | `court`, `shuttle`, `water`, `food`, `other` (khoản `other` bắt buộc có `label` ≤ 40 ký tự) |
+| `expenses[].amount` | Số nguyên 0 – 10.000.000; tối đa 30 khoản |
+| `expenses[].everyone` | `true` = "Chọn tất cả" (gồm cả người vào sau) |
+| `expenses[].sharedBy` | Khi `everyone: false`: ít nhất 1 mã người, đều phải có trong kèo |
+
+- Chỉ chủ kèo, **bất cứ lúc nào** (trước, trong, sau buổi chơi), trừ kèo đã hủy (BR-16).
+- `200` → `data: PostDetail` (có `costs`, `payment` theo số tiền mới)
+- `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` (kèo đã hủy) · `400 VALIDATION_ERROR` (trường `expenses[i]` hoặc `guests`) · `401` · `404 NOT_FOUND`
+
+#### `PUT /posts/:id/attendance`
+Body: `{ "attendance": [{ "userId": "665f…", "attended": false }] }` (chỉ những người cần đổi; mỗi người một lần).
+- Chỉ chủ kèo, từ **giờ bắt đầu** trở đi, kèo chưa hủy. Điểm danh là số liệu bùng kèo; **không** tự đổi phần chia tiền (muốn người vắng không chịu khoản nào thì bỏ họ khỏi khoản đó).
+- `200` → `data: PostDetail` · `403 NOT_AUTHOR` · `409 NOT_STARTED` · `409 POST_NOT_OPEN` · `400 VALIDATION_ERROR` · `401` · `404 NOT_FOUND`
 
 ## 4. Mã lỗi
 
@@ -315,7 +332,7 @@ Body: `{ "text": "Tối nay 19h-21h sân Cầu Giấy thiếu 2 nam 1 nữ TB- �
 | `UNAUTHORIZED` | 401 | Không gửi token | Vui lòng đăng nhập để tiếp tục. |
 | `TOKEN_EXPIRED` | 401 | Token sai, hết hạn, hoặc đã đổi mật khẩu | Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại. |
 | `INVALID_CREDENTIALS` | 401 | Sai email hoặc mật khẩu | Email hoặc mật khẩu không đúng. |
-| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả) | Chỉ chủ kèo mới làm được thao tác này. |
+| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả, sửa chi phí, điểm danh) | Chỉ chủ kèo mới làm được thao tác này. |
 | `NOT_FOUND` | 404 | Không tìm thấy / đường dẫn sai | Không tìm thấy dữ liệu. |
 | `DUPLICATE` | 409 | Trùng dữ liệu duy nhất (email) | Email này đã được đăng ký. |
 | `POST_NOT_OPEN` | 409 | Kèo đủ người hoặc đã hủy | Kèo đã đủ người hoặc đã bị hủy. |
@@ -323,7 +340,7 @@ Body: `{ "text": "Tối nay 19h-21h sân Cầu Giấy thiếu 2 nam 1 nữ TB- �
 | `IS_AUTHOR` | 409 | Chủ kèo tự tham gia | Bạn là chủ kèo này. |
 | `ALREADY_JOINED` | 409 | Đã tham gia rồi | Bạn đã tham gia kèo này rồi. |
 | `NOT_JOINED` | 409 | Rời kèo chưa tham gia; đánh dấu đã trả cho người không trong kèo | Bạn chưa tham gia kèo này. |
-| `SETTLEMENT_CLOSED` | 409 | Chốt chi phí ngoài khung từ giờ bắt đầu tới 24 giờ sau giờ kết thúc | Chỉ chốt chi phí được từ giờ bắt đầu tới 24 giờ sau giờ kết thúc. |
+| `NOT_STARTED` | 409 | Điểm danh trước giờ bắt đầu | Chỉ điểm danh được từ giờ bắt đầu kèo. |
 | `LEVEL_MISMATCH` | 409 | Trình độ ngoài khoảng của kèo | Trình độ của bạn không nằm trong khoảng kèo yêu cầu. |
 | `NO_SLOT` | 409 | Hết chỗ hợp giới tính | Kèo không còn chỗ phù hợp với giới tính của bạn. |
 | `SYSTEM_BUSY` | 409 | Xung đột ghi CSDL | Hệ thống đang bận, vui lòng thử lại. |

@@ -10,10 +10,10 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 17/17 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 218 test backend + 54 test frontend; 17/17 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 179 test backend + 49 test frontend; 18/18 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 128,3 KB (thêm thư viện vẽ mã QR) |
-| Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
+| Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; usability test luồng chia tiền ≥ 8 người (WBS 5.5) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
 | Q5 | Số liệu nghiên cứu (Charter 2.0) | Xuất được số liệu ẩn danh cho RQ1–RQ3 (khoản chi, người cùng chịu, thời điểm đã trả, kèo đủ người); không có tên, email, số tài khoản | **Chưa**: chờ 4.8.2 và lệnh xuất số liệu (US-22). Q5 cũ (độ chính xác bộ trích xuất) đã bỏ 24/11/2026 |
 
 ---
@@ -38,10 +38,10 @@
 | TC-Q1-05 | Người khác hủy kèo; chủ kèo hủy rồi có người vào | 403 `NOT_AUTHOR`; 409 `POST_NOT_OPEN` | `post.test.js` |
 | TC-Q1-06 | Lọc kèo ngày mai lúc 5h30 sáng khi server chạy giờ UTC | Kèo nằm đúng ngày theo lịch Việt Nam | `post.test.js`, `utils/vnTime.test.js` |
 | TC-Q1-07 | Đăng kèo giờ kết thúc trước giờ bắt đầu / ở quá khứ | 400, chỉ rõ trường `endsAt` / `startsAt` | `post.test.js` |
-| TC-Q1-08 | Smoke test trên **máy chủ chạy thật** (qua Cloudflare + Nginx): đăng ký, đăng nhập, dán bài, đăng kèo, 3 người tranh 2 chỗ cùng lúc, rời, hủy | 17/17 bước đạt, tự dọn dữ liệu thử | `npm run smoke` với `SMOKE_API_URL=https://sv22.bcse-vju.com/api`, 23/11/2026 ([DEPLOY.md](DEPLOY.md) mục 4) |
+| TC-Q1-08 | Smoke test trên **máy chủ chạy thật** (qua Cloudflare + Nginx): đăng ký, đăng nhập, đăng kèo, 3 người tranh 2 chỗ cùng lúc, rời, hủy | 16/16 bước đạt, tự dọn dữ liệu thử | `npm run smoke` với `SMOKE_API_URL=https://sv22.bcse-vju.com/api`, 23/11/2026 ([DEPLOY.md](DEPLOY.md) mục 4) |
 | TC-Q1-09 | Mã QR chuyển khoản theo chuẩn VietQR: đủ trường, đúng BIN / số tài khoản / số tiền / nội dung, CRC16 đúng (mẫu chuẩn "123456789" → 29B1) | Mọi trường đúng; giải mã ảnh QR trên giao diện ra đúng chuỗi | `tests/utils/vietqr.test.js`; giải mã ảnh chụp màn hình bằng jsQR (24/11/2026) |
 | TC-Q1-10 | Chủ kèo đánh dấu đã trả; người khác thử đánh dấu; đánh dấu người ngoài kèo; kèo đã hủy; người khác vào / rời kèo | 200; 403 `NOT_AUTHOR`; 409 `NOT_JOINED`; 409 `POST_NOT_OPEN`; trạng thái đã trả không mất (BR-14) | `tests/post/payment.test.js` |
-| TC-Q1-11 | Chốt chi phí: 420.000đ ÷ 8 người; người vắng không bị thu / bị thu; chốt lại; trước giờ bắt đầu, quá 24 giờ, kèo đã hủy, người khác chốt; điểm danh thiếu / thừa / trùng người; số người chơi quá ít | 53.000đ/người (làm tròn lên); tổng phải thu đúng; 409 `SETTLEMENT_CLOSED`, 409 `POST_NOT_OPEN`, 403, 400 đúng trường (BR-16, BR-17) | `tests/post/settlement.rules.test.js`, `settlement.test.js` |
+| TC-Q1-11 | Chi phí theo từng khoản: sân chia tất cả + ăn chia 3 người; "Tất cả" gồm người vào sau; người rời bị loại; chia lẻ làm tròn lên; còn thiếu / trả dư sau khi đã trả; sửa sau giờ chơi; người khác sửa; kèo đã hủy; dữ liệu sai; điểm danh trước giờ bắt đầu | 180.000đ / 80.000đ đúng; 403, 409, 400 đúng trường (BR-16 → BR-18) | `tests/post/costs.rules.test.js`, `tests/post/payment.test.js` |
 
 ## Q2 — Bảo mật
 
@@ -63,7 +63,7 @@
 | TC-Q2-04 | Sai email và sai mật khẩu | Cùng 401 `INVALID_CREDENTIALS`, không lộ email nào đã đăng ký | `tests/auth/auth.test.js` |
 | TC-Q2-05 | Đăng nhập sai liên tục | Vượt giới hạn → 429 `RATE_LIMITED`; đăng nhập đúng không bị đếm | `tests/auth/rate-limit.test.js` (kiểm tra cơ chế với giới hạn 3 lần; cấu hình thật 10 lần / 15 phút nằm ở `rateLimit.middleware.js`) |
 | TC-Q2-06 | Client tự gửi `tokenVersion`, `email`, `author`, `status`, `participants` | Bị bỏ qua | `auth.test.js`, `user.test.js`, `post.test.js` |
-| TC-Q2-07 | Xem chi tiết kèo / danh sách | Không có email người khác, không có `rawText` | `post.test.js` |
+| TC-Q2-07 | Xem chi tiết kèo / danh sách | Không có email người khác; khách / người ngoài kèo không thấy chi phí, số tài khoản | `post.test.js` |
 | TC-Q2-08 | Lỗi không lường trước ở server | 500 `INTERNAL_ERROR`, không trả chi tiết lỗi | `tests/utils/error-middleware.test.js` |
 | TC-Q2-09 | Khách, người ngoài kèo, token hỏng xem chi tiết kèo có thu tiền | Không có số tài khoản, không có `payment` / `paid` (BR-15) | `tests/post/payment.test.js` |
 
@@ -93,18 +93,18 @@
 - Giao diện theo thiết bị: **máy tính** (từ 1024 px) dùng bố cục web (thanh điều hướng trên cùng, nội dung rộng tối đa 1200 px, nhiều cột); **điện thoại / máy tính bảng** dùng giao diện kiểu app: thanh tab đáy 5 mục, thanh tiêu đề gọn có nút quay lại, chip lọc nhanh cuộn ngang (chọn ngày / khu vực bằng bộ chọn của điện thoại), nút hành động chính dính ở đáy; vùng bấm ≥ 44 px; chừa vùng tai thỏ / thanh home (safe-area).
 - Cài lên màn hình chính như một app (PWA): manifest, biểu tượng 192 / 512 px (có bản maskable), chế độ `standalone`. Không dùng service worker để tránh người dùng bị kẹt ở bản cũ khi cập nhật.
 - Mọi lỗi hiển thị bằng tiếng Việt theo `code` (bảng ở [API.md](API.md) mục 4).
-- "Dán bài → tự điền": ô được điền tự động có nền vàng để người dùng kiểm tra lại.
+- Chi phí theo từng khoản: xem trước số tiền của từng người ngay khi chủ kèo sửa; người tham gia thấy toàn bộ khoản chi và phần của mình.
 - Bộ lọc nằm trên URL: tải lại trang hoặc gửi link vẫn giữ bộ lọc.
 
 **Ca kiểm tra QC (chạy tay bằng trình duyệt Chrome tự động, màn hình 1366 px và 390 px):**
 
 | Mã | Luồng | Kết quả |
 |---|---|---|
-| TC-Q4-01 | Xem danh sách → lọc → chưa đăng nhập bị chuyển sang Đăng nhập → đăng nhập → dán bài mẫu → tự điền → đăng kèo → người khác tham gia → "Kèo của tôi" → token hết hạn → chủ kèo hủy kèo → trang 404 | 14/14 bước đạt, 0 lỗi JavaScript |
+| TC-Q4-01 | Xem danh sách → lọc → chưa đăng nhập bị chuyển sang Đăng nhập → đăng nhập → điền form → đăng kèo → người khác tham gia → "Kèo của tôi" → token hết hạn → chủ kèo hủy kèo → trang 404 | 14/14 bước đạt, 0 lỗi JavaScript |
 | TC-Q4-02 | Đăng ký → sửa trình độ → đổi mật khẩu (nhập lại sai, sai mật khẩu hiện tại, đúng) → đăng xuất → đăng nhập bằng mật khẩu mới | 10/10 bước đạt |
 | TC-Q4-03 | Mở bản chạy thật https://sv22.bcse-vju.com ở 1366 px và 390 px: trang chủ, gọi API danh sách kèo, mở thẳng `/dang-ky` | 6/6 bước đạt, 0 lỗi JavaScript của ứng dụng (23/11/2026) |
 | TC-Q4-04 | Chủ kèo nhập tài khoản nhận tiền → người tham gia thấy mã QR, số tài khoản, nội dung → chủ kèo đánh dấu đã trả → người tham gia thấy "Đã trả" → khách không thấy gì | 11/11 bước đạt, 0 lỗi JavaScript (24/11/2026) |
-| TC-Q4-06 | Sau giờ chơi: chủ kèo bỏ tích một người (vắng), nhập chi phí, xem trước, chốt → người có mặt thấy chi phí và mã QR số tiền mới → người vắng thấy "không phải trả" → chủ kèo chọn "người vắng vẫn phải trả" → người vắng có mã QR | 10/10 bước đạt, 0 lỗi JavaScript; giải mã mã QR của người vắng ra đúng 53.000đ (24/11/2026) |
+| TC-Q4-06 | Chưa có khoản chi → người chơi chưa thấy mã QR → chủ kèo thêm bạn không dùng app, sân 320.000đ (tất cả) + ăn 300.000đ (bỏ 1 người), xem trước, lưu → người chơi thấy toàn bộ chi phí, mã QR 180.000đ, không có nút sửa → chủ kèo đánh dấu đã trả, thêm tiền nước → người chơi "còn thiếu" 10.000đ → khách không thấy chi phí | 10/10 bước đạt, 0 lỗi JavaScript; giải mã mã QR "còn thiếu" ra đúng 10.000đ (25/11/2026) |
 | TC-Q4-07 | Điện thoại 390 px: thanh tab đáy 5 mục (Tìm kèo, Hôm nay, Đăng kèo, Kèo của tôi, Tài khoản), thanh điều hướng trên bị ẩn, bấm tab chuyển trang, trang con có nút quay lại; chụp 12 màn hình ở 390 px và 1366 px | Đạt, không trang nào bị cuộn ngang, 0 lỗi JavaScript (24/11/2026) |
 | TC-Q4-08 | Kiểm tra điều kiện cài như app bằng Chrome (`Page.getInstallabilityErrors`, `Page.getAppManifest`) | 0 lỗi installability, manifest không lỗi (24/11/2026) |
 | TC-Q4-05 | Quét mã QR bằng **2 ứng dụng ngân hàng khác nhau** (không cần chuyển tiền thật) | Ứng dụng điền sẵn đúng ngân hàng, số tài khoản, tên, số tiền, nội dung. **Chưa làm**: chờ kiểm tra bằng điện thoại thật (rủi ro R7) |
@@ -112,17 +112,6 @@
 **Việc còn lại:**
 - Chuyển hai kịch bản trên thành bộ test E2E (Playwright) trong repo và chạy trên CI (WBS 5.3).
 - Usability test luồng đăng kèo, chia tiền theo khoản, thu tiền với ≥ 8 người (WBS 5.5).
-
-## Q5 cũ — Độ chính xác bộ trích xuất (đã bỏ 24/11/2026, giữ lại để đối chiếu)
-
-**Biện pháp QA:**
-- Bộ test mẫu cho từng nhóm trường và các trường hợp dễ nhầm ("Việt Nam" không phải 2 nam, "1 gậy" không phải 1 giờ, số điện thoại, "2 đôi" không phải tiền, Unicode tổ hợp từ Facebook): `tests/parser/parsePost.test.js`.
-
-**Phương pháp đo (khi có dữ liệu):**
-1. Bộ dữ liệu 100 bài, gán nhãn 4 nhóm trường; đo độ đồng thuận người gán nhãn bằng Cohen's κ (mục tiêu ≥ 0,8).
-2. Chia 70% tập phát triển luật (70 bài), 30% tập kiểm tra **giữ kín** (30 bài).
-3. Tính Precision / Recall / F1 cho từng trường trên tập kiểm tra cho bộ trích xuất dựa trên luật; phân loại từng lỗi (viết tắt, sai chính tả, cách ghi giờ lạ, thiếu thông tin…).
-4. Ghi kết quả và phân tích lỗi vào báo cáo đồ án.
 
 ---
 

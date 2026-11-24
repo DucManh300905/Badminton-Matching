@@ -43,7 +43,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
 | 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
 | 4.2 | Lõi nghiệp vụ: kèo, chỗ, trình độ | `backend/src/modules/post/post.rules.js` | M | 8 | 4.1.1 | Xong |
-| 4.3 | Gỡ bộ trích xuất bài đăng (code `parser/`, API `/api/parse`, ô dán bài, test, tài liệu) | Code và tài liệu không còn bộ trích xuất | M | 2 | – | Chưa |
+| 4.3 | Gỡ bộ trích xuất bài đăng (code `parser/`, API `/api/parse`, ô dán bài, test, tài liệu) | Code và tài liệu không còn bộ trích xuất | M | 2 | – | Xong |
 | 4.4.1 | Xác thực (email + mật khẩu, JWT) | Đăng nhập hoạt động | M | 4 | 4.1.3 | Xong |
 | 4.4.2 | API kèo + tham gia/rời | API posts | M | 10 | 4.2, 4.4.1 | Xong |
 | 4.4.3 | Tìm kiếm theo khu vực / ngày / trình độ | API search | M | 8 | 4.4.2 | Xong |
@@ -54,7 +54,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.6 | Thông báo qua email | Module notify | S | 4 | 4.4.2 | Chưa |
 | 4.7 | Đánh giá uy tín sau kèo | API + UI rating | C | 6 | 4.4.2 | Chưa |
 | 4.8.1 | Thu tiền kèo bằng mã QR chuyển khoản (VietQR): số tài khoản trong hồ sơ, QR đúng số tiền từng người, chủ kèo đánh dấu đã trả | API + UI thanh toán kèo (US-32) | M | 6 | 4.4.2 | Xong |
-| 4.8.2 | **Chi phí theo từng khoản** (sân, cầu, nước, ăn, khác): chủ kèo thêm / sửa bất cứ lúc nào, chọn người cùng chịu từng khoản (có "Chọn tất cả"), thêm bạn không dùng app; mọi người trong kèo xem được; điểm danh; "còn thiếu" khi chi phí tăng sau khi đã trả. Thay cho bản chốt chi phí chia đều | API + UI chi phí kèo (US-33, US-28) | M | 10 | 4.8.1 | Đang làm |
+| 4.8.2 | **Chi phí theo từng khoản** (sân, cầu, nước, ăn, khác): chủ kèo thêm / sửa bất cứ lúc nào, chọn người cùng chịu từng khoản (có "Chọn tất cả"), thêm bạn không dùng app; mọi người trong kèo xem được; điểm danh; "còn thiếu" khi chi phí tăng sau khi đã trả. Thay cho bản chốt chi phí chia đều | API + UI chi phí kèo (US-33, US-28) | M | 10 | 4.8.1 | Xong |
 | 4.8.3 | Cài web lên màn hình chính (PWA: manifest, biểu tượng) | `manifest.webmanifest`, biểu tượng | S | 2 | 4.5.2 | Xong |
 | 4.8.4 | Tin nhắn tổng kết kèo để sao chép / chia sẻ sang Zalo, Facebook | Nút "Sao chép" ở chi tiết kèo (US-35, gộp US-14) | S | 1 | 4.8.1 | Chưa |
 | 4.8.5 | Lịch sử chi tiêu theo tháng | Mục trong "Kèo của tôi" (US-36) | C | 1 | 4.8.2 | Chưa |

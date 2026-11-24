@@ -64,61 +64,98 @@ export interface Participant extends PublicUser {
   level: SkillLevel | null;
   slot: SlotKind;
   joinedAt: string;
-  /** Ba trường dưới chỉ có khi người xem là chủ kèo hoặc người trong kèo */
+  /** Các trường dưới chỉ có khi người xem là chủ kèo hoặc người trong kèo */
   paid?: boolean;
-  /** Điểm danh khi chốt chi phí: true có mặt, false vắng, null chưa điểm danh */
+  /** Điểm danh sau giờ bắt đầu: true có mặt, false vắng, null chưa điểm danh */
   attended?: boolean | null;
-  /** Số tiền người này phải trả (0 = vắng và chủ kèo không thu của người vắng) */
-  amountDue?: number;
+  /** Số tiền người này phải trả; null = chủ kèo chưa nhập khoản chi nào */
+  amountDue?: number | null;
+  paymentStatus?: PaymentStatus;
 }
 
-/** Chi phí thật đã chốt sau buổi (WBS 4.8.2) */
-export interface Settlement {
-  courtFee: number;
-  shuttleFee: number;
-  otherFee: number;
+/** none: chưa có khoản phải trả · unpaid · paid · owe: còn thiếu · overpaid: trả dư */
+export type PaymentStatus = 'none' | 'unpaid' | 'paid' | 'owe' | 'overpaid';
+
+export type ExpenseKind = 'court' | 'shuttle' | 'water' | 'food' | 'other';
+
+/**
+ * Mã người trong phần chia tiền: "host" (chủ kèo), "u:<userId>" (người tham gia),
+ * "g:<id>" (bạn của chủ kèo không dùng app)
+ */
+export type MemberRef = string;
+
+export interface Expense {
+  kind: ExpenseKind;
+  label: string | null;
+  amount: number;
+  /** "Chọn tất cả": luôn gồm mọi người hiện có trong kèo, kể cả người vào sau */
+  everyone: boolean;
+  sharedBy: MemberRef[];
+  /** Người đang cùng chịu (server tính) và phần của mỗi người (chưa làm tròn) */
+  sharers: MemberRef[];
+  share: number;
+}
+
+export interface CostMember {
+  ref: MemberRef;
+  type: 'host' | 'user' | 'guest';
+  name: string;
+  /** null = chưa có khoản chi nào */
+  due: number | null;
+  userId?: string;
+  status?: PaymentStatus;
+  diff?: number;
+  attended?: boolean | null;
+}
+
+/** Chi phí theo từng khoản (WBS 4.8.2): ai trong kèo cũng xem được, chỉ chủ kèo sửa */
+export interface PostCosts {
+  updatedAt: string | null;
   total: number;
-  /** Tổng số người chơi trong buổi (gồm chủ kèo và bạn của chủ kèo không dùng app) */
-  headcount: number;
-  /** Người vắng vẫn phải trả phần của mình */
-  chargeAbsent: boolean;
-  perPerson: number;
-  settledAt: string;
+  guests: { id: string; name: string }[];
+  expenses: Expense[];
+  members: CostMember[];
 }
 
-export interface SettleInput {
-  courtFee: number;
-  shuttleFee: number;
-  otherFee: number;
-  headcount: number;
-  chargeAbsent: boolean;
-  attendance: { userId: string; attended: boolean }[];
+export interface CostsInput {
+  /** key: id cũ hoặc khóa tạm cho bạn mới thêm; khoản chi tham chiếu bằng "g:<key>" */
+  guests: { key: string; name: string }[];
+  expenses: { kind: ExpenseKind; label?: string; amount: number; everyone: boolean; sharedBy: MemberRef[] }[];
 }
 
 /** Thanh toán kèo: chỉ có khi người xem là chủ kèo hoặc người đã tham gia */
 export interface PostPayment {
-  amount: number;
-  /** Có thể chuyển khoản bằng mã QR (kèo có thu tiền, chưa hủy, chủ kèo đã nhập tài khoản) */
-  available: boolean;
+  /** Chủ kèo đã nhập ít nhất một khoản chi (chưa có thì chưa có mã QR) */
+  hasCosts: boolean;
+  /** Chi phí dự kiến mỗi người lúc đăng kèo, để tham khảo */
+  estimate: number;
   bank: { bin: string; shortName: string } | null;
   accountNumber: string | null;
   accountName: string | null;
-  /** participantCount = số người phải trả (không tính người vắng không bị thu) */
+  /** Chỉ tính người tham gia qua app phải trả > 0 */
   summary: { paidCount: number; participantCount: number; collected: number; expected: number };
-  /** Chỉ có với chủ kèo: đang trong khung được chốt chi phí (từ giờ bắt đầu tới 24 giờ sau giờ kết thúc) */
-  canSettle?: boolean;
-  /** Các trường dưới chỉ có với người tham gia (không có với chủ kèo) */
+  /** Chỉ có với chủ kèo */
+  canEditCosts?: boolean;
+  canMarkAttendance?: boolean;
+  /** Các trường dưới chỉ có với người tham gia */
+  amount?: number;
+  status?: PaymentStatus;
+  /** Số còn phải chuyển (còn thiếu nếu đã trả trước đó) */
+  toPay?: number;
+  diff?: number;
+  paid?: boolean;
+  paidAmount?: number | null;
+  attended?: boolean | null;
+  available?: boolean;
   content?: string;
   qr?: string | null;
-  paid?: boolean;
-  attended?: boolean | null;
 }
 
 /** Kèo ở trang chi tiết */
 export interface PostDetail extends PostSummary {
   participants: Participant[];
-  /** Chỉ người trong kèo; null = chưa chốt */
-  settlement?: Settlement | null;
+  /** Chỉ người trong kèo */
+  costs?: PostCosts;
   payment?: PostPayment;
 }
 
@@ -139,7 +176,6 @@ export interface CreatePostInput {
   pricePerPerson: number;
   slots: SlotNeed;
   note?: string;
-  rawText?: string;
 }
 
 export interface RegisterInput {
@@ -148,22 +184,4 @@ export interface RegisterInput {
   displayName: string;
   gender: Gender;
   level: SkillLevel;
-}
-
-export interface TimeOfDay {
-  hour: number;
-  minute: number;
-}
-
-/** Kết quả bộ trích xuất bài đăng (POST /api/parse) */
-export interface ParsedPost {
-  dayOffset?: number;
-  weekday?: number;
-  start?: TimeOfDay;
-  end?: TimeOfDay;
-  pricePerPerson?: number;
-  slots?: SlotNeed;
-  levelMin?: SkillLevel;
-  levelMax?: SkillLevel;
-  confidence: number;
 }

@@ -7,82 +7,108 @@ import PaymentCard from './PaymentCard';
 vi.mock('qrcode', () => ({ default: { toDataURL: vi.fn(() => Promise.resolve('data:image/png;base64,QR')) } }));
 
 const base: PostPayment = {
-  amount: 50_000,
-  available: true,
+  hasCosts: true,
+  estimate: 50_000,
   bank: { bin: '970436', shortName: 'Vietcombank' },
   accountNumber: '0123456789',
   accountName: 'CHU KEO',
-  summary: { paidCount: 0, participantCount: 1, collected: 0, expected: 50_000 },
+  summary: { paidCount: 0, participantCount: 2, collected: 0, expected: 260_000 },
+  amount: 180_000,
+  status: 'unpaid',
+  toPay: 180_000,
+  diff: 0,
+  paid: false,
+  paidAmount: null,
+  attended: null,
+  available: true,
   content: 'BM 7207C1 DUC MANH',
   qr: '000201010212...',
-  paid: false,
 };
 
 describe('PaymentCard', () => {
-  it('hiện mã QR, số tiền, ngân hàng, số tài khoản, nội dung và trạng thái chưa xác nhận', async () => {
+  it('chưa trả: mã QR đúng số tiền, ngân hàng, số tài khoản, nội dung', async () => {
     render(<PaymentCard payment={base} postId="6b03ac71dd6dd4f6e07207c1" />);
 
-    expect(await screen.findByRole('img', { name: /Mã QR chuyển 50\.000/ })).toHaveAttribute(
+    expect(await screen.findByRole('img', { name: /Mã QR chuyển 180\.000/ })).toHaveAttribute(
       'src',
       'data:image/png;base64,QR',
     );
     expect(screen.getByText('Vietcombank')).toBeInTheDocument();
     expect(screen.getByText('0123456789')).toBeInTheDocument();
     expect(screen.getByText('BM 7207C1 DUC MANH')).toBeInTheDocument();
-    expect(screen.getByText('Chưa xác nhận')).toBeInTheDocument();
+    expect(screen.getByText('Chưa trả')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Lưu ảnh QR' })).toHaveAttribute('download', 'ma-qr-keo-7207c1.png');
   });
 
-  it('chủ kèo đã đánh dấu → "Đã trả"', async () => {
-    render(<PaymentCard payment={{ ...base, paid: true }} postId="abc123" />);
-    expect(await screen.findByText('Đã trả')).toBeInTheDocument();
-  });
-
-  it('chủ kèo chưa nhập tài khoản → không có mã QR, hướng dẫn trả trực tiếp', () => {
+  it('chủ kèo chưa nhập chi phí → chưa có mã QR, hiện chi phí dự kiến', () => {
     render(
       <PaymentCard
-        payment={{ ...base, available: false, qr: null, bank: null, accountNumber: null, accountName: null }}
-        postId="abc123"
+        payment={{ ...base, hasCosts: false, amount: 0, toPay: 0, qr: null, available: false }}
+        postId="abc"
       />,
     );
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
-    expect(screen.getByText(/chưa thêm tài khoản nhận tiền/)).toBeInTheDocument();
+    expect(screen.getByText(/Chủ kèo chưa nhập chi phí\. Chi phí dự kiến khoảng 50\.000đ/)).toBeInTheDocument();
   });
 
-  it('đã chốt chi phí → hiện từng khoản và số tiền mỗi người', async () => {
+  it('đã trả đủ → không còn mã QR', () => {
     render(
       <PaymentCard
-        payment={{ ...base, amount: 53_000, attended: true }}
-        postId="abc123"
-        settlement={{
-          courtFee: 320_000,
-          shuttleFee: 80_000,
-          otherFee: 20_000,
-          total: 420_000,
-          headcount: 8,
-          chargeAbsent: false,
-          perPerson: 53_000,
-          settledAt: '2026-11-24T15:00:00.000Z',
-        }}
+        payment={{ ...base, status: 'paid', toPay: 0, paid: true, paidAmount: 180_000, qr: null }}
+        postId="abc"
       />,
     );
-    expect(await screen.findByText('Tiền sân')).toBeInTheDocument();
-    expect(screen.getByText(/420\.000.*53\.000/)).toBeInTheDocument();
+    expect(screen.getByText('Đã trả')).toBeInTheDocument();
+    expect(screen.getByText(/Bạn đã trả đủ/)).toBeInTheDocument();
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
-  it('vắng mặt, chủ kèo không thu người vắng → không phải trả', () => {
-    render(<PaymentCard payment={{ ...base, amount: 0, available: false, qr: null, attended: false }} postId="abc" />);
-    expect(screen.getByText(/ghi nhận bạn vắng mặt buổi này, bạn không phải trả/)).toBeInTheDocument();
+  it('còn thiếu → giải thích và mã QR cho phần thiếu', async () => {
+    render(
+      <PaymentCard
+        payment={{
+          ...base,
+          amount: 190_000,
+          status: 'owe',
+          toPay: 10_000,
+          diff: 10_000,
+          paid: true,
+          paidAmount: 180_000,
+        }}
+        postId="abc"
+      />,
+    );
+    expect(await screen.findByRole('img', { name: /Mã QR chuyển 10\.000/ })).toBeInTheDocument();
+    expect(screen.getByText(/cần chuyển thêm 10\.000đ/)).toBeInTheDocument();
   });
 
-  it('vắng mặt nhưng chủ kèo thu cả người vắng → vẫn có mã QR, có giải thích', async () => {
-    render(<PaymentCard payment={{ ...base, attended: false }} postId="abc" />);
-    expect(await screen.findByRole('img')).toBeInTheDocument();
-    expect(screen.getByText(/người vắng vẫn trả phần của mình/)).toBeInTheDocument();
+  it('trả dư → báo chủ kèo sẽ hoàn lại', () => {
+    render(
+      <PaymentCard
+        payment={{
+          ...base,
+          amount: 100_000,
+          status: 'overpaid',
+          toPay: 0,
+          diff: 80_000,
+          paid: true,
+          paidAmount: 180_000,
+          qr: null,
+        }}
+        postId="abc"
+      />,
+    );
+    expect(screen.getByText(/trả dư 80\.000đ/)).toBeInTheDocument();
   });
 
-  it('kèo miễn phí → không cần chuyển tiền', () => {
-    render(<PaymentCard payment={{ ...base, amount: 0, available: false, qr: null }} postId="abc123" />);
-    expect(screen.getByText(/Kèo miễn phí/)).toBeInTheDocument();
+  it('không có khoản nào phải trả (vd: vắng, không bị tính) → không cần chuyển tiền', () => {
+    render(
+      <PaymentCard
+        payment={{ ...base, amount: 0, toPay: 0, status: 'none', qr: null, available: false, attended: false }}
+        postId="abc"
+      />,
+    );
+    expect(screen.getByText(/không phải trả khoản nào/)).toBeInTheDocument();
+    expect(screen.getByText(/ghi nhận bạn vắng mặt/)).toBeInTheDocument();
   });
 });

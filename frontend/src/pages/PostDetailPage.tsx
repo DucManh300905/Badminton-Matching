@@ -4,7 +4,7 @@ import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
 import PaymentCard from '../components/PaymentCard';
-import SettlementForm, { SettlementSummary } from '../components/SettlementForm';
+import CostsCard, { AttendanceCard } from '../components/CostsCard';
 import { Alert, Avatar, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostDetail } from '../types';
@@ -140,7 +140,7 @@ export default function PostDetailPage() {
                 <dd>{formatLevelRange(post.levelMin, post.levelMax)}</dd>
               </div>
               <div>
-                <dt>Chi phí</dt>
+                <dt>Chi phí dự kiến</dt>
                 <dd>{formatPrice(post.pricePerPerson)}/người</dd>
               </div>
               {post.address && (
@@ -157,13 +157,13 @@ export default function PostDetailPage() {
             <h2 className="card__title">
               Người tham gia ({post.participants.length}/{total})
             </h2>
-            {isAuthor && payment && payment.amount > 0 && post.participants.length > 0 && (
+            {isAuthor && payment?.hasCosts && payment.summary.participantCount > 0 && (
               <p className="pay-summary">
                 Đã thu {payment.summary.paidCount}/{payment.summary.participantCount} người ·{' '}
                 <strong>{formatMoney(payment.summary.collected)}</strong> / {formatMoney(payment.summary.expected)}
               </p>
             )}
-            {isAuthor && payment && payment.amount > 0 && !payment.bank && post.status !== 'closed' && (
+            {isAuthor && payment?.hasCosts && !payment.bank && post.status !== 'closed' && (
               <div className="notice">
                 <Alert tone="info">
                   Thêm số tài khoản để người chơi chuyển tiền bằng mã QR:{' '}
@@ -190,20 +190,22 @@ export default function PostDetailPage() {
                       <span className="badge badge--closed">Vắng</span>
                     )}
                     {p.paid !== undefined &&
-                      (p.amountDue ?? post.pricePerPerson) > 0 &&
+                      (p.amountDue ?? 0) > 0 &&
                       (isAuthor && post.status !== 'closed' ? (
                         <button
                           type="button"
-                          className={`paid-toggle${p.paid ? ' paid-toggle--on' : ''}`}
+                          className={`paid-toggle${p.paid ? ' paid-toggle--on' : ''}${p.paymentStatus === 'owe' ? ' paid-toggle--owe' : ''}`}
                           aria-pressed={p.paid}
                           disabled={busy}
                           onClick={() => togglePaid(p.id, !p.paid)}
                         >
-                          {p.paid ? 'Đã trả' : 'Chưa trả'}
+                          {p.paymentStatus === 'owe' ? 'Còn thiếu' : p.paid ? 'Đã trả' : 'Chưa trả'}
                         </button>
                       ) : (
-                        <span className={`badge badge--${p.paid ? 'open' : 'full'}`}>
-                          {p.paid ? 'Đã trả' : 'Chưa trả'}
+                        <span
+                          className={`badge badge--${p.paymentStatus === 'owe' ? 'closed' : p.paid ? 'open' : 'full'}`}
+                        >
+                          {p.paymentStatus === 'owe' ? 'Còn thiếu' : p.paid ? 'Đã trả' : 'Chưa trả'}
                         </span>
                       ))}
                   </li>
@@ -212,14 +214,13 @@ export default function PostDetailPage() {
             )}
           </section>
 
-          {isAuthor && payment?.canSettle && (
-            <SettlementForm key={post.settlement?.settledAt ?? 'new'} post={post} onSaved={setPost} />
-          )}
-          {isAuthor && !payment?.canSettle && post.settlement && (
-            <section className="card" aria-label="Chi phí đã chốt">
-              <h2 className="card__title">Chi phí đã chốt</h2>
-              <SettlementSummary settlement={post.settlement} />
-            </section>
+          {post.costs && <CostsCard post={post} isAuthor={isAuthor} onSaved={setPost} />}
+          {isAuthor && payment?.canMarkAttendance && (
+            <AttendanceCard
+              key={post.participants.map((p) => `${p.id}${p.attended}`).join()}
+              post={post}
+              onSaved={setPost}
+            />
           )}
         </div>
 
@@ -230,8 +231,7 @@ export default function PostDetailPage() {
               <span className={`badge badge--${badge.tone}`}>{badge.text}</span>
             </div>
             <p className="action-card__price">
-              {formatPrice(post.settlement?.perPerson ?? post.pricePerPerson)}{' '}
-              <span>/ người{post.settlement ? ' (đã chốt)' : ''}</span>
+              {formatPrice(post.pricePerPerson)} <span>/ người (dự kiến)</span>
             </p>
             <dl className="slot-list">
               {SLOT_ROWS.filter(([k]) => post.slots[k] > 0).map(([k, label]) => (
@@ -262,9 +262,7 @@ export default function PostDetailPage() {
               </>
             )}
           </aside>
-          {hasJoined && payment && post.status !== 'closed' && (
-            <PaymentCard payment={payment} postId={post.id} settlement={post.settlement} />
-          )}
+          {hasJoined && payment && post.status !== 'closed' && <PaymentCard payment={payment} postId={post.id} />}
         </div>
       </div>
 
@@ -272,7 +270,7 @@ export default function PostDetailPage() {
       {post.status !== 'closed' && !started && (
         <div className="action-bar">
           <div className="action-bar__info">
-            <strong>{formatPrice(post.settlement?.perPerson ?? post.pricePerPerson)}</strong>
+            <strong>{formatPrice(post.pricePerPerson)}</strong>
             <span>{badge.text}</span>
           </div>
           {actionButton}
