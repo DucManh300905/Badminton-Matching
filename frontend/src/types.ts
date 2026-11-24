@@ -1,12 +1,21 @@
 // Kiểu dữ liệu dùng chung, khớp với JSON backend trả về (docs/API.md)
 import type { Gender, SkillLevel } from './utils/constants';
 
+/** Tài khoản nhận tiền chuyển khoản (chỉ người trong kèo của chủ tài khoản mới thấy) */
+export interface BankAccount {
+  bankBin: string;
+  accountNumber: string;
+  /** In hoa, không dấu */
+  accountName: string;
+}
+
 export interface User {
   id: string;
   email: string;
   displayName: string;
   gender: Gender;
   level: SkillLevel;
+  bankAccount?: BankAccount;
 }
 
 /** Kết quả đăng ký / đăng nhập */
@@ -55,11 +64,29 @@ export interface Participant extends PublicUser {
   level: SkillLevel | null;
   slot: SlotKind;
   joinedAt: string;
+  /** Chỉ có khi người xem là chủ kèo hoặc người trong kèo */
+  paid?: boolean;
+}
+
+/** Thanh toán kèo: chỉ có khi người xem là chủ kèo hoặc người đã tham gia */
+export interface PostPayment {
+  amount: number;
+  /** Có thể chuyển khoản bằng mã QR (kèo có thu tiền, chưa hủy, chủ kèo đã nhập tài khoản) */
+  available: boolean;
+  bank: { bin: string; shortName: string } | null;
+  accountNumber: string | null;
+  accountName: string | null;
+  summary: { paidCount: number; participantCount: number; collected: number; expected: number };
+  /** Ba trường dưới chỉ có với người tham gia (không có với chủ kèo) */
+  content?: string;
+  qr?: string | null;
+  paid?: boolean;
 }
 
 /** Kèo ở trang chi tiết */
 export interface PostDetail extends PostSummary {
   participants: Participant[];
+  payment?: PostPayment;
 }
 
 export interface PostFilter {

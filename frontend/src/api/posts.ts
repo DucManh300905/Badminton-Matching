@@ -33,4 +33,10 @@ export const postsApi = {
     const res = await client.post<ApiResponse<PostDetail>>(`/posts/${id}/cancel`);
     return res.data.data;
   },
+
+  /** Chỉ chủ kèo: đánh dấu một người đã / chưa chuyển tiền */
+  async setPaid(id: string, userId: string, paid: boolean) {
+    const res = await client.patch<ApiResponse<PostDetail>>(`/posts/${id}/participants/${userId}/payment`, { paid });
+    return res.data.data;
+  },
 };

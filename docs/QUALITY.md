@@ -10,9 +10,9 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 13/13 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 160 test backend + 42 test frontend; 13/13 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 15/15 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 189 test backend + 46 test frontend; 15/15 BR; coverage dòng 99,25%; smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
-| Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 113,5 KB |
+| Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 126,9 KB (thêm thư viện vẽ mã QR) |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; thời gian tạo bài giảm ≥ 50% nhờ "dán bài → tự điền" (RQ2) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
 | Q5 | Độ chính xác bộ trích xuất | F1 trung bình theo trường ≥ 0,75, không nhóm trường nào dưới 0,60, trên tập kiểm tra 30 bài (RQ1); có bảng phân loại lỗi | **Chưa đo**: chờ bộ dữ liệu gán nhãn (WBS 2.2) |
 
@@ -39,6 +39,8 @@
 | TC-Q1-06 | Lọc kèo ngày mai lúc 5h30 sáng khi server chạy giờ UTC | Kèo nằm đúng ngày theo lịch Việt Nam | `post.test.js`, `utils/vnTime.test.js` |
 | TC-Q1-07 | Đăng kèo giờ kết thúc trước giờ bắt đầu / ở quá khứ | 400, chỉ rõ trường `endsAt` / `startsAt` | `post.test.js` |
 | TC-Q1-08 | Smoke test trên **máy chủ chạy thật** (qua Cloudflare + Nginx): đăng ký, đăng nhập, dán bài, đăng kèo, 3 người tranh 2 chỗ cùng lúc, rời, hủy | 17/17 bước đạt, tự dọn dữ liệu thử | `npm run smoke` với `SMOKE_API_URL=https://sv22.bcse-vju.com/api`, 23/11/2026 ([DEPLOY.md](DEPLOY.md) mục 4) |
+| TC-Q1-09 | Mã QR chuyển khoản theo chuẩn VietQR: đủ trường, đúng BIN / số tài khoản / số tiền / nội dung, CRC16 đúng (mẫu chuẩn "123456789" → 29B1) | Mọi trường đúng; giải mã ảnh QR trên giao diện ra đúng chuỗi | `tests/utils/vietqr.test.js`; giải mã ảnh chụp màn hình bằng jsQR (24/11/2026) |
+| TC-Q1-10 | Chủ kèo đánh dấu đã trả; người khác thử đánh dấu; đánh dấu người ngoài kèo; kèo đã hủy; người khác vào / rời kèo | 200; 403 `NOT_AUTHOR`; 409 `NOT_JOINED`; 409 `POST_NOT_OPEN`; trạng thái đã trả không mất (BR-14) | `tests/post/payment.test.js` |
 
 ## Q2 — Bảo mật
 
@@ -62,6 +64,7 @@
 | TC-Q2-06 | Client tự gửi `tokenVersion`, `email`, `author`, `status`, `participants` | Bị bỏ qua | `auth.test.js`, `user.test.js`, `post.test.js` |
 | TC-Q2-07 | Xem chi tiết kèo / danh sách | Không có email người khác, không có `rawText` | `post.test.js` |
 | TC-Q2-08 | Lỗi không lường trước ở server | 500 `INTERNAL_ERROR`, không trả chi tiết lỗi | `tests/utils/error-middleware.test.js` |
+| TC-Q2-09 | Khách, người ngoài kèo, token hỏng xem chi tiết kèo có thu tiền | Không có số tài khoản, không có `payment` / `paid` (BR-15) | `tests/post/payment.test.js` |
 
 **Ghi nhận:** `npm audit` (kể cả thư viện dev) báo lỗ hổng trong thư viện con của **Jest** (`deepmerge`, `glob`). Đây là công cụ test, chỉ chạy trên máy dev và CI, không có trong bản chạy thật. Lệnh "sửa" mà npm gợi ý hạ Jest xuống bản 25 nên không áp dụng; theo dõi bản cập nhật của Jest ([RISKS.md](RISKS.md) R9).
 
@@ -98,6 +101,8 @@
 | TC-Q4-01 | Xem danh sách → lọc → chưa đăng nhập bị chuyển sang Đăng nhập → đăng nhập → dán bài mẫu → tự điền → đăng kèo → người khác tham gia → "Kèo của tôi" → token hết hạn → chủ kèo hủy kèo → trang 404 | 14/14 bước đạt, 0 lỗi JavaScript |
 | TC-Q4-02 | Đăng ký → sửa trình độ → đổi mật khẩu (nhập lại sai, sai mật khẩu hiện tại, đúng) → đăng xuất → đăng nhập bằng mật khẩu mới | 10/10 bước đạt |
 | TC-Q4-03 | Mở bản chạy thật https://sv22.bcse-vju.com ở 1366 px và 390 px: trang chủ, gọi API danh sách kèo, mở thẳng `/dang-ky` | 6/6 bước đạt, 0 lỗi JavaScript của ứng dụng (23/11/2026) |
+| TC-Q4-04 | Chủ kèo nhập tài khoản nhận tiền → người tham gia thấy mã QR, số tài khoản, nội dung → chủ kèo đánh dấu đã trả → người tham gia thấy "Đã trả" → khách không thấy gì | 11/11 bước đạt, 0 lỗi JavaScript (24/11/2026) |
+| TC-Q4-05 | Quét mã QR bằng **2 ứng dụng ngân hàng khác nhau** (không cần chuyển tiền thật) | Ứng dụng điền sẵn đúng ngân hàng, số tài khoản, tên, số tiền, nội dung. **Chưa làm**: chờ kiểm tra bằng điện thoại thật (rủi ro R7) |
 
 **Việc còn lại:**
 - Chuyển hai kịch bản trên thành bộ test E2E (Playwright) trong repo và chạy trên CI (WBS 5.3).

@@ -72,7 +72,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 
 ### R6 — Vi phạm quy định bảo vệ dữ liệu cá nhân (Trung bình, 10 điểm)
 - **Mô tả:** thu thập bài đăng hoặc thông tin người dùng trái Nghị định 13/2023/NĐ-CP và Luật Bảo vệ dữ liệu cá nhân.
-- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác.
+- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác. **Số tài khoản nhận tiền** (WBS 4.8.1) do người dùng tự nhập và tự xóa được, không bắt buộc, chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15, TC-Q2-09); hệ thống không lưu giao dịch chuyển tiền.
 
 ### R7 — Mã QR chuyển khoản sai (Thấp, 6 điểm)
 - **Mô tả:** chủ kèo nhập sai số tài khoản hoặc mã QR sinh sai số tiền / nội dung, người chơi chuyển nhầm (gói 4.8). Thay cho rủi ro chi phí API LLM trước đây (đã bỏ LLM ngày 24/11/2026).

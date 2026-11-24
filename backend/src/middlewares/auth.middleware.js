@@ -54,7 +54,24 @@ const authenticate = async (req, res, next) => {
     }
 };
 
+/**
+ * Đăng nhập tùy chọn: có token hợp lệ thì gắn req.user, không có hoặc token hỏng thì coi là khách.
+ * Dùng cho trang công khai nhưng hiện thêm thông tin riêng cho người liên quan (vd: thanh toán kèo).
+ */
+const optionalAuthenticate = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+            req.user = await verifyToken(authHeader.split(' ')[1]);
+        } catch {
+            req.user = undefined;
+        }
+    }
+    next();
+};
+
 module.exports = {
     authenticate,
+    optionalAuthenticate,
     verifyToken
 };

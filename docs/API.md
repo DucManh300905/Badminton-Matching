@@ -64,8 +64,10 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 
 **User**
 ```json
-{ "id": "665f…", "email": "minh@example.com", "displayName": "Minh", "gender": "male", "level": "TB" }
+{ "id": "665f…", "email": "minh@example.com", "displayName": "Minh", "gender": "male", "level": "TB",
+  "bankAccount": { "bankBin": "970436", "accountNumber": "0123456789", "accountName": "NGUYEN VAN MINH" } }
 ```
+- `bankAccount` (tài khoản nhận tiền) chỉ có khi người dùng đã nhập; chỉ trả cho chính chủ.
 
 **PostSummary** (danh sách kèo)
 ```json
@@ -94,9 +96,29 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 **PostDetail** = PostSummary + danh sách người tham gia:
 ```json
 "participants": [
-  { "id": "665f…", "displayName": "Lan", "gender": "female", "level": "TB_MINUS", "slot": "female", "joinedAt": "2026-11-13T08:00:00.000Z" }
+  { "id": "665f…", "displayName": "Lan", "gender": "female", "level": "TB_MINUS", "slot": "female", "joinedAt": "2026-11-13T08:00:00.000Z", "paid": false }
 ]
 ```
+- `paid` và `payment` (bên dưới) **chỉ có khi người xem là chủ kèo hoặc người đã tham gia** (gửi kèm token); khách và người ngoài kèo không thấy (BR-15).
+
+**PostPayment** (`payment` trong PostDetail, WBS 4.8.1):
+```json
+"payment": {
+  "amount": 50000,
+  "available": true,
+  "bank": { "bin": "970436", "shortName": "Vietcombank" },
+  "accountNumber": "0123456789",
+  "accountName": "NGUYEN VAN MINH",
+  "summary": { "paidCount": 1, "participantCount": 2, "collected": 50000, "expected": 100000 },
+  "content": "BM 70FB8C LAN",
+  "qr": "00020101021238540010A000000727…6304ABCD",
+  "paid": false
+}
+```
+- `available`: kèo có thu tiền (`amount > 0`), chưa hủy và chủ kèo đã nhập tài khoản. Khi `false` thì `bank`, `accountNumber`, `accountName`, `qr` là `null`.
+- `content`, `qr`, `paid` chỉ có với **người tham gia** (không có với chủ kèo). `qr` là chuỗi theo chuẩn **VietQR** (NAPAS / EMVCo), client vẽ thành mã QR; ứng dụng ngân hàng quét sẽ điền sẵn ngân hàng, số tài khoản, số tiền, nội dung.
+- `content`: `BM <6 ký tự cuối mã kèo> <tên người chơi không dấu>`, tối đa 25 ký tự.
+- Hệ thống **không giữ tiền và không tự biết ai đã chuyển**: chủ kèo đối chiếu tài khoản rồi đánh dấu bằng `PATCH …/payment`.
 
 **Danh mục**
 
@@ -118,12 +140,15 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | GET | `/users/me` | Có | Thông tin của mình |
 | PUT | `/users/me` | Có | Sửa tên, giới tính, trình độ |
 | GET | `/users/me/posts` | Có | Kèo mình đã đăng và đã tham gia |
+| PUT | `/users/me/bank-account` | Có | Lưu / sửa tài khoản nhận tiền |
+| DELETE | `/users/me/bank-account` | Có | Xóa tài khoản nhận tiền |
 | GET | `/posts` | | Danh sách kèo sắp diễn ra, có lọc |
-| GET | `/posts/:id` | | Chi tiết kèo |
+| GET | `/posts/:id` | Tùy chọn | Chi tiết kèo; có token thì người trong kèo thấy thêm phần thanh toán |
 | POST | `/posts` | Có | Đăng kèo |
 | POST | `/posts/:id/join` | Có | Tham gia kèo |
 | DELETE | `/posts/:id/join` | Có | Rời kèo |
 | POST | `/posts/:id/cancel` | Có | Hủy kèo (chỉ chủ kèo) |
+| PATCH | `/posts/:id/participants/:userId/payment` | Có | Đánh dấu đã / chưa trả tiền (chỉ chủ kèo) |
 | POST | `/parse` | | Trích thông tin từ nội dung bài đăng |
 
 ## 3. Chi tiết endpoint
@@ -166,6 +191,18 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 `200` → `data: { authored: PostSummary[], joined: PostSummary[] }`
 - Mỗi danh sách tối đa 50 kèo, mới nhất trước, **gồm cả kèo đã qua và đã hủy**.
 
+#### `PUT /users/me/bank-account`
+| Trường | Bắt buộc | Ràng buộc |
+|---|:-:|---|
+| `bankBin` | Có | Mã BIN 6 số, thuộc danh sách ngân hàng (`backend/src/utils/banks.js`, theo danh sách của Ngân hàng Nhà nước) |
+| `accountNumber` | Có | 6 – 19 chữ số; khoảng trắng, dấu chấm, gạch ngang được tự bỏ |
+| `accountName` | Có | 2 – 50 chữ cái; server tự đổi sang **in hoa không dấu** (`Nguyễn Văn Minh` → `NGUYEN VAN MINH`) |
+
+- `200` → `data: User` (có `bankAccount` đã chuẩn hóa) · `400 VALIDATION_ERROR` · `401`
+
+#### `DELETE /users/me/bank-account`
+- `200` → `data: User` (không còn `bankAccount`) · `401`
+
 ### 3.3 Kèo
 
 #### `GET /posts`
@@ -179,6 +216,7 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 - `200` → `data: PostSummary[]` · `400 VALIDATION_ERROR` (tham số sai)
 
 #### `GET /posts/:id`
+- Không bắt buộc đăng nhập. Gửi kèm token thì: chủ kèo và người đã tham gia nhận thêm `participants[].paid` và `payment`; token hỏng hoặc hết hạn thì coi như khách (không báo 401).
 - `200` → `data: PostDetail` · `404 NOT_FOUND`
 
 #### `POST /posts`
@@ -212,6 +250,12 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 #### `POST /posts/:id/cancel`
 - `200` → `data: PostDetail` (`status: "closed"`)
 - `403 NOT_AUTHOR` · `409 POST_STARTED` · `409 POST_NOT_OPEN` (đã hủy trước đó) · `401` · `404 NOT_FOUND`
+
+#### `PATCH /posts/:id/participants/:userId/payment`
+Body: `{ "paid": true }` hoặc `{ "paid": false }` (đúng kiểu boolean).
+- Chủ kèo đánh dấu người tham gia `userId` đã / chưa chuyển tiền (BR-14). Làm được cả sau giờ chơi, trừ khi kèo đã hủy.
+- `200` → `data: PostDetail` (đã cập nhật `paid`, `payment.summary`)
+- `403 NOT_AUTHOR` · `409 NOT_JOINED` (người đó không tham gia kèo) · `409 POST_NOT_OPEN` (kèo đã hủy) · `400 VALIDATION_ERROR` · `401` · `404 NOT_FOUND`
 
 ### 3.4 Bộ trích xuất
 
@@ -248,14 +292,14 @@ Body: `{ "text": "Tối nay 19h-21h sân Cầu Giấy thiếu 2 nam 1 nữ TB- �
 | `UNAUTHORIZED` | 401 | Không gửi token | Vui lòng đăng nhập để tiếp tục. |
 | `TOKEN_EXPIRED` | 401 | Token sai, hết hạn, hoặc đã đổi mật khẩu | Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại. |
 | `INVALID_CREDENTIALS` | 401 | Sai email hoặc mật khẩu | Email hoặc mật khẩu không đúng. |
-| `NOT_AUTHOR` | 403 | Không phải chủ kèo | Chỉ chủ kèo mới hủy được kèo. |
+| `NOT_AUTHOR` | 403 | Không phải chủ kèo (hủy kèo, đánh dấu đã trả) | Chỉ chủ kèo mới làm được thao tác này. |
 | `NOT_FOUND` | 404 | Không tìm thấy / đường dẫn sai | Không tìm thấy dữ liệu. |
 | `DUPLICATE` | 409 | Trùng dữ liệu duy nhất (email) | Email này đã được đăng ký. |
 | `POST_NOT_OPEN` | 409 | Kèo đủ người hoặc đã hủy | Kèo đã đủ người hoặc đã bị hủy. |
 | `POST_STARTED` | 409 | Kèo đã bắt đầu | Kèo đã bắt đầu, không thể thay đổi. |
 | `IS_AUTHOR` | 409 | Chủ kèo tự tham gia | Bạn là chủ kèo này. |
 | `ALREADY_JOINED` | 409 | Đã tham gia rồi | Bạn đã tham gia kèo này rồi. |
-| `NOT_JOINED` | 409 | Rời kèo chưa tham gia | Bạn chưa tham gia kèo này. |
+| `NOT_JOINED` | 409 | Rời kèo chưa tham gia; đánh dấu đã trả cho người không trong kèo | Bạn chưa tham gia kèo này. |
 | `LEVEL_MISMATCH` | 409 | Trình độ ngoài khoảng của kèo | Trình độ của bạn không nằm trong khoảng kèo yêu cầu. |
 | `NO_SLOT` | 409 | Hết chỗ hợp giới tính | Kèo không còn chỗ phù hợp với giới tính của bạn. |
 | `SYSTEM_BUSY` | 409 | Xung đột ghi CSDL | Hệ thống đang bận, vui lòng thử lại. |

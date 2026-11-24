@@ -14,11 +14,13 @@ const notFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy kèo')
 
 const AUTHOR_FIELDS = 'displayName';
 const PARTICIPANT_FIELDS = 'displayName gender level';
+// Trang chi tiết cần thêm tài khoản nhận tiền của chủ kèo; serializer chỉ đưa cho người trong kèo (BR-15)
+const AUTHOR_DETAIL_FIELDS = 'displayName bankAccount';
 
 /** Đọc kèo kèm tên chủ kèo + thông tin người tham gia */
 const findDetail = (id) =>
     Post.findById(id)
-        .populate('author', AUTHOR_FIELDS)
+        .populate('author', AUTHOR_DETAIL_FIELDS)
         .populate('participants.user', PARTICIPANT_FIELDS);
 
 /**
@@ -148,7 +150,39 @@ const leavePost = (postId, userId, now) => updateParticipants(postId, (post) => 
 /** @param {string} postId @param {string} userId @param {Date} now */
 const cancelPost = (postId, userId, now) => updateParticipants(postId, (post) => rules.cancelPost(post, userId, now));
 
+/**
+ * Chủ kèo đánh dấu một người đã / chưa chuyển tiền (BR-14).
+ * Không cần transaction: chỉ đổi đúng một trường của một người, ghi nguyên tử bằng toán tử vị trí "$".
+ * @param {string} postId
+ * @param {string} authorId  Người đang thao tác
+ * @param {string} playerId  Người được đánh dấu
+ * @param {boolean} paid
+ * @param {Date} now
+ */
+const setPaid = async (postId, authorId, playerId, paid, now) => {
+    const post = await Post.findById(postId).select('author status participants.user');
+    if (!post) {
+        throw notFound();
+    }
+    if (String(post.author) !== authorId) {
+        throw new AppError(403, 'NOT_AUTHOR', 'Chỉ chủ kèo mới đánh dấu được');
+    }
+    if (post.status === 'closed') {
+        throw new AppError(409, 'POST_NOT_OPEN', 'Kèo đã bị hủy');
+    }
+    if (!post.participants.some((p) => String(p.user) === playerId)) {
+        throw new AppError(409, 'NOT_JOINED', 'Người này không tham gia kèo');
+    }
+
+    await Post.updateOne(
+        { _id: postId, 'participants.user': playerId },
+        { $set: { 'participants.$.paidAt': paid ? now : null } }
+    );
+    return getPost(postId);
+};
+
 module.exports = {
+    setPaid,
     LIST_LIMIT,
     MY_POSTS_LIMIT,
     listPosts,

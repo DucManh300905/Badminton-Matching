@@ -1,12 +1,12 @@
 const express = require('express');
 const { body, query } = require('express-validator');
 
-const { authenticate } = require('../../middlewares/auth.middleware');
+const { authenticate, optionalAuthenticate } = require('../../middlewares/auth.middleware');
 const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost } = require('./post.controller');
+const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid } = require('./post.controller');
 
 const router = express.Router();
 
@@ -60,11 +60,19 @@ const createRules = [
 
 // :id sai định dạng ObjectId → Mongoose báo CastError → errorHandler trả 404 NOT_FOUND
 router.get('/', listRules, validate, listPosts);
-router.get('/:id', getPost);
+// Có token thì người trong kèo thấy thêm phần thanh toán; không có vẫn xem được như khách
+router.get('/:id', optionalAuthenticate, getPost);
 
 router.post('/', authenticate, createRules, validate, createPost);
 router.post('/:id/join', authenticate, joinPost);
 router.delete('/:id/join', authenticate, leavePost);
 router.post('/:id/cancel', authenticate, cancelPost);
+router.patch(
+    '/:id/participants/:userId/payment',
+    authenticate,
+    [body('paid').isBoolean({ strict: true }).withMessage('paid phải là true hoặc false')],
+    validate,
+    setPaid
+);
 
 module.exports = router;

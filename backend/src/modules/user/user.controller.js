@@ -32,7 +32,34 @@ const updateMe = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Cập nhật thành công', data: user });
 });
 
+// PUT /api/users/me/bank-account — lưu / sửa tài khoản nhận tiền (WBS 4.8.1)
+const setBankAccount = asyncHandler(async (req, res) => {
+    const { bankBin, accountNumber, accountName } = req.body;
+    const user = await User.findByIdAndUpdate(
+        req.user.userId,
+        { $set: { bankAccount: { bankBin, accountNumber, accountName } } },
+        { returnDocument: 'after', runValidators: true }
+    );
+    if (!user) {
+        throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy người dùng');
+    }
+
+    res.json({ success: true, message: 'Đã lưu tài khoản nhận tiền', data: user });
+});
+
+// DELETE /api/users/me/bank-account
+const deleteBankAccount = asyncHandler(async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.user.userId, { $unset: { bankAccount: 1 } }, { returnDocument: 'after' });
+    if (!user) {
+        throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy người dùng');
+    }
+
+    res.json({ success: true, message: 'Đã xóa tài khoản nhận tiền', data: user });
+});
+
 module.exports = {
     getMe,
-    updateMe
+    updateMe,
+    setBankAccount,
+    deleteBankAccount
 };

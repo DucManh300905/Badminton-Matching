@@ -81,8 +81,8 @@ Nền tảng mở cho mọi người đăng kèo nên có thể bị: đăng hà
 
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
-| US-24 | Là **người chơi**, tôi muốn hệ thống chặn việc đăng kèo hàng loạt để danh sách không bị ngập kèo rác. | Mỗi tài khoản tối đa **3 kèo đang mở** và **5 kèo / ngày**; không cho đăng kèo **trùng** (cùng người, cùng sân, giờ bắt đầu cách nhau dưới 1 giờ); vượt giới hạn báo rõ lý do bằng tiếng Việt; giới hạn tạo tài khoản 10 / giờ / IP (đã có). | S | Quy tắc mới (BR-14) | Một phần (mới có giới hạn tạo tài khoản) |
-| US-25 | Là **người chơi**, tôi muốn báo cáo một kèo có dấu hiệu giả để quản trị viên kiểm tra. | Nút "Báo cáo" ở trang chi tiết, chọn lý do (kèo giả / sai thông tin / quảng cáo / lừa đảo, thu tiền trước) và ghi chú ngắn; mỗi người báo một kèo một lần; kèo bị **3 người khác nhau** báo cáo thì **tạm ẩn** khỏi danh sách cho tới khi quản trị viên xem; chủ kèo không thấy ai đã báo cáo. | S | Quy tắc mới (BR-15) | Chưa |
+| US-24 | Là **người chơi**, tôi muốn hệ thống chặn việc đăng kèo hàng loạt để danh sách không bị ngập kèo rác. | Mỗi tài khoản tối đa **3 kèo đang mở** và **5 kèo / ngày**; không cho đăng kèo **trùng** (cùng người, cùng sân, giờ bắt đầu cách nhau dưới 1 giờ); vượt giới hạn báo rõ lý do bằng tiếng Việt; giới hạn tạo tài khoản 10 / giờ / IP (đã có). | S | Quy tắc mới (BR-16) | Một phần (mới có giới hạn tạo tài khoản) |
+| US-25 | Là **người chơi**, tôi muốn báo cáo một kèo có dấu hiệu giả để quản trị viên kiểm tra. | Nút "Báo cáo" ở trang chi tiết, chọn lý do (kèo giả / sai thông tin / quảng cáo / lừa đảo, thu tiền trước) và ghi chú ngắn; mỗi người báo một kèo một lần; kèo bị **3 người khác nhau** báo cáo thì **tạm ẩn** khỏi danh sách cho tới khi quản trị viên xem; chủ kèo không thấy ai đã báo cáo. | S | Quy tắc mới (BR-17) | Chưa |
 | US-26 | Là **quản trị viên**, tôi muốn xem danh sách kèo bị báo cáo, ẩn kèo vi phạm và khóa tài khoản đăng kèo giả. | Danh sách báo cáo mới nhất trước, kèm lý do và lịch sử của chủ kèo; ẩn hoặc khôi phục kèo; khóa tài khoản thì mọi phiên đăng nhập cũ hết hiệu lực ngay (dùng `tokenVersion` sẵn có) và không đăng nhập lại được; mọi thao tác được ghi lại (ai, lúc nào, lý do). Bản tối thiểu: lệnh quản trị chạy trên máy chủ. | S | Vai trò mới | Chưa |
 | US-27 | Là **người chơi**, tôi muốn chỉ tài khoản đã xác minh email mới được đăng kèo để giảm tài khoản ảo. | Đăng ký xong nhận email chứa link xác minh (hết hạn sau 24 giờ); chưa xác minh vẫn xem và tham gia được nhưng không đăng kèo được. | C | Cần F8 (email) | Chưa |
 
@@ -94,12 +94,12 @@ Nền tảng mở cho mọi người đăng kèo nên có thể bị: đăng hà
 |---|---|---|:-:|---|---|
 | US-28 | Là **chủ kèo**, tôi muốn điểm danh người tham gia sau buổi chơi để ghi nhận ai đã không đến. | Từ giờ kết thúc tới **24 giờ sau**, chủ kèo đánh dấu từng người "Có đến / Không đến" (mặc định "Có đến"); người bị đánh dấu "Không đến" được báo và có thể **phản hồi** nếu đánh dấu sai (chuyển cho quản trị viên); người tham gia cũng có thể báo "**Kèo không diễn ra**", tính như một báo cáo kèo giả (US-25). Phần đánh dấu có mặt làm chung màn hình với chốt chi phí (US-33). | S | WBS 4.8.2 (đánh dấu có mặt), 4.7 (phản hồi), RQ3 | Chưa |
 | US-29 | Là **chủ kèo**, tôi muốn thấy độ tin cậy của người tham gia để biết ai thường đến đúng hẹn. | Hồ sơ và danh sách người tham gia hiện "đã chơi N kèo · có mặt X%"; chỉ hiện khi đã có ít nhất **3 kèo được điểm danh**, tránh đánh giá oan người mới; không hiện ai đã đánh dấu. | C | WBS 4.7, cùng nhóm US-21 | Chưa |
-| US-30 | Là **chủ kèo**, tôi muốn người hay bùng kèo bị hạn chế để kèo của tôi ít bị thiếu người phút chót. | **2 lần "Không đến" trong 30 ngày** thì tạm không tham gia kèo mới trong **7 ngày**; khi bấm tham gia thấy rõ lý do và ngày được mở lại; lần đánh dấu đã được quản trị viên gỡ (US-28 phản hồi) thì không tính. | C | Quy tắc mới (BR-16) | Chưa |
+| US-30 | Là **chủ kèo**, tôi muốn người hay bùng kèo bị hạn chế để kèo của tôi ít bị thiếu người phút chót. | **2 lần "Không đến" trong 30 ngày** thì tạm không tham gia kèo mới trong **7 ngày**; khi bấm tham gia thấy rõ lý do và ngày được mở lại; lần đánh dấu đã được quản trị viên gỡ (US-28 phản hồi) thì không tính. | C | Quy tắc mới (BR-18) | Chưa |
 | US-31 | Là **chủ kèo**, tôi muốn biết khi có người rời kèo sát giờ để kịp tìm người thay. | Rời trong vòng **2 giờ trước giờ bắt đầu** được ghi là "rời sát giờ" (tính vào độ tin cậy như nửa lần không đến); chủ kèo nhận email ngay (cùng cơ chế US-19); kèo mở lại chỗ như bình thường (BR-12). | C | F8, BR-12 | Chưa |
 
 Biện pháp **đã có hoặc đã lên kế hoạch** cũng giúp giảm bùng kèo: email nhắc trước giờ chơi (US-20), rời kèo dễ dàng để trả chỗ sớm thay vì im lặng không đến (US-16).
 
-**Quy tắc nghiệp vụ mới đề xuất** (thêm vào [project.md](project.md) mục 6 khi làm): **BR-14** giới hạn và chống trùng khi đăng kèo (US-24) · **BR-15** kèo bị 3 người báo cáo thì tạm ẩn (US-25) · **BR-16** tạm hạn chế tham gia sau 2 lần không đến trong 30 ngày (US-30).
+**Quy tắc nghiệp vụ mới đề xuất** (thêm vào [project.md](project.md) mục 6 khi làm): **BR-16** giới hạn và chống trùng khi đăng kèo (US-24) · **BR-17** kèo bị 3 người báo cáo thì tạm ẩn (US-25) · **BR-18** tạm hạn chế tham gia sau 2 lần không đến trong 30 ngày (US-30). BR-14, BR-15 đã dùng cho thu tiền ([project.md](project.md)).
 
 ### E10 — Thu tiền và chi phí kèo
 
@@ -107,7 +107,7 @@ Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ
 
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
-| US-32 | Là **người chơi đã tham gia kèo**, tôi muốn quét mã QR để chuyển đúng số tiền cho chủ kèo mà không phải hỏi số tài khoản. | Chủ kèo lưu ngân hàng, số tài khoản, tên chủ tài khoản trong hồ sơ (chỉ người đã tham gia kèo mới thấy); trang chi tiết kèo hiện mã QR VietQR có **đúng giá mỗi người** và nội dung chuyển khoản gồm mã kèo; hiện tên chủ tài khoản để đối chiếu; chủ kèo chưa nhập số tài khoản thì ẩn mã QR và nhắc chủ kèo; chủ kèo đánh dấu "Đã trả" cho từng người, người chơi thấy trạng thái của mình. | S | WBS 4.8.1, R7 | Chưa |
+| US-32 | Là **người chơi đã tham gia kèo**, tôi muốn quét mã QR để chuyển đúng số tiền cho chủ kèo mà không phải hỏi số tài khoản. | Chủ kèo lưu ngân hàng, số tài khoản, tên chủ tài khoản trong hồ sơ (chỉ người đã tham gia kèo mới thấy); trang chi tiết kèo hiện mã QR VietQR có **đúng giá mỗi người** và nội dung chuyển khoản gồm mã kèo; hiện tên chủ tài khoản để đối chiếu; chủ kèo chưa nhập số tài khoản thì ẩn mã QR và nhắc chủ kèo; chủ kèo đánh dấu "Đã trả" cho từng người, người chơi thấy trạng thái của mình. | S | WBS 4.8.1, BR-14, BR-15, R7 | Xong |
 | US-33 | Là **chủ kèo**, tôi muốn nhập chi phí thực tế sau buổi chơi (tiền sân, cầu, nước) và đánh dấu ai có mặt để chia lại cho đúng. | Mở được từ giờ kết thúc tới 24 giờ sau; nhập từng khoản bằng bàn phím số; số tiền mỗi người = tổng chi phí chia đều cho **người có mặt** (gồm cả chủ kèo), làm tròn lên 1.000đ; mã QR của US-32 cập nhật theo số tiền mới; người "Không đến" không bị chia tiền và được ghi nhận cho E9. | S | WBS 4.8.2, US-28 | Chưa |
 | US-34 | Là **người chơi**, tôi muốn thêm trang web vào màn hình chính điện thoại để mở nhanh như một ứng dụng. | Trình duyệt hiện gợi ý "Thêm vào màn hình chính" (Android Chrome); mở lên không có thanh địa chỉ, có biểu tượng và tên riêng của Badminton Matching. | S | WBS 4.8.3 | Chưa |
 | US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Chưa |
@@ -122,9 +122,9 @@ Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài t�
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
 | Must | 12 | 10 | 2 (US-13, US-22) | 0 |
-| Should | 12 | 0 | 1 (US-24) | 11 (US-14, US-19, US-20, US-23, US-25, US-26, US-28, US-32, US-33, US-34, US-35) |
+| Should | 12 | 1 (US-32) | 1 (US-24) | 10 (US-14, US-19, US-20, US-23, US-25, US-26, US-28, US-33, US-34, US-35) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **31** | **10** | **3** | **18** |
+| **Tổng** | **31** | **11** | **3** | **17** |
 
 Hai story **Must** còn lại nằm trên đường găng: **US-13** (tinh chỉnh bộ trích xuất dựa trên luật và đánh giá RQ1, trước 5.4 ngày 01/12) và **US-22** (xuất số liệu thử nghiệm, trước 6.3 ngày 08/12).
 
