@@ -5,8 +5,8 @@
 | **Sinh viên thực hiện** | An Đức Mạnh – MSSV 23110310 |
 | **Giảng viên hướng dẫn** | [ ] |
 | **Hình thức** | Đồ án cá nhân |
-| **Phiên bản** | 1.3 (bản trình duyệt) |
-| **Ngày lập** | 13/11/2026 · cập nhật 17/11/2026: lộ trình 2 giai đoạn (web trước, app di động sau); **hạn hoàn thành dự án 15/12/2026** |
+| **Phiên bản** | 1.4 (bản trình duyệt) |
+| **Ngày lập** | 13/11/2026 · cập nhật 17/11/2026: lộ trình 2 giai đoạn (web trước, app di động sau); **hạn hoàn thành dự án 15/12/2026** · cập nhật 24/11/2026: bỏ bộ trích xuất LLM / hybrid, thêm thu tiền và chi phí kèo (mục 4, 5, 7, 9) |
 | **Trạng thái** | Chờ giảng viên hướng dẫn phê duyệt |
 | **Tên dự án (tên tạm)** | Badminton Booking |
 
@@ -43,9 +43,9 @@ Xây dựng và thử nghiệm thực tế một nền tảng web giúp người
 ### 3.2 Mục tiêu cụ thể (SMART)
 | # | Mục tiêu | Chỉ số đo | Hạn |
 |---|---|---|---|
-| O1 | Hoàn thành web app với các chức năng cốt lõi (đăng kèo, tìm/lọc, tham gia, thông báo email) | 100% user story mức *Must* đạt tiêu chí chấp nhận | 30/11/2026 |
+| O1 | Hoàn thành web app với các chức năng cốt lõi (đăng kèo, tìm/lọc, tham gia, thu tiền bằng mã QR, thông báo email) | 100% user story mức *Must* đạt tiêu chí chấp nhận | 30/11/2026 |
 | O2 | Xây dựng bộ dữ liệu bài đăng có gán nhãn | ≥ 100 bài, đã ẩn danh hóa | 28/11/2026 |
-| O3 | Bộ trích xuất đạt độ chính xác cao | F1 trung bình theo trường ≥ 0,90 (hybrid) | 03/12/2026 |
+| O3 | Bộ trích xuất dựa trên luật đạt độ chính xác chấp nhận được | F1 trung bình theo trường ≥ 0,75 trên 30 bài kiểm tra, kèm bảng phân loại lỗi | 03/12/2026 |
 | O4 | Thử nghiệm thực tế tại 1 khu vực | ≥ 15 người dùng thật, ≥ 10 kèo được đăng trong 2 tuần | 07/12/2026 |
 | O5 | Đảm bảo chất lượng mã nguồn | Unit test chạy tự động trên CI, coverage dòng ≥ 80% | Liên tục |
 
@@ -55,7 +55,7 @@ Xây dựng và thử nghiệm thực tế một nền tảng web giúp người
 
 | | Câu hỏi nghiên cứu | Giả thuyết | Phương pháp kiểm chứng |
 |---|---|---|---|
-| **RQ1** | Phương pháp nào trích xuất thông tin kèo từ bài đăng tiếng Việt phi cấu trúc chính xác nhất: dựa trên luật, LLM, hay kết hợp (hybrid)? | **H1:** Hybrid đạt F1 ≥ 0,90; dựa trên luật đạt F1 ≥ 0,75. | Đo Precision/Recall/F1 theo 4 nhóm trường (thời gian, giá, số chỗ, trình độ) trên tập 100 bài gán nhãn tay (30 bài kiểm tra giữ kín). |
+| **RQ1** | Bộ trích xuất dựa trên luật (regex + từ điển) trích xuất thông tin kèo từ bài đăng tiếng Việt phi cấu trúc chính xác đến mức nào, và sai ở những dạng bài viết nào? | **H1:** F1 trung bình theo trường ≥ 0,75; không nhóm trường nào dưới 0,60. | Đo Precision/Recall/F1 theo 4 nhóm trường (thời gian, giá, số chỗ, trình độ) trên tập 100 bài gán nhãn tay (30 bài kiểm tra giữ kín); phân loại từng lỗi (viết tắt, sai chính tả, cách ghi giờ lạ, thiếu thông tin…) để chỉ ra giới hạn của phương pháp luật. |
 | **RQ2** | Tính năng “dán bài → tự điền” có giảm thời gian tạo bài đăng so với điền form thủ công không? | **H2:** Thời gian tạo bài giảm ≥ 50%. | Thử nghiệm A/B trong phòng (within-subject), n ≥ 8, kiểm định Wilcoxon (phù hợp với mẫu nhỏ). |
 | **RQ3** | Nền tảng có cấu trúc giúp kèo được lấp đủ người hiệu quả hơn không? | **H3:** ≥ 60% kèo đăng trong thời gian thử nghiệm đủ người trước giờ chơi. | Thống kê log hệ thống trong 2 tuần thử nghiệm, kèm khảo sát mức hài lòng (thang SUS). |
 
@@ -72,7 +72,7 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Đăng ký / đăng nhập bằng email + mật khẩu (JWT) | Must |
 | Đăng nhập bằng Google | Could |
 | Đăng kèo: sân, thời gian, trình độ, số chỗ theo giới tính, chi phí mỗi người | Must |
-| Dán nội dung bài đăng → tự động điền form (dựa trên luật, LLM, hybrid) | Must |
+| Dán nội dung bài đăng → tự động điền form (dựa trên luật) | Must |
 | Tìm kiếm và lọc theo khu vực, thời gian, trình độ | Must |
 | Tìm theo khoảng cách (tọa độ sân) | Could |
 | Tham gia / rời kèo; kèo tự đóng khi đủ người | Must |
@@ -80,10 +80,17 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Thông báo qua email (có người tham gia, kèo sắp diễn ra) | Should |
 | Nút chia sẻ kèo lên Facebook / Zalo | Should |
 | Đánh giá uy tín sau mỗi kèo | Could (có trong lịch, cắt đầu tiên nếu trễ) |
+| Thu tiền kèo bằng mã QR chuyển khoản (VietQR); chủ kèo đánh dấu đã trả | Should |
+| Chốt chi phí sau buổi (tiền sân, cầu, nước), đánh dấu người có mặt, chia cho người có mặt | Should |
+| Cài web lên màn hình chính điện thoại (PWA) | Should |
+| Tin nhắn tổng kết kèo để chia sẻ sang Zalo / Facebook | Should |
+| Lịch sử chi tiêu theo tháng | Could |
 
 ### 5.2 Ngoài phạm vi
 - Tự động thu thập (cào) dữ liệu từ Facebook hoặc mạng xã hội khác.
-- Thanh toán trực tuyến, đặt sân tích hợp với hệ thống của chủ sân.
+- Thanh toán trực tuyến (cổng thanh toán, ví, thu hộ) và đặt sân tích hợp với hệ thống của chủ sân. Hệ thống chỉ **hiển thị mã QR chuyển khoản** giữa người chơi và chủ kèo, không giữ hay xử lý tiền.
+- Bộ trích xuất bằng LLM hoặc hybrid (bỏ ngày 24/11/2026 để tập trung thời gian cho thử nghiệm thực tế).
+- Quản lý quỹ nhóm, kho cầu, gộp nợ chéo giữa nhiều người ứng tiền, chia tiền theo số trận: phù hợp nhóm chơi cố định hơn là kèo vãng lai.
 - Ứng dụng di động (iOS/Android): **không thuộc phạm vi đồ án**, làm ở giai đoạn 2 sau khi bảo vệ (mục 7.1).
 - Web push notification.
 - Chat thời gian thực (dùng liên kết Zalo/Messenger thay thế).
@@ -111,7 +118,7 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 |---|---|---|
 | **M0** | Charter trình duyệt, WBS và Gantt hoàn thành, CI chạy | 13/11/2026 |
 | **M1** | Hệ thống chạy thật (production), chốt đặc tả yêu cầu, bắt đầu thử nghiệm thực tế | 23/11/2026 |
-| **M2** | Hoàn thành tính năng (*feature freeze*): bộ trích xuất LLM + kết hợp, bộ dữ liệu 100 bài gán nhãn | 30/11/2026 |
+| **M2** | Hoàn thành tính năng (*feature freeze*): thu tiền bằng mã QR, chốt chi phí sau buổi; bộ dữ liệu 100 bài gán nhãn | 30/11/2026 |
 | **M3** | Kết thúc thử nghiệm thực tế (2 tuần); đánh giá RQ1, RQ2 | 07/12/2026 |
 | **M4** | Báo cáo đồ án và slide hoàn thành | 13/12/2026 |
 | **M5** | **Hạn hoàn thành dự án** (ngày bảo vệ: chờ lịch của khoa) | 15/12/2026 |
@@ -150,12 +157,12 @@ Chi tiết xem [Gantt chart](03-gantt.md) và file Excel [diagrams/gantt.xlsx](d
 |---|---|---|
 | Hosting backend (Node.js) + frontend (file tĩnh sau khi build) | Máy chủ Ubuntu của trường, HTTPS qua Cloudflare (Nginx + PM2, [DEPLOY.md](DEPLOY.md)) | 0đ |
 | Cơ sở dữ liệu | MongoDB 8 dạng replica set: cài trên máy khi phát triển, cài trên máy chủ khi chạy thật | 0đ |
-| API LLM cho bộ trích xuất | Giới hạn ngân sách cứng | ≤ 250.000đ |
+| Tạo mã QR chuyển khoản | Tự sinh mã theo chuẩn VietQR ngay trong ứng dụng | 0đ |
 | Tên miền (tùy chọn) | | ≤ 300.000đ/năm |
 | CI/CD | GitHub Actions | 0đ |
-| **Tổng** | | **≤ 550.000đ** |
+| **Tổng** | | **≤ 300.000đ** |
 
-**Thời gian:** giai đoạn 1 khoảng **260 giờ công**, hạn hoàn thành **15/12/2026**. Đến 17/11/2026 đã xong khoảng 101 giờ; phần còn lại khoảng 137 giờ trong 4 tuần, trung bình **~34 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3). 
+**Thời gian:** giai đoạn 1 khoảng **262 giờ công** (sau điều chỉnh 24/11/2026), hạn hoàn thành **15/12/2026**. Đến 17/11/2026 đã xong khoảng 101 giờ; phần còn lại khoảng 137 giờ trong 4 tuần, trung bình **~34 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3). 
 
 **Công nghệ:**
 - **Backend:** Node.js 24 LTS + Express 5 (kiến trúc modular monolith: mỗi chức năng một module routes / controller / service / model), MongoDB + Mongoose, xác thực JWT, kiểm tra dữ liệu bằng express-validator, bảo mật bằng helmet + giới hạn số lần đăng nhập.
@@ -173,10 +180,10 @@ MongoDB được chọn vì có sẵn transaction (bảo đảm hai người tha
 | R1 | Làm một mình: ốm, bận thi hoặc việc khác thì không có người làm thay | Cao | Cao | Có dự phòng thời gian; cắt phạm vi theo MoSCoW (Could → Should); báo GVHD sớm khi trễ quá 1 tuần |
 | R2 | Pilot không có đủ người dùng (bài toán “con gà – quả trứng”) | Cao | Cao | Tập trung 1 khu vực; hợp tác với chủ sân và admin group; tự đăng kèo thật để khởi động |
 | R3 | Phát sinh thêm yêu cầu (*scope creep*) | Cao | Cao | Chỉ làm *Must* trước M3; mọi ý tưởng mới ghi vào backlog, xem xét sau M5 |
-| R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Trung bình | Trung bình | Bổ sung LLM / hybrid; mở rộng tập luật dựa trên phân tích lỗi |
+| R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Trung bình | Trung bình | Mở rộng tập luật dựa trên phân tích lỗi trên tập phát triển; nếu vẫn thấp, trình bày giới hạn như một kết quả nghiên cứu |
 | R5 | Thiếu khách quan khi một người tự gán nhãn dữ liệu | Trung bình | Trung bình | Nhờ 1 người gán nhãn độc lập 30 bài; đo Cohen's κ; tự gán nhãn lại 20% sau 1 tuần |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Thấp | Cao | Không cào dữ liệu; ẩn danh hóa bộ dữ liệu; xin đồng ý khi khảo sát; có chính sách quyền riêng tư |
-| R7 | Chi phí hoặc giới hạn của API LLM | Trung bình | Thấp | Đặt hạn mức chi; cache kết quả; dùng luật làm phương án dự phòng |
+| R7 | Mã QR chuyển khoản sai (sai số tài khoản, sai số tiền) | Thấp | Trung bình | Hiện tên chủ tài khoản để người chuyển đối chiếu; test mã QR theo chuẩn VietQR; nội dung chuyển khoản có mã kèo |
 
 Chi tiết từng rủi ro (dấu hiệu nhận biết sớm, kế hoạch dự phòng) ghi trong `docs/RISKS.md`.
 

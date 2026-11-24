@@ -106,7 +106,7 @@ frontend/src/
 | F4 | Đăng kèo + dán bài tự điền (dựa trên luật) | Đăng kèo | `POST /posts`, `POST /parse` | Xong |
 | F5 | Chi tiết, tham gia, rời, hủy kèo | Chi tiết kèo | `/posts/:id/…` | Xong |
 | F6 | Kèo của tôi (đã đăng / đã tham gia) | Kèo của tôi, Tài khoản | `GET /users/me/posts` | Xong |
-| F7 | Bộ trích xuất bằng LLM và hybrid (RQ1) | Đăng kèo | `POST /parse` | Chưa |
+| F7 | Thu tiền kèo bằng mã QR, chốt chi phí sau buổi (đánh dấu người có mặt), tin nhắn tổng kết, lịch sử chi tiêu | Chi tiết kèo, Kèo của tôi, Hồ sơ | Bổ sung khi làm (WBS 4.8) | Chưa (Should) |
 | F8 | Thông báo email | — | — | Chưa (Should) |
 | F9 | Đánh giá uy tín sau kèo | — | — | Chưa (Could) |
 | F10 | App di động Android / iOS (React Native + Expo): toàn bộ F1–F6 + thông báo đẩy | App | Dùng lại API hiện có | Giai đoạn 2, sau đồ án |
@@ -158,7 +158,7 @@ File `backend/src/modules/parser/parsePost.js`. Đầu vào là văn bản tiế
 | Số chỗ | sau "thiếu / cần / tuyển / tìm / còn / giao lưu": "2 nam 1 nữ", "1 bạn", "2 slot", "hai nam" |
 | Trình độ | "TB-", "TB", "TB+", "TB khá", "TB yếu", "khá", "giỏi", "mới chơi", "TB+ trở lên", "khá trở xuống" |
 
-Bộ trích xuất không lấy tên, số điện thoại hay đường dẫn cá nhân. Đây là phương pháp nền (baseline) cho câu hỏi nghiên cứu RQ1; phương pháp LLM và kết hợp (F7) sẽ so sánh với nó trên bộ dữ liệu 100 bài gán nhãn.
+Bộ trích xuất không lấy tên, số điện thoại hay đường dẫn cá nhân. Đây là đối tượng đánh giá của câu hỏi nghiên cứu RQ1: đo Precision / Recall / F1 trên bộ dữ liệu 100 bài gán nhãn và phân loại lỗi (phương án LLM / hybrid đã bỏ ngày 24/11/2026).
 
 ## 8. Chạy dự án
 
