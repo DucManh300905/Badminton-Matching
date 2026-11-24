@@ -1,6 +1,6 @@
 # Sổ rủi ro — Badminton Matching
 
-> Cập nhật: 24/11/2026 (bỏ LLM / hybrid: sửa R4, thay R7; thêm 4.8 Thu tiền). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
+> Cập nhật: 24/11/2026 (Charter 2.0: bỏ bộ trích xuất bài đăng; đóng R4, R5; thêm R16, R17). Người theo dõi mọi rủi ro: An Đức Mạnh (đồ án cá nhân).
 > Tài liệu liên quan: [Charter](01-project-charter.md) mục 10 (R1–R7 gốc) · [QUALITY.md](QUALITY.md) · [Gantt](03-gantt.md)
 
 ## 1. Cách đánh giá
@@ -23,8 +23,8 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R1 | Làm một mình: ốm, bận thi, việc riêng | Tiến độ | 4 | 5 | 20 | Cao | Đang theo dõi |
 | R2 | Thử nghiệm thực tế thiếu người dùng | Nghiên cứu | 4 | 4 | 16 | Cao | Đang theo dõi |
 | R3 | Phình phạm vi | Tiến độ | 4 | 4 | 16 | Cao | Đang theo dõi |
-| R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Nghiên cứu | 3 | 3 | 9 | Trung bình | Chưa đo được |
-| R5 | Gán nhãn dữ liệu thiếu khách quan | Nghiên cứu | 3 | 3 | 9 | Trung bình | Chưa bắt đầu |
+| R4 | Bộ trích xuất dựa trên luật không đạt chỉ tiêu | Nghiên cứu | – | – | – | – | **Đóng** (bỏ bộ trích xuất, 24/11) |
+| R5 | Gán nhãn dữ liệu thiếu khách quan | Nghiên cứu | – | – | – | – | **Đóng** (không còn bộ dữ liệu gán nhãn, 24/11) |
 | R6 | Vi phạm quy định bảo vệ dữ liệu cá nhân | Pháp lý | 2 | 5 | 10 | Trung bình | Đã có biện pháp |
 | R7 | Mã QR chuyển khoản sai (sai số tài khoản, sai số tiền) | Kỹ thuật | 2 | 3 | 6 | Thấp | Theo dõi |
 | R8 | Lộ bí mật (`JWT_SECRET`, `.env`) lên repo Public | Bảo mật | 2 | 5 | 10 | Trung bình | Đã có biện pháp |
@@ -35,6 +35,8 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R13 | Tài liệu không khớp với code | Quy trình | 3 | 2 | 6 | Thấp | Theo dõi |
 | R14 | Thời gian còn lại rất ngắn (hạn 15/12/2026) | Tiến độ | 4 | 5 | 20 | Cao | Đang theo dõi |
 | R15 | Máy chủ chạy thật gián đoạn hoặc mất dữ liệu trong thời gian thử nghiệm | Hạ tầng | 3 | 4 | 12 | Trung bình | Đã có biện pháp |
+| R16 | Giảng viên chưa đồng ý đổi đề tài và câu hỏi nghiên cứu lúc muộn (Charter 2.0) | Quy trình | 3 | 5 | 15 | Cao | Đang theo dõi |
+| R17 | Thiếu số liệu cho RQ1, RQ2 vì chủ kèo không nhập khoản chi / không đánh dấu đã trả | Nghiên cứu | 3 | 4 | 12 | Trung bình | Đang theo dõi |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
@@ -61,13 +63,15 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
 - **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
 
-### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Trung bình, 9 điểm)
+### R4 — Bộ trích xuất dựa trên luật không đạt chỉ tiêu (Đóng 24/11/2026)
+- **Đóng:** bộ trích xuất bị bỏ khi đổi trọng tâm nghiên cứu (Charter 2.0). Nội dung dưới đây giữ lại để đối chiếu.
 - **Mô tả:** cách viết bài đăng quá đa dạng, F1 của phương pháp luật dưới 0,75.
 - **Dấu hiệu sớm:** trên tập phát triển (70 bài), F1 một nhóm trường dưới 0,6.
 - **Phòng ngừa:** mở rộng luật dựa trên phân tích lỗi; bộ test mẫu cho từng trường hợp khó.
 - **Dự phòng:** mở rộng luật cho các nhóm lỗi lớn nhất trên tập phát triển (không đụng tập kiểm tra); nếu vẫn dưới chỉ tiêu, trình bày như một phát hiện nghiên cứu (giới hạn của phương pháp luật) kèm bảng phân loại lỗi. Phương án dùng LLM / hybrid đã bỏ ngày 24/11/2026.
 
-### R5 — Gán nhãn dữ liệu thiếu khách quan (Trung bình, 9 điểm)
+### R5 — Gán nhãn dữ liệu thiếu khách quan (Đóng 24/11/2026)
+- **Đóng:** không còn bộ dữ liệu gán nhãn (Charter 2.0). Nội dung dưới đây giữ lại để đối chiếu.
 - **Mô tả:** một người vừa viết bộ trích xuất vừa gán nhãn, dễ thiên lệch.
 - **Phòng ngừa:** hướng dẫn gán nhãn viết trước; nhờ 1 người gán độc lập 30 bài, đo Cohen's κ (mục tiêu ≥ 0,8); tự gán lại 20% sau 1 tuần; tập kiểm tra 30 bài giữ kín, không dùng khi viết luật.
 
@@ -116,6 +120,18 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Dấu hiệu sớm:** `https://sv22.bcse-vju.com/api/health` không phản hồi; ổ đĩa dùng trên 90%; file sao lưu hằng ngày không xuất hiện.
 - **Phòng ngừa:** PM2 tự chạy lại backend khi lỗi và sau khi máy khởi động lại (`pm2 startup` + `pm2 save`); khởi động lại máy một lần **trước** khi bắt đầu thử nghiệm để kiểm tra; MongoDB chỉ nghe `127.0.0.1`, máy không mở cổng ra Internet; sao lưu tự động hằng ngày, giữ 7 ngày; xoay vòng log PM2; kiểm tra bằng `npm run smoke` sau mỗi lần triển khai.
 - **Dự phòng:** khôi phục từ bản sao lưu gần nhất ([DEPLOY.md](DEPLOY.md) mục 6); chép bản sao lưu về máy cá nhân mỗi tuần thử nghiệm; ghi lại thời gian gián đoạn vào nhật ký thử nghiệm để loại khỏi số liệu.
+
+### R16 — Giảng viên chưa đồng ý đổi đề tài lúc muộn (Cao, 15 điểm)
+- **Mô tả:** ngày 24/11/2026 đổi trọng tâm nghiên cứu từ trích xuất bài đăng sang chia chi phí theo từng khoản và thu tiền QR (Charter 2.0), chỉ 3 tuần trước hạn.
+- **Dấu hiệu sớm:** chưa có phản hồi của giảng viên sau 2 ngày gửi Charter 2.0.
+- **Phòng ngừa:** gửi Charter 2.0 kèm mục 14 (lý do đổi) ngay; phần nền tảng (ghép kèo, thu tiền QR, máy chủ) không phụ thuộc quyết định này nên vẫn làm tiếp.
+- **Dự phòng:** Charter 1.x và code bộ trích xuất còn trong lịch sử Git (tag `v0.2.0`), khôi phục được trong vài giờ nếu giảng viên yêu cầu giữ đề tài cũ.
+
+### R17 — Thiếu số liệu cho RQ1, RQ2 (Trung bình, 12 điểm)
+- **Mô tả:** RQ1, RQ2 dựa trên khoản chi và thời điểm đánh dấu đã trả do chủ kèo nhập; nếu chủ kèo không nhập thì không có số liệu.
+- **Dấu hiệu sớm:** sau tuần thử nghiệm đầu, dưới 5 kèo có khoản chi.
+- **Phòng ngừa:** nhắc chủ kèo trên trang kèo; nhập khoản chi được bất cứ lúc nào; tự tổ chức một số kèo thật trong thử nghiệm.
+- **Dự phòng:** bổ sung bằng câu hỏi trong khảo sát cuối thử nghiệm; trình bày RQ1 bằng số liệu khảo sát nếu số kèo quá ít, ghi rõ giới hạn.
 
 ## 4. Cập nhật sổ rủi ro
 
