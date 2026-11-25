@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PostCard from '../components/PostCard';
+import UserMenu from '../components/UserMenu';
 import Icon from '../components/Icon';
 import { Alert, CardTitle, IconText, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
@@ -63,11 +64,7 @@ export default function HomePage() {
           <p className="home-appbar__brand">Badminton Matching</p>
           <p className="home-appbar__hello">{user ? `Chào ${user.displayName}` : 'Tìm kèo cầu lông, ghép đội nhanh'}</p>
         </div>
-        {!user && (
-          <Link to="/dang-nhap" className="btn btn--outline">
-            Đăng nhập
-          </Link>
-        )}
+        <UserMenu compact />
       </header>
 
       {/* Điện thoại: lọc nhanh bằng hàng chip cuộn ngang (máy tính dùng bộ lọc cột trái) */}

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { GENDERS } = require('../../utils/constants');
+const { GENDERS, TAB_BAR_ITEMS, TAB_BAR_SIZE } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { BANK_BINS } = require('../../utils/banks');
 const { publicUrl } = require('../../utils/images');
@@ -73,6 +73,20 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+// Thanh dưới trên điện thoại (WBS 4.12): 3 tiện ích người dùng chọn; null = mặc định
+userSchema.add({
+    tabBar: {
+        type: [String],
+        default: undefined,
+        validate: {
+            validator: (v) =>
+                v == null ||
+                (v.length === TAB_BAR_SIZE && new Set(v).size === v.length && v.every((k) => TAB_BAR_ITEMS.includes(k))),
+            message: 'Thanh dưới cần đúng 3 tiện ích khác nhau'
+        }
+    }
+});
 
 // Đường dẫn ảnh đại diện trả cho client (plugin toJSON bật virtuals)
 userSchema.virtual('avatarUrl').get(function avatarUrl() {

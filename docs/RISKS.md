@@ -63,6 +63,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
 - **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
 - **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
+- **Ghi nhận (25/11/2026, lần 2):** thêm 4.12 Tổng quan, Cài đặt, chế độ tối (11 giờ) theo yêu cầu. Tổng giai đoạn 1 thành 290 giờ.
 - **Ghi nhận (25/11/2026):** thêm 4.10 kho cầu và 4.11 ảnh bill, hóa đơn PDF (17 giờ) theo yêu cầu; kho cầu chuyển từ ngoài phạm vi vào phạm vi Charter. Tổng giai đoạn 1 thành 279 giờ.
 - **Ghi nhận (24/11/2026, lần 3):** thêm 4.9 icon và ảnh đại diện / ảnh bìa (12 giờ) theo yêu cầu, làm xong trong ngày; tổng giai đoạn 1 thành 262 giờ, phần việc còn lại không đổi.
 

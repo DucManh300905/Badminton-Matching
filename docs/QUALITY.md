@@ -10,7 +10,7 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 206 test backend + 55 test frontend; 18/18 BR; coverage dòng 98,56% (25/11/2026); smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 209 test backend + 62 test frontend; 18/18 BR; coverage dòng ≥ 98% (25/11/2026); smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 128,3 KB (thêm thư viện vẽ mã QR) |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; usability test luồng chia tiền ≥ 8 người (WBS 5.5) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
@@ -113,6 +113,7 @@
 | TC-Q4-08 | Kiểm tra điều kiện cài như app bằng Chrome (`Page.getInstallabilityErrors`, `Page.getAppManifest`) | 0 lỗi installability, manifest không lỗi (24/11/2026) |
 | TC-Q4-09 | Tải ảnh đại diện (hiện ở thanh trên, menu tài khoản, thẻ hồ sơ); chọn file không phải ảnh bị chặn ngay trên trình duyệt; đăng kèo kèm ảnh bìa (xem trước trước khi đăng); thẻ kèo có ảnh / dải màu mặc định, mọi thẻ có icon; xóa và thêm lại ảnh bìa trên điện thoại 390 px; xóa ảnh đại diện → chữ cái đầu | 15/15 bước đạt, không cuộn ngang, 0 lỗi JavaScript / console (24/11/2026) |
 | TC-Q4-10 | Kho cầu: thêm loại cầu bằng nút "24 quả" + 560.000đ (23.333đ/quả), nhập thêm 12 quả 300.000đ (bình quân 23.889đ, thanh mức cầu 36/36) → khoản Cầu 30 quả = 717.000đ, kho còn 6 → sửa 40 quả: cảnh báo "Kho chỉ còn 36 quả", vẫn lưu, kho 0, thanh đỏ → 2 ảnh bill, xem lớn → người chơi xuất hóa đơn, bản in chỉ còn tờ hóa đơn, Chrome tạo PDF 1 trang → điện thoại 390 px không cuộn ngang → khách mở link hóa đơn phải đăng nhập | 23/23 bước đạt, 0 lỗi JavaScript / console (25/11/2026) |
+| TC-Q4-11 | Điện thoại 390 px: thanh dưới Tìm kèo / Hôm nay / Đăng kèo / Kèo của tôi / Tổng quan; khách tìm "kho cau" ở Tổng quan, bấm thì sang Đăng nhập và quay lại đúng Kho cầu; nút tài khoản góc phải chỉ có Cài đặt, Đăng xuất; Cài đặt: bỏ "Hôm nay", thêm "Kho cầu", đưa lên trước, lưu → thanh dưới đổi, lưu theo tài khoản, tải lại vẫn giữ, khôi phục mặc định; chế độ Tối đổi ngay, tải lại không nháy trắng, Theo máy đổi theo máy không cần tải lại; đang tối nhưng bản in hóa đơn nền trắng; máy tính: thanh trên có Tổng quan, menu dọc sáng "Cài đặt" khi ở Hồ sơ, `/tai-khoan` chuyển sang `/tong-quan` | 27/27 bước đạt, không trang nào cuộn ngang (sáng và tối), 0 lỗi JavaScript / console (25/11/2026) |
 | TC-Q4-05 | Quét mã QR bằng **2 ứng dụng ngân hàng khác nhau** (không cần chuyển tiền thật) | Ứng dụng điền sẵn đúng ngân hàng, số tài khoản, tên, số tiền, nội dung. **Chưa làm**: chờ kiểm tra bằng điện thoại thật (rủi ro R7) |
 
 **Việc còn lại:**
