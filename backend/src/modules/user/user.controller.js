@@ -48,6 +48,18 @@ const setBankAccount = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Đã lưu tài khoản nhận tiền', data: user });
 });
 
+// PUT /api/users/me/tab-bar — chọn 3 tiện ích cho thanh dưới (WBS 4.12); items: null = về mặc định
+const setTabBar = asyncHandler(async (req, res) => {
+    const { items } = req.body;
+    const update = items === null ? { $unset: { tabBar: 1 } } : { $set: { tabBar: items } };
+    const user = await User.findByIdAndUpdate(req.user.userId, update, { returnDocument: 'after', runValidators: true });
+    if (!user) {
+        throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy người dùng');
+    }
+
+    res.json({ success: true, message: 'Đã lưu thanh dưới', data: user });
+});
+
 // DELETE /api/users/me/bank-account
 const deleteBankAccount = asyncHandler(async (req, res) => {
     const user = await User.findByIdAndUpdate(req.user.userId, { $unset: { bankAccount: 1 } }, { returnDocument: 'after' });
@@ -88,5 +100,6 @@ module.exports = {
     getMe,
     updateMe,
     setBankAccount,
-    deleteBankAccount
+    deleteBankAccount,
+    setTabBar
 };

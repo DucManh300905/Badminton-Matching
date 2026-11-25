@@ -1,7 +1,7 @@
 // Rule express-validator cho các trường của người dùng (dùng chung cho auth và user).
 // Mỗi hàm trả về chain MỚI (chain của express-validator không được dùng lại giữa các route).
 const { body } = require('express-validator');
-const { GENDERS } = require('../../utils/constants');
+const { GENDERS, TAB_BAR_ITEMS, TAB_BAR_SIZE } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { BANK_BINS } = require('../../utils/banks');
 const { toBankText } = require('../../utils/vietqr');
@@ -61,7 +61,19 @@ const bankAccountRules = () => [
         .withMessage('Tên chủ tài khoản từ 2 đến 50 chữ cái')
 ];
 
+/** Thanh dưới: đúng 3 tiện ích khác nhau trong danh sách, hoặc null để về mặc định */
+const tabBarRules = () => [
+    body('items')
+        .custom((v) => {
+            if (v === null) return true;
+            if (!Array.isArray(v) || v.length !== TAB_BAR_SIZE) return false;
+            return new Set(v).size === v.length && v.every((k) => TAB_BAR_ITEMS.includes(k));
+        })
+        .withMessage(`Chọn đúng ${TAB_BAR_SIZE} tiện ích khác nhau cho thanh dưới`)
+];
+
 module.exports = {
+    tabBarRules,
     emailRule,
     displayNameRule,
     genderRule,

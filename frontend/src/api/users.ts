@@ -38,6 +38,12 @@ export const usersApi = {
     return res.data.data;
   },
 
+  /** 3 tiện ích của thanh dưới, lưu theo tài khoản; null = về mặc định */
+  async setTabBar(items: string[] | null) {
+    const res = await client.put<ApiResponse<User>>('/users/me/tab-bar', { items });
+    return res.data.data;
+  },
+
   async deleteBankAccount() {
     const res = await client.delete<ApiResponse<User>>('/users/me/bank-account');
     return res.data.data;

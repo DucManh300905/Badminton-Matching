@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import { featureOf, tabBarOf } from '../utils/features';
 import { toDateInput } from '../utils/format';
 import { activeTab, type TabKey } from '../utils/nav';
 import Icon, { type IconName } from './Icon';
@@ -8,32 +10,42 @@ interface Tab {
   key: TabKey;
   label: string;
   icon: IconName;
-  to: (today: string) => string;
+  to: string;
 }
 
-// 2 tab · nút "Đăng kèo" nổi ở giữa · 2 tab
-const TABS: Tab[] = [
-  { key: 'search', label: 'Tìm kèo', icon: 'search', to: () => '/' },
-  { key: 'today', label: 'Hôm nay', icon: 'clock', to: (today) => `/?date=${today}` },
-  { key: 'new', label: 'Đăng kèo', icon: 'plus', to: () => '/keo/moi' },
-  { key: 'mine', label: 'Kèo của tôi', icon: 'calendar', to: () => '/keo-cua-toi' },
-  { key: 'account', label: 'Tài khoản', icon: 'user', to: () => '/tai-khoan' },
-];
-
-/** Thanh tab đáy kiểu app, CHỈ hiện trên điện thoại và máy tính bảng (dưới 1024px) */
+/**
+ * Thanh tab đáy kiểu app, CHỈ hiện trên điện thoại và máy tính bảng (dưới 1024px).
+ * 2 ô tự chọn · nút "Đăng kèo" nổi ở giữa · 1 ô tự chọn · "Tổng quan" (WBS 4.12).
+ * 3 ô tự chọn lưu theo tài khoản (Cài đặt → Thanh dưới); chưa chọn / chưa đăng nhập thì dùng mặc định.
+ */
 export default function TabBar() {
+  const { user } = useAuth();
   const { pathname, search } = useLocation();
   // Lấy ngày một lần khi mở app (đủ dùng cho tab "Hôm nay")
   const [today] = useState(() => toDateInput(new Date()));
-  const active = activeTab(pathname, search, today);
+  const current = activeTab(pathname, search, today);
+
+  const [a, b, c] = tabBarOf(user?.tabBar).map((k) => {
+    const f = featureOf(k);
+    return { key: k, label: f.short, icon: f.icon, to: f.to(today) } as Tab;
+  });
+  const tabs: Tab[] = [
+    a,
+    b,
+    { key: 'new', label: 'Đăng kèo', icon: 'plus', to: '/keo/moi' },
+    c,
+    { key: 'overview', label: 'Tổng quan', icon: 'grid', to: '/tong-quan' },
+  ];
+  // Trang của một tiện ích không có trên thanh (vd Kho cầu khi chưa chọn) → sáng ô "Tổng quan"
+  const active = current && tabs.some((t) => t.key === current) ? current : current ? 'overview' : null;
 
   return (
     <nav className="tabbar" aria-label="Điều hướng chính">
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const isActive = tab.key === active;
         const className = `tab${tab.key === 'new' ? ' tab--center' : ''}${isActive ? ' tab--active' : ''}`;
         return (
-          <Link key={tab.key} to={tab.to(today)} className={className} aria-current={isActive ? 'page' : undefined}>
+          <Link key={tab.key} to={tab.to} className={className} aria-current={isActive ? 'page' : undefined}>
             {tab.key === 'new' ? (
               <span className="tab__fab">
                 <Icon name={tab.icon} size={28} />

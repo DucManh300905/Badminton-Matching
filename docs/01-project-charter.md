@@ -6,7 +6,7 @@
 | **Giảng viên hướng dẫn** | [ ] |
 | **Hình thức** | Đồ án cá nhân |
 | **Phiên bản** | **2.0 – đề xuất đổi trọng tâm nghiên cứu** (bản trình duyệt) |
-| **Ngày lập** | 13/11/2026 · cập nhật 17/11/2026: lộ trình 2 giai đoạn, **hạn hoàn thành dự án 15/12/2026** · cập nhật 24/11/2026 (bản 2.0): **bỏ bộ trích xuất bài đăng**, đổi trọng tâm nghiên cứu sang **chia chi phí theo từng khoản và thu tiền bằng mã QR** (mục 1, 3, 4, 5, 6, 7, 10, 12; lý do ở mục 14) · cập nhật 25/11/2026: **kho cầu** và **ảnh bill, hóa đơn PDF** chuyển vào phạm vi (mục 5) |
+| **Ngày lập** | 13/11/2026 · cập nhật 17/11/2026: lộ trình 2 giai đoạn, **hạn hoàn thành dự án 15/12/2026** · cập nhật 24/11/2026 (bản 2.0): **bỏ bộ trích xuất bài đăng**, đổi trọng tâm nghiên cứu sang **chia chi phí theo từng khoản và thu tiền bằng mã QR** (mục 1, 3, 4, 5, 6, 7, 10, 12; lý do ở mục 14) · cập nhật 25/11/2026: **kho cầu** và **ảnh bill, hóa đơn PDF** chuyển vào phạm vi; thêm **Tổng quan, Cài đặt, chế độ tối** (mục 5) |
 | **Trạng thái** | **Chờ giảng viên hướng dẫn phê duyệt việc đổi đề tài và câu hỏi nghiên cứu** |
 | **Tên dự án (tên tạm)** | Badminton Matching |
 
@@ -85,6 +85,7 @@ Vì đồ án do một người thực hiện, phạm vi được phân loại t
 | Điểm danh có mặt / vắng sau buổi chơi | Should |
 | **Kho cầu** của từng người: nhiều loại cầu, nhập theo số quả (chọn nhanh 12 / 24 / 36) và tổng tiền, tự chia ra giá mỗi quả; khoản "Cầu" tính theo số quả và tự trừ kho; thống kê số quả đã dùng theo tuần / tháng | Should |
 | Ảnh bill (tối đa 7 ảnh mỗi kèo) và **xuất hóa đơn / PDF** cho mọi người trong kèo | Should |
+| Trang **Tổng quan** chứa mọi tính năng (có tìm kiếm); **Cài đặt**: hồ sơ, mật khẩu, chế độ sáng / tối, chọn tiện ích cho thanh dưới | Should |
 | Thử nghiệm thực tế tại 1 khu vực (Hà Nội) | Must |
 | Thông báo qua email (có người tham gia, kèo sắp diễn ra) | Should |
 | Tin nhắn tổng kết kèo để chia sẻ sang Zalo / Facebook | Should |
@@ -165,7 +166,7 @@ Chi tiết xem [Gantt chart](03-gantt.md) và file Excel [diagrams/gantt.xlsx](d
 | CI/CD | GitHub Actions | 0đ |
 | **Tổng** | | **≤ 300.000đ** |
 
-**Thời gian:** giai đoạn 1 khoảng **279 giờ công** (sau điều chỉnh 24–25/11/2026, gồm 12 giờ icon và ảnh, 17 giờ kho cầu và hóa đơn, đã làm xong). Từ 24/11 tới hạn 15/12/2026 còn khoảng **106 giờ** trong 3 tuần, trung bình **~35 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3).
+**Thời gian:** giai đoạn 1 khoảng **290 giờ công** (sau điều chỉnh 24–25/11/2026, gồm 12 giờ icon và ảnh, 17 giờ kho cầu và hóa đơn, 11 giờ Tổng quan và Cài đặt, đã làm xong). Từ 24/11 tới hạn 15/12/2026 còn khoảng **106 giờ** trong 3 tuần, trung bình **~35 giờ/tuần** (chi tiết trong [WBS](02-wbs.md) mục 3).
 
 **Công nghệ:**
 - **Backend:** Node.js 24 LTS + Express 5 (kiến trúc modular monolith: mỗi chức năng một module routes / controller / service / model), MongoDB + Mongoose, xác thực JWT, kiểm tra dữ liệu bằng express-validator, bảo mật bằng helmet + giới hạn số lần đăng nhập.

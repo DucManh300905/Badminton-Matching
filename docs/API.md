@@ -69,6 +69,7 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
   "bankAccount": { "bankBin": "970436", "accountNumber": "0123456789", "accountName": "NGUYEN VAN MINH" } }
 ```
 - `bankAccount` (tài khoản nhận tiền) chỉ có khi người dùng đã nhập; chỉ trả cho chính chủ.
+- `tabBar` (WBS 4.12): 3 tiện ích của thanh dưới trên điện thoại, theo thứ tự, ví dụ `["search", "shuttles", "mine"]`; không có trường này = mặc định (`search`, `today`, `mine`). Chỉ trả cho chính chủ.
 - `avatarUrl`: đường dẫn ảnh đại diện **cùng tên miền với web** (`null` = chưa có ảnh, giao diện dùng chữ cái đầu của tên). Mọi chỗ trả thông tin người khác (`author`, `participants[]`) cũng có `avatarUrl`.
 
 **PostSummary** (danh sách kèo)
@@ -184,6 +185,7 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | DELETE | `/users/me/bank-account` | Có | Xóa tài khoản nhận tiền |
 | PUT | `/users/me/avatar` | Có | Tải ảnh đại diện (multipart) |
 | DELETE | `/users/me/avatar` | Có | Xóa ảnh đại diện |
+| PUT | `/users/me/tab-bar` | Có | Chọn 3 tiện ích cho thanh dưới (điện thoại) |
 | GET | `/posts` | | Danh sách kèo sắp diễn ra, có lọc |
 | GET | `/posts/:id` | Tùy chọn | Chi tiết kèo; có token thì người trong kèo thấy thêm phần thanh toán |
 | POST | `/posts` | Có | Đăng kèo |
@@ -263,6 +265,11 @@ Gửi `multipart/form-data`, một file ở trường **`image`**.
 - Nhận **JPEG, PNG, WebP**, tối đa **5 MB**. Định dạng được kiểm tra theo **nội dung file**, không tin phần mở rộng hay `Content-Type`.
 - Server xoay ảnh theo EXIF, cắt vuông **256×256** (ưu tiên vùng nổi bật), đổi sang **WebP** chất lượng 80 và **bỏ toàn bộ metadata (EXIF, GPS)**. Tên file ngẫu nhiên 32 ký tự hex; ảnh cũ bị xóa.
 - `200` → `data: User` (có `avatarUrl` mới) · `400 INVALID_IMAGE` (không có file, không phải ảnh, GIF…) · `413 FILE_TOO_LARGE` · `401`
+
+#### `PUT /users/me/tab-bar`
+Body: `{ "items": ["search", "shuttles", "mine"] }` hoặc `{ "items": null }` (về mặc định).
+- Đúng **3** mã **khác nhau** trong: `search` (Tìm kèo), `today` (Hôm nay), `mine` (Kèo của tôi), `shuttles` (Kho cầu). "Đăng kèo" và "Tổng quan" luôn cố định trên thanh nên không chọn được.
+- `200` → `data: User` (có / không có `tabBar`) · `400 VALIDATION_ERROR` · `401`
 
 #### `DELETE /users/me/avatar`
 - `200` → `data: User` (`avatarUrl: null`), xóa file ảnh · `401`

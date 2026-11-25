@@ -28,6 +28,20 @@
   --container: 1200px;
   --navbar-height: 64px;
   --tabbar-height: 64px;
+
+  /* Thêm cho chế độ sáng / tối (WBS 4.12) */
+  --glass: rgba(255, 255, 255, 0.95);
+  --line-strong: #cfdcd4;
+  --input-disabled: #f2f5f3;
+  --neutral-soft: #edf1ef;
+  --track: #e8efeb;
+  --bar-soft: #9fd8b8;
+  --warn-ink: #8a5a00;
+  --danger-line: #f2c4bf;
+  --danger-ink: #a5281e;
+  --info-line: #c4dcf1;
+  --info-ink: #164f7f;
+  color-scheme: light;
 }
 
 /* ================= Nền tảng ================= */
@@ -120,7 +134,7 @@ legend {
   top: 0;
   z-index: 30;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--glass);
   backdrop-filter: blur(8px);
 }
 
@@ -173,6 +187,10 @@ legend {
   margin-left: auto;
 }
 
+.page-header__account {
+  display: none;
+}
+
 /* Menu người dùng (bấm vào tên) */
 .user-menu {
   position: relative;
@@ -185,7 +203,7 @@ legend {
   padding: 4px 10px 4px 4px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
+  background: var(--card);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -197,17 +215,21 @@ legend {
 
 .user-menu__panel {
   position: absolute;
+  z-index: 40;
   top: calc(100% + 8px);
   right: 0;
   min-width: 220px;
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
   box-shadow: var(--shadow);
 }
 
 .user-menu__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 8px 12px 10px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 6px;
@@ -220,8 +242,11 @@ legend {
 }
 
 .user-menu__item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
+  color: var(--ink);
   padding: 9px 12px;
   border: 0;
   border-radius: 8px;
@@ -242,7 +267,7 @@ legend {
 /* ================= Chân trang ================= */
 .footer {
   border-top: 1px solid var(--line);
-  background: #fff;
+  background: var(--card);
 }
 
 .footer__inner {
@@ -284,6 +309,7 @@ legend {
 }
 
 .hero .btn--light {
+  color: #0a7a3c;
   color: var(--green-700);
   background: #fff;
 }
@@ -391,7 +417,7 @@ legend {
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--card);
   box-shadow: var(--shadow-sm);
   transition:
     border-color 0.15s,
@@ -569,7 +595,7 @@ a.stat:hover {
 .btn--outline {
   border-color: var(--line);
   color: var(--ink);
-  background: #fff;
+  background: var(--card);
 }
 
 .btn--outline:hover:not(:disabled) {
@@ -578,9 +604,9 @@ a.stat:hover {
 }
 
 .btn--danger {
-  border-color: #f2c4bf;
+  border-color: var(--danger-line);
   color: var(--danger);
-  background: #fff;
+  background: var(--card);
 }
 
 .btn--danger:hover:not(:disabled) {
@@ -637,9 +663,9 @@ a.stat:hover {
   width: 100%;
   min-height: 42px;
   padding: 9px 12px;
-  border: 1px solid #cfdcd4;
+  border: 1px solid var(--line-strong);
   border-radius: 10px;
-  background: #fff;
+  background: var(--card);
   outline: none;
   transition:
     border-color 0.15s,
@@ -653,7 +679,7 @@ a.stat:hover {
 
 .input:disabled {
   color: var(--muted);
-  background: #f2f5f3;
+  background: var(--input-disabled);
 }
 
 textarea.input {
@@ -790,14 +816,14 @@ textarea.input {
 }
 
 .alert--error {
-  border-color: #f2c4bf;
-  color: #a5281e;
+  border-color: var(--danger-line);
+  color: var(--danger-ink);
   background: var(--danger-soft);
 }
 
 .alert--info {
-  border-color: #c4dcf1;
-  color: #164f7f;
+  border-color: var(--info-line);
+  color: var(--info-ink);
   background: var(--info-soft);
 }
 
@@ -954,7 +980,7 @@ textarea.input {
 
 .badge--full {
   color: var(--muted);
-  background: #edf1ef;
+  background: var(--neutral-soft);
 }
 
 .badge--closed {
@@ -1084,7 +1110,7 @@ textarea.input {
   padding: 4px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
+  background: var(--card);
   color: var(--muted);
   font: inherit;
   font-size: 13px;
@@ -1224,7 +1250,7 @@ textarea.input {
   padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
 }
 
 .expense-edit > * + * {
@@ -1321,7 +1347,7 @@ textarea.input {
   padding: 12px 6px 10px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   font: inherit;
   color: var(--ink);
   cursor: pointer;
@@ -1374,7 +1400,7 @@ textarea.input {
   place-items: center;
   width: 20px;
   height: 20px;
-  border: 2px solid #fff;
+  border: 2px solid var(--card);
   border-radius: 50%;
   color: #fff;
   background: var(--green-600);
@@ -1433,7 +1459,7 @@ textarea.input {
   padding: 14px 4px 10px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   font: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -1493,7 +1519,7 @@ textarea.input {
   padding: 3px 10px 3px 4px;
   border: 1.5px solid var(--line);
   border-radius: 999px;
-  background: #fff;
+  background: var(--card);
   font: inherit;
   font-size: 13.5px;
   color: var(--muted);
@@ -1548,7 +1574,7 @@ textarea.input {
 
 .swipe-row__content {
   position: relative;
-  background: #fff;
+  background: var(--card);
   transition: transform 0.2s ease;
   touch-action: pan-y;
 }
@@ -1820,7 +1846,7 @@ textarea.input {
     margin: 0 -16px 16px;
     padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
     border-bottom: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.96);
+    background: var(--glass);
     backdrop-filter: blur(8px);
   }
 
@@ -1922,7 +1948,7 @@ textarea.input {
     padding: 6px 14px;
     border: 1px solid var(--line);
     border-radius: 999px;
-    background: #fff;
+    background: var(--card);
     color: var(--ink);
     font: inherit;
     font-size: 14px;
@@ -1970,7 +1996,7 @@ textarea.input {
     gap: 12px;
     padding: 10px 16px;
     border-top: 1px solid var(--line);
-    background: #fff;
+    background: var(--card);
     box-shadow: 0 -4px 16px rgba(10, 70, 40, 0.08);
   }
 
@@ -2005,30 +2031,16 @@ textarea.input {
     padding: 12px 20px;
     border-top: 1px solid var(--line);
     border-radius: 0 0 var(--radius) var(--radius);
-    background: #fff;
+    background: var(--card);
   }
 
   .form-footer--sticky .btn {
     flex: 1;
   }
 
-  /* --- Tài khoản: menu chỉ ở màn hình gốc --- */
+  /* --- Tài khoản: điện thoại không có menu dọc (đã có Tổng quan + nút tài khoản góc phải) --- */
   .account-layout .account-nav {
     display: none;
-  }
-
-  /* Màn hình gốc "Tài khoản": thanh tiêu đề + số liệu trước, menu ngay sau */
-  .account-layout--root .account-nav {
-    display: block;
-    order: 1;
-  }
-
-  .account-upcoming {
-    display: none;
-  }
-
-  .account-layout--root .stats {
-    margin-bottom: 16px;
   }
 
   /* --- Thanh tab đáy --- */
@@ -2044,7 +2056,7 @@ textarea.input {
     height: calc(var(--tabbar-height) + env(safe-area-inset-bottom));
     padding: 0 4px env(safe-area-inset-bottom);
     border-top: 1px solid var(--line);
-    background: #fff;
+    background: var(--card);
     box-shadow: 0 -4px 16px rgba(10, 70, 40, 0.06);
   }
 
@@ -2078,7 +2090,7 @@ textarea.input {
     width: 52px;
     height: 52px;
     margin-bottom: 2px;
-    border: 4px solid #fff;
+    border: 4px solid var(--card);
     border-radius: 50%;
     background: var(--green-600);
     color: #fff;
@@ -2385,7 +2397,7 @@ textarea.input {
   height: 10px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e8efeb;
+  background: var(--track);
 }
 
 .stock-level__fill {
@@ -2422,7 +2434,7 @@ textarea.input {
   min-height: 42px;
   border: 1.5px solid var(--line);
   border-radius: 10px;
-  background: #fff;
+  background: var(--card);
   font: inherit;
   font-weight: 600;
   color: var(--ink);
@@ -2462,7 +2474,7 @@ textarea.input {
 
 .seg__btn--on {
   color: var(--ink);
-  background: #fff;
+  background: var(--card);
   box-shadow: var(--shadow-sm);
 }
 
@@ -2540,7 +2552,7 @@ textarea.input {
   width: min(24px, 70%);
   min-height: 0;
   border-radius: 4px 4px 0 0;
-  background: #9fd8b8;
+  background: var(--bar-soft);
 }
 
 .usage-chart__bar--current {
@@ -2650,7 +2662,7 @@ textarea.input {
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 13px;
-  color: #8a5a00;
+  color: var(--warn-ink);
   background: var(--amber-soft);
 }
 
@@ -2749,7 +2761,7 @@ textarea.input {
   padding: 32px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--card);
   box-shadow: var(--shadow-sm);
 }
 
@@ -2832,7 +2844,7 @@ textarea.input {
   font-size: 12.5px;
   font-weight: 600;
   color: var(--muted);
-  border-bottom-color: #cfdcd4;
+  border-bottom-color: var(--line-strong);
 }
 
 .invoice__table .num {
@@ -2925,7 +2937,7 @@ textarea.input {
   }
 
   body {
-    background: #fff;
+    background: var(--card);
   }
 
   .navbar,
@@ -2967,5 +2979,414 @@ textarea.input {
   .invoice__head {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+}
+
+/* ================= Chế độ tối (WBS 4.12) =================
+   <html data-theme="dark"> do utils/theme.ts đặt (Sáng / Tối / Theo máy). Chỉ đổi biến màu;
+   nút xanh giữ nguyên (chữ trắng trên nền xanh vẫn đủ tương phản). */
+:root[data-theme='dark'] {
+  --green-800: #9be7bd;
+  --green-700: #5fd394;
+  --green-500: #1fae5e;
+  --green-400: #35c372;
+  --green-100: #1b3a2a;
+  --green-50: #15281e;
+
+  --ink: #e3ece7;
+  --muted: #95a89d;
+  --line: #2a3a32;
+  --bg: #0e1612;
+  --card: #17221c;
+
+  --amber-soft: #352b12;
+  --danger: #f07a6e;
+  --danger-soft: #3a1d1a;
+  --info-soft: #162736;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.45);
+
+  --glass: rgba(23, 34, 28, 0.94);
+  --line-strong: #3a4c42;
+  --input-disabled: #1d2a23;
+  --neutral-soft: #24322b;
+  --track: #24322b;
+  --bar-soft: #2f6b4a;
+  --warn-ink: #f2c66b;
+  --danger-line: #6b2c26;
+  --danger-ink: #f3a198;
+  --info-line: #2b4a66;
+  --info-ink: #9cc8ef;
+  color-scheme: dark;
+}
+
+/* Khi in (hóa đơn) luôn dùng màu sáng */
+@media print {
+  :root[data-theme='dark'] {
+    --green-800: #06622f;
+    --green-700: #0a7a3c;
+    --green-500: #1caa5b;
+    --green-400: #2fc06f;
+    --green-100: #d7f2e2;
+    --green-50: #ecf8f1;
+    --ink: #1b2a22;
+    --muted: #6c7d74;
+    --line: #e3ece6;
+    --bg: #ffffff;
+    --card: #ffffff;
+    --line-strong: #cfdcd4;
+    --danger: #d23b2e;
+    color-scheme: light;
+  }
+}
+
+/* ================= Tổng quan, Cài đặt, nút tài khoản (WBS 4.12) ================= */
+.user-menu--compact .user-menu__button {
+  padding: 2px;
+  border-color: transparent;
+  background: none;
+}
+
+.user-menu--compact .user-menu__panel {
+  min-width: 240px;
+}
+
+.user-menu__header strong {
+  display: block;
+}
+
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mini-stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.mini-stat strong {
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--green-700);
+}
+
+.mini-stat .mini-stat__text {
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+a.mini-stat:hover {
+  border-color: var(--green-400);
+}
+
+.feature-search {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.feature-search > .icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.feature-search .input {
+  min-height: 46px;
+  padding-left: 44px;
+  border-radius: 999px;
+}
+
+.feature-group + .feature-group {
+  margin-top: 22px;
+}
+
+.feature-group__title {
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.feature-tile:hover {
+  border-color: var(--green-400);
+  box-shadow: var(--shadow);
+}
+
+.feature-tile__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: var(--green-700);
+  background: var(--green-50);
+}
+
+.feature-tile__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.feature-tile__label {
+  font-weight: 700;
+}
+
+.feature-tile__desc {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Cài đặt */
+.settings-links {
+  padding: 6px;
+}
+
+.settings-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+}
+
+.settings-link + .settings-link {
+  border-top: 1px solid var(--line);
+}
+
+.settings-link:hover {
+  background: var(--green-50);
+}
+
+.settings-link__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.settings-link__label {
+  font-weight: 600;
+}
+
+.settings-link__hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.settings-link__chevron {
+  color: var(--muted);
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 6px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.theme-option:hover {
+  border-color: var(--green-400);
+}
+
+.theme-option--on {
+  border-color: var(--green-600);
+  color: var(--green-700);
+  background: var(--green-50);
+}
+
+.tabbar-preview {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  padding: 8px 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.tabbar-preview__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--ink);
+}
+
+.tabbar-preview__item--fixed {
+  color: var(--muted);
+}
+
+.tab-picker {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tab-picker__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab-picker__row:last-child {
+  border-bottom: 0;
+}
+
+.tab-picker__toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.tab-picker__toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tab-picker__toggle .icon {
+  color: var(--green-600);
+}
+
+.tab-picker__check {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tab-picker__row--on .tab-picker__check {
+  border-color: var(--green-600);
+  background: var(--green-600);
+}
+
+.tab-picker__moves {
+  display: flex;
+  gap: 2px;
+  color: var(--muted);
+}
+
+.tab-picker__moves .icon-btn {
+  color: var(--ink);
+}
+
+.tab-picker__moves .icon-btn:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+@media (max-width: 1023.98px) {
+  .page-header__account {
+    display: block;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .mini-stats {
+    gap: 6px;
+  }
+
+  .mini-stat {
+    padding: 8px 10px;
+  }
+
+  .feature-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .mini-stat strong {
+    font-size: 18px;
+  }
+
+  .mini-stat .mini-stat__text {
+    font-size: 13px;
+  }
+
+  .mini-stat span {
+    font-size: 11.5px;
+    line-height: 1.3;
   }
 }

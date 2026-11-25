@@ -2,9 +2,9 @@ const express = require('express');
 
 const { authenticate } = require('../../middlewares/auth.middleware');
 const { validate } = require('../../middlewares/validate.middleware');
-const { getMe, updateMe, setBankAccount, deleteBankAccount, setAvatar, deleteAvatar } = require('./user.controller');
+const { getMe, updateMe, setBankAccount, deleteBankAccount, setAvatar, deleteAvatar, setTabBar } = require('./user.controller');
 const { receiveImage } = require('../../utils/images');
-const { displayNameRule, genderRule, levelRule, bankAccountRules } = require('./user.rules');
+const { displayNameRule, genderRule, levelRule, bankAccountRules, tabBarRules } = require('./user.rules');
 const { listMyPosts } = require('../post/post.controller');
 
 const router = express.Router();
@@ -23,5 +23,6 @@ router.put('/me/bank-account', bankAccountRules(), validate, setBankAccount);
 router.delete('/me/bank-account', deleteBankAccount);
 router.put('/me/avatar', receiveImage, setAvatar);
 router.delete('/me/avatar', deleteAvatar);
+router.put('/me/tab-bar', tabBarRules(), validate, setTabBar);
 
 module.exports = router;

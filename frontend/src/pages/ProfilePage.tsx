@@ -42,7 +42,7 @@ export default function ProfilePage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ to: '/tai-khoan', label: 'Tài khoản' }]}
+        breadcrumbs={[{ to: '/tai-khoan/cai-dat', label: 'Cài đặt' }]}
         title="Hồ sơ cá nhân"
         subtitle="Thông tin dùng để ghép bạn vào kèo phù hợp"
       />

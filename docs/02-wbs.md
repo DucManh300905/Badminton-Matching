@@ -3,7 +3,7 @@
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
 Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Phương pháp: phân rã theo **giai đoạn → gói công việc**. Mỗi gói công việc có sản phẩm đầu ra, ước lượng công và mức ưu tiên rõ ràng.
 
-**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 279 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
+**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 290 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
 
 **Ưu tiên (MoSCoW):** M = Must · S = Should · C = Could (chỉ làm nếu còn thời gian)
 **Trạng thái:** Xong · Đang làm · Chưa (chưa bắt đầu)
@@ -38,7 +38,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Xong |
 | 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Xong |
 | 3.4 | Wireframe các màn hình chính (từ giao diện đã làm) | Wireframe (Figma / giấy) | M | 3 | 4.5.1, 4.5.2 | Chưa |
-| **4** | **PHÁT TRIỂN** | | | **133** | | |
+| **4** | **PHÁT TRIỂN** | | | **144** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
 | 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
@@ -61,6 +61,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.9 | Icon nét mảnh cạnh chữ khắp giao diện; **ảnh đại diện** và **ảnh bìa kèo** (tải lên, cắt, đổi WebP, xóa EXIF / GPS; chưa có ảnh thì dùng chữ cái đầu / dải màu xanh) | `Icon.tsx`, `utils/images.js`, API `/users/me/avatar`, `/posts/:id/cover` | S | 12 | 4.5.3, 4.5.4 | Xong |
 | 4.10 | **Kho cầu**: nhiều loại cầu, nhập theo số quả (12 / 24 / 36 hoặc tự nhập) + tổng tiền → giá mỗi quả (bình quân khi nhập thêm), thanh mức cầu; khoản "Cầu" theo số quả tự trừ / hoàn kho; thống kê số quả đã dùng theo tuần / tháng | Module `shuttle`, trang `/kho-cau` (US-37) | S | 11 | 4.8.2 | Xong |
 | 4.11 | Ảnh bill (tối đa 7 ảnh / kèo) và trang **hóa đơn** in / lưu PDF cho mọi người trong kèo | API `/posts/:id/bills`, trang `/keo/:id/hoa-don` (US-38) | S | 6 | 4.8.2, 4.9 | Xong |
+| 4.12 | **Tổng quan và Cài đặt**: tab "Tổng quan" chứa mọi tính năng (ô tìm kiếm không dấu, hàng số liệu nhỏ); nút Tài khoản ở góc phải trên cùng (Cài đặt, Đăng xuất); Cài đặt gồm Hồ sơ, Đổi mật khẩu, **chế độ Sáng / Tối / Theo máy**, chọn 3 tiện ích cho thanh dưới (lưu theo tài khoản) | `utils/features.ts`, `OverviewPage`, `SettingsPage`, `UserMenu`, API `/users/me/tab-bar` (US-39) | S | 11 | 4.5.4 | Xong |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **28** | | |
 | 5.1 | Unit test (liên tục, coverage ≥ 80%) | `backend/tests/` (Jest), test frontend (Vitest) | M | 12 | 4.1.2 | Đang làm |
 | 5.2 | Integration / API test | Jest + Supertest + MongoDB trong RAM | M | 6 | 4.4.2 | Xong |
@@ -74,7 +75,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.5, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | Chưa |
-| | **TỔNG GIAI ĐOẠN 1** | | | **279** | | |
+| | **TỔNG GIAI ĐOẠN 1** | | | **290** | | |
 
 ## 3. Tổng hợp khối lượng
 
@@ -82,7 +83,7 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 
 | | Giờ công |
 |---|---:|
-| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 279 |
+| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 290 |
 | Còn lại tính từ 24/11 (không tính 7.3 Bảo vệ) | ~106 |
 | Số tuần còn lại (24/11/2026 → 15/12/2026) | 3 |
 | **Trung bình cần làm** | **~35 giờ/tuần** |
@@ -98,6 +99,8 @@ Cỡ mẫu đã giảm so với kế hoạch ban đầu: khảo sát ≥ 30 ph�
 **Bổ sung 24/11/2026:** thêm 4.9 Icon và ảnh (12h: icon 3h, ảnh đại diện / ảnh bìa 9h) theo yêu cầu, đã làm xong trong ngày nên **không** làm tăng phần việc còn lại. Tổng **262 giờ**; ghi nhận ở [RISKS.md](RISKS.md) R3, rủi ro mới R18.
 
 **Bổ sung 25/11/2026:** thêm 4.10 Kho cầu (11h) và 4.11 Ảnh bill, hóa đơn PDF (6h) theo yêu cầu; kho cầu chuyển từ ngoài phạm vi vào phạm vi (Charter mục 5). Đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **279 giờ**.
+
+**Bổ sung 25/11/2026 (lần 2):** thêm 4.12 Tổng quan và Cài đặt (11h) theo yêu cầu; đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **290 giờ**.
 
 Nếu trễ so với lịch, cắt theo thứ tự: 4.7 Uy tín → 4.8.5 Lịch sử chi tiêu → 4.6 Thông báo email → 5.3 E2E test → 3.4 Wireframe (dùng ảnh chụp giao diện). Xem [Gantt](03-gantt.md) mục 5.
 
@@ -116,6 +119,8 @@ Giai đoạn 2 (app di động, mục 5) **không** nằm trong khối lượng 
 **4.10 Kho cầu.** Mỗi người có tối đa 20 loại cầu (collection `shuttles`). Nhập cầu = số quả + tổng tiền đã trả; giá mỗi quả = tổng tiền / số quả, nhập thêm khi kho còn cầu thì lấy **bình quân theo số quả**. Khoản "Cầu" của kèo lưu số quả, giá mỗi quả và loại cầu (chép tên); server tính số tiền và **trừ / hoàn kho theo chênh lệch** so với lần lưu trước, trong cùng transaction với lần lưu chi phí; kho không đủ thì dừng ở 0, không chặn. Thống kê số quả đã dùng tính từ các kèo mình làm chủ, đã diễn ra, chưa hủy, theo lịch Việt Nam (tuần bắt đầu thứ Hai). **Tiêu chí chấp nhận:** test API cho giá bình quân, trừ / hoàn kho, cầu của người khác, loại cầu đã xóa, thống kê; e2e thêm / nhập thêm / khoản cầu / vượt kho.
 
 **4.11 Ảnh bill và hóa đơn.** Chủ kèo tải tối đa 7 ảnh bill (giữ tỉ lệ, cạnh dài ≤ 1600 px, WebP, xóa EXIF / GPS); giới hạn kiểm tra ngay trong lệnh ghi nên tải đồng thời cũng không vượt. Chỉ người trong kèo thấy ảnh. Trang hóa đơn dùng chức năng in của trình duyệt để lưu PDF (chữ tiếng Việt đúng, không thêm thư viện); ghi rõ đây là bảng kê chia tiền, không phải hóa đơn VAT. **Tiêu chí chấp nhận:** test API quyền xem / sửa, giới hạn 7 ảnh, kích thước ảnh; e2e tạo PDF thật bằng Chrome.
+
+**4.12 Tổng quan và Cài đặt.** Danh mục tiện ích nằm ở một chỗ (`frontend/src/utils/features.ts`): trang Tổng quan, ô tìm kiếm và thanh dưới đều đọc từ đây, nên tính năng mới chỉ cần thêm một dòng. Thanh dưới: 3 ô tự chọn + "Đăng kèo" ở giữa + "Tổng quan" ở cuối (cố định); lựa chọn lưu theo tài khoản (trường `tabBar`). Chế độ màu lưu trên thiết bị; một đoạn script trong `index.html` đặt màu trước khi vẽ trang để không nháy trắng; mọi màu trong CSS đi qua biến, chế độ tối chỉ đổi giá trị biến; khi in luôn dùng màu sáng. Menu Tài khoản chỉ có Cài đặt và Đăng xuất, không lặp lại tính năng. **Tiêu chí chấp nhận:** test API cho thanh dưới (thiếu, trùng, ô cố định, null về mặc định); e2e cả sáng lẫn tối ở 390 px và 1366 px.
 
 **5.1 Unit test.** Mọi logic nghiệp vụ và bộ trích xuất phải có unit test. CI chạy typecheck + test + coverage trên mỗi lần push và Pull Request. Không merge vào `main` khi CI đỏ. Backend dùng Jest + Supertest với MongoDB chạy trong RAM (dạng replica set để test được transaction); frontend dùng Vitest. Ngưỡng coverage backend: lines/functions/statements ≥ 80%, branches ≥ 70%.
 
