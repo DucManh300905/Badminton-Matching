@@ -253,8 +253,25 @@ const list = async (userId, now) => {
         (await ChatRead.find({ user: uid, key: { $in: [...postConvs, ...directs].map((c) => c.key) } })).map((r) => [r.key, r.at])
     );
 
-    const unreadOf = (c) =>
+    const hasUnread = (c) =>
         !!c?.lastMessage?.at && String(c.lastMessage.sender) !== userId && !(reads.get(c.key) >= c.lastMessage.at);
+
+    // Số tin chưa xem của từng cuộc: tin của người khác mới hơn lần đọc cuối (một lần truy vấn cho mọi cuộc)
+    const pending = [...postConvs, ...directs].filter(hasUnread);
+    const counts = new Map();
+    if (pending.length > 0) {
+        const rows = await Message.aggregate([
+            {
+                $match: {
+                    sender: { $ne: uid },
+                    $or: pending.map((c) => ({ key: c.key, createdAt: { $gt: reads.get(c.key) ?? new Date(0) } }))
+                }
+            },
+            { $group: { _id: '$key', n: { $sum: 1 } } }
+        ]);
+        for (const r of rows) counts.set(r._id, r.n);
+    }
+    const unreadOf = (c) => (c && hasUnread(c) ? (counts.get(c.key) ?? 1) : 0);
     const lastOf = (c) =>
         c?.lastMessage?.at ? { text: c.lastMessage.text, at: c.lastMessage.at, mine: String(c.lastMessage.sender) === userId } : null;
 
@@ -304,8 +321,14 @@ const list = async (userId, now) => {
     return items.map(({ sortAt, ...rest }) => rest);
 };
 
-/** Số cuộc trò chuyện có tin chưa đọc (chấm đỏ ở "Lịch sử") */
-const unreadCount = async (userId, now) => (await list(userId, now)).filter((c) => c.unread).length;
+/** Tin chưa xem: tổng số tin và số cuộc trò chuyện có tin chưa xem (số đỏ ở "Lịch sử") */
+const unreadCount = async (userId, now) => {
+    const items = await list(userId, now);
+    return {
+        count: items.reduce((sum, c) => sum + c.unread, 0),
+        conversations: items.filter((c) => c.unread > 0).length
+    };
+};
 
 /** Khóa nhắn riêng với một người; chỉ cho người đã cùng chơi */
 const directKeyWith = async (userId, otherId) => {

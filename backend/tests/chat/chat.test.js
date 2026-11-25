@@ -125,14 +125,21 @@ describe('Danh sách và tin chưa đọc', () => {
         const { a, b, key } = await setup();
         const empty = (await request(app).get('/api/chats').set(auth(a.token))).body.data;
         expect(empty).toHaveLength(1);
-        expect(empty[0]).toMatchObject({ key, kind: 'post', lastMessage: null, unread: false, canSend: true });
+        expect(empty[0]).toMatchObject({ key, kind: 'post', lastMessage: null, unread: 0, canSend: true });
 
+        await say(b.token, key, 'Tới sân chưa?').expect(201);
         await say(b.token, key, 'Ai mang cầu không?').expect(201);
         const list = (await request(app).get('/api/chats').set(auth(a.token))).body.data;
-        expect(list[0]).toMatchObject({ key, unread: true, lastMessage: { text: 'Ai mang cầu không?', mine: false } });
-        expect((await request(app).get('/api/chats/unread').set(auth(a.token))).body.data.count).toBe(1);
+        expect(list[0]).toMatchObject({ key, unread: 2, lastMessage: { text: 'Ai mang cầu không?', mine: false } });
+        expect((await request(app).get('/api/chats/unread').set(auth(a.token))).body.data).toEqual({ count: 2, conversations: 1 });
         // Người gửi không thấy tin của mình là chưa đọc
         expect((await request(app).get('/api/chats/unread').set(auth(b.token))).body.data.count).toBe(0);
+
+        // Chủ kèo trả lời = đã đọc tới lúc gửi; tin mới của B sau đó tính lại từ 1
+        await say(a.token, key, 'Mình mang').expect(201);
+        expect((await request(app).get('/api/chats/unread').set(auth(a.token))).body.data.count).toBe(0);
+        await say(b.token, key, 'Ok cảm ơn').expect(201);
+        expect((await request(app).get('/api/chats/unread').set(auth(a.token))).body.data.count).toBe(1);
 
         // Cuộc có tin đứng trước nhóm chưa có tin (dù kèo đó diễn ra muộn hơn)
         const later = await createPost(a.token);
@@ -154,7 +161,7 @@ describe('Nhắn riêng', () => {
 
         await say(b.token, k, 'Anh ơi em chuyển khoản rồi nhé').expect(201);
         const list = (await request(app).get('/api/chats').set(auth(a.token))).body.data;
-        expect(list.find((x) => x.key === k)).toMatchObject({ kind: 'direct', title: b.user.displayName, unread: true });
+        expect(list.find((x) => x.key === k)).toMatchObject({ kind: 'direct', title: b.user.displayName, unread: 1 });
         // Người ngoài không đọc được tin riêng của người khác
         expect((await openChat(c.token, k)).status).toBe(404);
 

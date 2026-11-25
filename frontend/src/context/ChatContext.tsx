@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext';
 type Listener = (key: string, message: ChatMessage) => void;
 
 interface ChatState {
-  /** Số cuộc trò chuyện có tin chưa đọc (chấm ở "Lịch sử") */
+  /** Tổng số tin chưa xem (số đỏ ở "Lịch sử") */
   unread: number;
   /** Kết nối thời gian thực đang mở (false → trang chat tự tải lại định kỳ) */
   live: boolean;

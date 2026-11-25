@@ -206,7 +206,7 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | PATCH | `/shuttles/:id` | Có | Đổi tên / kiểm kê số quả |
 | DELETE | `/shuttles/:id` | Có | Xóa loại cầu |
 | GET | `/chats` | Có | Các cuộc trò chuyện của tôi |
-| GET | `/chats/unread` | Có | Số cuộc trò chuyện có tin chưa đọc |
+| GET | `/chats/unread` | Có | Số tin chưa xem |
 | GET | `/chats/direct/:userId` | Có | Khóa nhắn riêng với một người đã cùng chơi |
 | GET | `/chats/:key` | Có | Mở cuộc trò chuyện (tin nhắn, thành viên) |
 | POST | `/chats/:key/messages` | Có | Gửi tin |
@@ -437,11 +437,11 @@ Body (đều không bắt buộc): `{ name?, quantity? }` — kiểm kê lại s
 **ChatMessage:** `{ "id": "…", "text": "Mình đến muộn 10 phút", "at": "2026-11-25T12:00:00.000Z", "sender": { "id", "displayName", "avatarUrl" } }`
 
 #### `GET /chats`
-`200` → `data: ChatSummary[]`: `{ key, kind: "post" | "direct", title, subtitle, postId?, startsAt?, coverUrl?, other?, canSend?, lastMessage: { text, at, mine } | null, unread }`.
+`200` → `data: ChatSummary[]`: `{ key, kind: "post" | "direct", title, subtitle, postId?, startsAt?, coverUrl?, other?, canSend?, lastMessage: { text, at, mine } | null, unread }` (`unread` = số tin chưa xem của cuộc đó).
 - Gồm nhóm của mọi kèo tôi đang ở trong (kèo đã quá hạn mà chưa ai nhắn thì không hiện) và các cuộc nhắn riêng đã có tin. Cuộc có tin trước (mới nhất ở trên), nhóm chưa có tin sau (kèo gần nhất ở trên).
 
 #### `GET /chats/unread`
-`200` → `data: { count }` (số cuộc trò chuyện có tin của người khác mới hơn lần đọc cuối).
+`200` → `data: { count, conversations }`: `count` = tổng số tin của người khác mới hơn lần đọc cuối (giao diện hiện số này, quá 99 ghi "99+"), `conversations` = số cuộc trò chuyện có tin chưa xem. Gửi tin cũng tính là đã đọc tới lúc gửi.
 
 #### `GET /chats/direct/:userId`
 `200` → `data: { key }` · `403 NOT_CONNECTED` (chưa từng cùng kèo) · `404` (chính mình / id sai)
