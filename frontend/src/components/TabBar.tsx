@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../context/AuthContext';
+import { useChat } from '../context/ChatContext';
 import { featureOf, tabBarOf } from '../utils/features';
 import { toDateInput } from '../utils/format';
 import { activeTab, type TabKey } from '../utils/nav';
@@ -20,6 +21,7 @@ interface Tab {
  */
 export default function TabBar() {
   const { user } = useAuth();
+  const { unread } = useChat();
   const { pathname, search } = useLocation();
   // Lấy ngày một lần khi mở app (đủ dùng cho tab "Hôm nay")
   const [today] = useState(() => toDateInput(new Date()));
@@ -39,6 +41,9 @@ export default function TabBar() {
   // Trang của một tiện ích không có trên thanh (vd Kho cầu khi chưa chọn) → sáng ô "Tổng quan"
   const active = current && tabs.some((t) => t.key === current) ? current : current ? 'overview' : null;
 
+  // Trang trò chuyện dùng toàn màn hình cho khung nhập tin
+  if (pathname.startsWith('/lich-su/tin-nhan/')) return null;
+
   return (
     <nav className="tabbar" aria-label="Điều hướng chính">
       {tabs.map((tab) => {
@@ -51,7 +56,10 @@ export default function TabBar() {
                 <Icon name={tab.icon} size={28} />
               </span>
             ) : (
-              <Icon name={tab.icon} size={24} />
+              <span className="tab__icon">
+                <Icon name={tab.icon} size={24} />
+                {tab.key === 'mine' && unread > 0 && <span className="dot" aria-label="Có tin nhắn mới" />}
+              </span>
             )}
             <span className="tab__label">{tab.label}</span>
           </Link>

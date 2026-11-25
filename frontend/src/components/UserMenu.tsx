@@ -6,7 +6,7 @@ import { Avatar } from './ui';
 
 /**
  * Menu Tài khoản (WBS 4.12): chỉ gồm những gì thuộc về tài khoản — Cài đặt, Đăng xuất.
- * Các tính năng (Kèo của tôi, Kho cầu…) nằm ở Tổng quan, không lặp lại ở đây.
+ * Các tính năng (Lịch sử, Kho cầu…) nằm ở Tổng quan, không lặp lại ở đây.
  * - compact: điện thoại, chỉ ảnh đại diện ở góc phải thanh tiêu đề
  * - thường: máy tính, ảnh + tên ở thanh trên
  * Chưa đăng nhập: nút "Đăng nhập".

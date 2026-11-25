@@ -7,7 +7,7 @@ import { Avatar, IconText } from './ui';
 
 interface Props {
   post: PostSummary;
-  /** Truyền vào để đánh dấu kèo đã diễn ra (trang "Kèo của tôi") */
+  /** Truyền vào để đánh dấu kèo đã diễn ra (trang "Lịch sử") */
   now?: number;
 }
 

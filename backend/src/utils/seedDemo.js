@@ -7,6 +7,8 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('../config/mongoose');
 const User = require('../modules/user/user.model');
 const Post = require('../modules/post/post.model');
+const Shuttle = require('../modules/shuttle/shuttle.model');
+const { Conversation, Message, ChatRead, Block } = require('../modules/chat/chat.model');
 const { vnDateTime } = require('./vnTime');
 
 const DEMO_DOMAIN = '@example.com';
@@ -30,6 +32,17 @@ const run = async () => {
 
     const oldUsers = await User.find({ email: { $regex: `${DEMO_DOMAIN.replace('.', '\\.')}$` } }).select('_id');
     const oldIds = oldUsers.map((u) => u._id);
+    // Tin nhắn, kho cầu của tài khoản mẫu cũ (WBS 4.10, 4.13): xóa theo kèo và theo người
+    const oldPostIds = (await Post.find({ author: { $in: oldIds } }).select('_id')).map((p) => p._id);
+    const oldConvs = await Conversation.find({
+        $or: [{ post: { $in: oldPostIds } }, { members: { $in: oldIds } }]
+    }).select('key');
+    const oldKeys = [...oldConvs.map((c) => c.key), ...oldPostIds.map((id) => `p-${id}`)];
+    await Message.deleteMany({ $or: [{ key: { $in: oldKeys } }, { sender: { $in: oldIds } }] });
+    await Conversation.deleteMany({ key: { $in: oldKeys } });
+    await ChatRead.deleteMany({ $or: [{ user: { $in: oldIds } }, { key: { $in: oldKeys } }] });
+    await Block.deleteMany({ $or: [{ blocker: { $in: oldIds } }, { blocked: { $in: oldIds } }] });
+    await Shuttle.deleteMany({ owner: { $in: oldIds } });
     await Post.deleteMany({ author: { $in: oldIds } });
     await User.deleteMany({ _id: { $in: oldIds } });
 

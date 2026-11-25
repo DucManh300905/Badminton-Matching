@@ -10,6 +10,7 @@ const authRoutes = require('./modules/auth/auth.routes');
 const userRoutes = require('./modules/user/user.routes');
 const postRoutes = require('./modules/post/post.routes');
 const shuttleRoutes = require('./modules/shuttle/shuttle.routes');
+const chatRoutes = require('./modules/chat/chat.routes');
 const { uploadDir } = require('./utils/images');
 
 const app = express();
@@ -46,6 +47,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 // Kho cầu của từng người (WBS 4.10)
 app.use('/api/shuttles', shuttleRoutes);
+// Nhắn tin trong app (WBS 4.13); tin mới được đẩy qua WebSocket /api/ws (chat.hub.js)
+app.use('/api/chats', chatRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

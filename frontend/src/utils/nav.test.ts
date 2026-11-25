@@ -12,6 +12,8 @@ describe('activeTab', () => {
     ['/keo/moi', '', 'new'],
     ['/keo/665f1f77bcf86cd799439011', '', 'search'],
     ['/keo-cua-toi', '?tab=authored', 'mine'],
+    ['/lich-su', '?tab=messages', 'mine'],
+    ['/lich-su/tin-nhan/p-665f1f77bcf86cd799439011', '', 'mine'],
     ['/kho-cau', '', 'shuttles'],
     ['/tong-quan', '', 'overview'],
     ['/tai-khoan/cai-dat', '', null],

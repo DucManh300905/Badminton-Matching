@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Navigate, Route, Routes } from 'react-router';
+import { Navigate, Route, Routes, useLocation } from 'react-router';
 import AccountLayout from './components/AccountLayout';
 import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
@@ -14,10 +14,17 @@ import ProfilePage from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
 import OverviewPage from './pages/OverviewPage';
 import SettingsPage from './pages/SettingsPage';
+import ChatPage from './pages/ChatPage';
 import InvoicePage from './pages/InvoicePage';
 import ShuttleStockPage from './pages/ShuttleStockPage';
 
 const authed = (page: ReactNode) => <RequireAuth>{page}</RequireAuth>;
+
+/** Đường dẫn cũ "Kèo của tôi" → "Lịch sử", giữ nguyên ?tab=… */
+function OldMyPosts() {
+  const { search } = useLocation();
+  return <Navigate to={`/lich-su${search}`} replace />;
+}
 
 export default function App() {
   return (
@@ -35,7 +42,9 @@ export default function App() {
           <Route path="tai-khoan/cai-dat" element={<SettingsPage />} />
           <Route path="tai-khoan/ho-so" element={<ProfilePage />} />
           <Route path="tai-khoan/doi-mat-khau" element={<ChangePasswordPage />} />
-          <Route path="keo-cua-toi" element={<MyPostsPage />} />
+          <Route path="lich-su" element={<MyPostsPage />} />
+          <Route path="lich-su/tin-nhan/:key" element={<ChatPage />} />
+          <Route path="keo-cua-toi" element={<OldMyPosts />} />
           <Route path="kho-cau" element={<ShuttleStockPage />} />
         </Route>
         <Route path="dang-nhap" element={<LoginPage />} />

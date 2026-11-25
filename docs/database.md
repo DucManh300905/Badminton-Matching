@@ -169,6 +169,17 @@ Model: `backend/src/modules/shuttle/shuttle.model.js`. Mỗi document là **mộ
 
 Kho bị trừ / hoàn **trong cùng transaction** với lần chủ kèo lưu chi phí (`post.service.js → updateCosts`): so số quả từng loại cầu giữa khoản "Cầu" cũ và mới của kèo, rồi cập nhật `quantity` bằng một lệnh pipeline `max(0, quantity − chênh lệch)`. Kèo bị hủy không tự hoàn kho (chỉnh bằng kiểm kê).
 
+### 3.6 Nhắn tin (WBS 4.13)
+
+Model: `backend/src/modules/chat/chat.model.js`. Quyền **không lưu** mà tính từ `posts` ở mỗi lần đọc / gửi (ai đang ở trong kèo, giờ kết thúc).
+
+| Collection | Trường | Ghi chú |
+|---|---|---|
+| `conversations` | `key` (duy nhất), `kind` (`post` / `direct`), `post` (nhóm), `members` (nhắn riêng: 2 người), `lastMessage { text ≤ 200, sender, at }` | Tạo khi có tin đầu tiên; giữ tin cuối để hiện danh sách nhanh |
+| `messages` | `key`, `sender`, `text` (1 – 1.000), `createdAt` | Chỉ chữ |
+| `chatreads` | `user`, `key`, `at` | Lần cuối mở cuộc trò chuyện → tính "chưa đọc" |
+| `blocks` | `blocker`, `blocked`, `createdAt` | Chặn nhắn riêng |
+
 ## 4. Index
 
 | Collection | Index | Phục vụ |
@@ -179,6 +190,10 @@ Kho bị trừ / hoàn **trong cùng transaction** với lần chủ kèo lưu c
 | `posts` | `{ district: 1, startsAt: 1 }` | Lọc theo khu vực |
 | `posts` | `{ 'participants.user': 1 }` | "Kèo tôi đã tham gia" |
 | `shuttles` | `{ owner: 1 }` | Kho cầu của một người |
+| `conversations` | `{ key: 1 }` unique · `{ members: 1 }` · `{ post: 1 }` | Mở một cuộc trò chuyện; danh sách nhắn riêng / nhóm của tôi |
+| `messages` | `{ key: 1, createdAt: -1 }` | Tin mới nhất của một cuộc trò chuyện, phân trang |
+| `chatreads` | `{ user: 1, key: 1 }` unique | Tin chưa đọc |
+| `blocks` | `{ blocker: 1, blocked: 1 }` unique | Kiểm tra chặn |
 
 Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi động (`config/database.js`).
 
@@ -198,6 +213,7 @@ Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi �
 - Tạo 4 tài khoản `minh`, `lan`, `hung`, `thu` `@example.com` (mật khẩu `DEMO_PASSWORD`, mặc định `Demo@123`) và 5 kèo trong 3 ngày tới.
 - **Chỉ xóa và tạo lại tài khoản `@example.com` cùng kèo của họ**; tài khoản khác giữ nguyên.
 - Từ chối chạy khi `NODE_ENV=production`.
+- Xóa luôn tin nhắn, cuộc trò chuyện, lượt đọc, lượt chặn và kho cầu của tài khoản mẫu cũ.
 - Không xóa file ảnh của tài khoản / kèo mẫu cũ; khi cần dọn, xóa thư mục `backend/uploads/` (đã nằm trong `.gitignore`).
 
 ## 7. Dữ liệu nghiên cứu
