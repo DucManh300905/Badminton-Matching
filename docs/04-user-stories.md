@@ -37,7 +37,7 @@ Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Mã WBS: **2.4.1** (produc
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
 | US-11 | Là **chủ kèo**, tôi muốn đăng kèo gồm sân, khu vực, thời gian, trình độ, chi phí và số chỗ theo giới tính để tuyển đúng người còn thiếu. | Giờ bắt đầu ở tương lai; thời lượng ≤ 6 giờ; trình độ từ ≤ trình độ đến; giá 0 – 1.000.000đ; tổng 1 – 20 chỗ (BR-01 → BR-05); lỗi chỉ rõ ô sai. | M | F4 | Xong |
-| US-14 | Là **chủ kèo**, tôi muốn chia sẻ link kèo lên Facebook / Zalo để người trong nhóm cũ vào tham gia. | Nút chia sẻ mở hộp chia sẻ; link mở thẳng trang chi tiết kèo. | S | WBS 4.8.4 (làm cùng US-35) | Chưa |
+| US-14 | Là **chủ kèo**, tôi muốn chia sẻ link kèo lên Facebook / Zalo để người trong nhóm cũ vào tham gia. | Nút chia sẻ mở hộp chia sẻ; link mở thẳng trang chi tiết kèo. | S | WBS 4.8.4 (làm cùng US-35) | Xong (nút "Chia sẻ kèo") |
 
 ### E3 — Tham gia kèo
 
@@ -47,11 +47,12 @@ Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Mã WBS: **2.4.1** (produc
 | US-16 | Là **người chơi**, tôi muốn rời kèo trước giờ chơi khi có việc bận để chỗ được trả lại cho người khác. | Chỉ trước giờ bắt đầu; kèo đang "đủ người" mở lại; trả đúng loại chỗ đã lấy (BR-12). | M | F5 | Xong |
 | US-17 | Là **chủ kèo**, tôi muốn hủy kèo khi không thuê được sân để người đã nhận chỗ biết sớm. | Chỉ chủ kèo, chỉ trước giờ bắt đầu; kèo hủy ẩn khỏi danh sách, không ai tham gia hay rời được (BR-13); có hỏi xác nhận trước khi hủy. | M | F5 | Xong |
 
-### E4 — Kèo của tôi
+### E4 — Lịch sử (trước là "Kèo của tôi") và tin nhắn
 
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
 | US-18 | Là **người chơi**, tôi muốn xem các kèo mình đã đăng và đã tham gia ở một chỗ để nắm lịch chơi. | Hai tab "Đã tham gia", "Đã đăng" có số lượng; kèo đã qua ghi "Đã diễn ra"; trang Tổng quan có số kèo sắp diễn ra. | M | F6 | Xong |
+| US-40 | Là **người trong kèo**, tôi muốn nhắn tin với mọi người trong kèo và nhắn riêng với người đã cùng chơi mà không cần xin Zalo. | Nhóm chat cho mỗi kèo (chủ kèo + người tham gia) và nhắn riêng; **chỉ người đã cùng ở trong một kèo** mới nhắn được, người rời kèo mất quyền vào nhóm; gửi được tới **2 giờ sau giờ kết thúc**, sau đó chỉ xem lại trong "Lịch sử" → "Tin nhắn"; tin mới đến ngay không cần tải lại; chấm đỏ báo tin chưa đọc; chỉ gửi chữ ≤ 1.000 ký tự, ≤ 20 tin / phút; **chặn** được người nhắn riêng. | S | WBS 4.13 | Xong |
 
 ### E5 — Thông báo
 
@@ -107,7 +108,7 @@ Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ
 | US-32 | Là **người chơi đã tham gia kèo**, tôi muốn quét mã QR để chuyển đúng số tiền cho chủ kèo mà không phải hỏi số tài khoản. | Chủ kèo lưu ngân hàng, số tài khoản, tên chủ tài khoản trong hồ sơ (chỉ người đã tham gia kèo mới thấy); trang chi tiết kèo hiện mã QR VietQR có **đúng giá mỗi người** và nội dung chuyển khoản gồm mã kèo; hiện tên chủ tài khoản để đối chiếu; chủ kèo chưa nhập số tài khoản thì ẩn mã QR và nhắc chủ kèo; chủ kèo đánh dấu "Đã trả" cho từng người, người chơi thấy trạng thái của mình. | M | WBS 4.8.1, BR-14, BR-15, R7 | Xong |
 | US-33 | Là **chủ kèo**, tôi muốn ghi từng khoản chi của kèo (sân, cầu, nước, ăn, khác) và chọn ai cùng chịu từng khoản, để người chỉ đến đánh không phải chịu tiền ăn uống và bạn của tôi không dùng app cũng được tính. | Chủ kèo thêm / sửa / xóa khoản chi **bất cứ lúc nào**; mỗi khoản có loại, tên (khoản "Khác"), số tiền và danh sách người cùng chịu, có nút **"Chọn tất cả"**; danh sách người gồm chủ kèo, người tham gia qua app và **bạn không dùng app** (chủ kèo thêm bằng tên); mỗi người trả tổng các phần của mình (khoản chia đều cho người được chọn), làm tròn lên 1.000đ; **mọi người trong kèo xem được toàn bộ khoản chi và số tiền của từng người**, chỉ chủ kèo sửa; mã QR của từng người cập nhật theo số tiền mới; người đã trả mà chi phí tăng thấy **"còn thiếu"** và mã QR cho phần còn thiếu. | M | WBS 4.8.2, RQ1, RQ2 | Xong |
 | US-34 | Là **người chơi**, tôi muốn thêm trang web vào màn hình chính điện thoại để mở nhanh như một ứng dụng. | Trình duyệt hiện gợi ý "Thêm vào màn hình chính" (Android Chrome); mở lên không có thanh địa chỉ, có biểu tượng và tên riêng của Badminton Matching. | S | WBS 4.8.3, 4.5.4 | Xong |
-| US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Chưa |
+| US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Xong (nút "Chia sẻ kèo", "Gửi tin thu tiền"; điện thoại mở bảng chia sẻ của máy) |
 | US-37 | Là **người chơi hay làm chủ kèo**, tôi muốn lưu số cầu mình đang có để tiền cầu trong kèo tự tính theo số quả và biết lúc nào sắp hết. | Trang "Kho cầu": nhiều loại cầu, mỗi loại có tên, số quả, giá mỗi quả; nhập cầu bằng nút **12 / 24 / 36 quả** hoặc tự nhập, kèm tổng tiền, hệ thống tự chia ra giá mỗi quả (nhập thêm thì giá bình quân); **thanh mức cầu** giảm dần khi dùng; khoản "Cầu" trong kèo chọn loại cầu và số quả, tiền = số quả × giá (làm tròn lên 1.000đ), kho **tự trừ / hoàn**; kho không đủ chỉ cảnh báo nhỏ, vẫn lưu; thống kê số quả đã dùng **theo tuần / tháng**. | S | WBS 4.10 | Xong |
 | US-38 | Là **người trong kèo**, tôi muốn xem ảnh bill và tải hóa đơn của kèo để đối chiếu và lưu lại. | Chủ kèo tải tối đa **7 ảnh bill** (ảnh được thu nhỏ, xóa vị trí GPS), mọi người trong kèo bấm để xem lớn, khách không thấy; nút **"Xuất hóa đơn"** ngay dưới chi phí kèo mở trang hóa đơn (thông tin kèo, từng khoản, mỗi người phải trả, trạng thái đã trả, ảnh bill) và **lưu PDF** bằng chức năng in của trình duyệt. | S | WBS 4.11 | Xong |
 | US-39 | Là **người dùng điện thoại**, tôi muốn mọi tính năng nằm ở một chỗ có tìm kiếm, tự chọn tiện ích ở thanh dưới và dùng được chế độ tối. | Thanh dưới: Tìm kèo, Hôm nay, (+) Đăng kèo, Kèo của tôi, **Tổng quan**; Tổng quan liệt kê mọi tính năng theo nhóm, ô tìm kiếm gõ không dấu vẫn ra, đầu trang có số liệu nhỏ; **nút Tài khoản góc phải trên cùng** (Cài đặt, Đăng xuất); Cài đặt gồm Hồ sơ cá nhân, Đổi mật khẩu, Giao diện **Sáng / Tối / Theo máy** (không nháy trắng khi mở), chọn 3 tiện ích cho thanh dưới, sắp thứ tự, khôi phục mặc định, **lưu theo tài khoản**. | S | WBS 4.12 | Xong |
@@ -115,16 +116,16 @@ Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ
 
 ### Ngoài phạm vi (Won't)
 
-Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài từ Facebook; thanh toán trực tuyến (cổng thanh toán, ví, thu hộ) và đặt sân với chủ sân; chat thời gian thực (dùng link Zalo / Messenger); thông báo đẩy trên trình duyệt; app di động (giai đoạn 2); **bộ trích xuất bài đăng** ("dán bài → tự điền", cả luật lẫn LLM, bỏ ngày 24/11/2026 theo Charter 2.0; các story US-12, US-13, US-23 đã xóa); quỹ nhóm, gộp nợ chéo giữa nhiều người ứng tiền, chia tiền theo số trận (kho cầu chuyển vào phạm vi ngày 25/11/2026: US-37).
+Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài từ Facebook; thanh toán trực tuyến (cổng thanh toán, ví, thu hộ) và đặt sân với chủ sân; thông báo đẩy trên trình duyệt; app di động (giai đoạn 2); **bộ trích xuất bài đăng** ("dán bài → tự điền", cả luật lẫn LLM, bỏ ngày 24/11/2026 theo Charter 2.0; các story US-12, US-13, US-23 đã xóa); quỹ nhóm, gộp nợ chéo giữa nhiều người ứng tiền, chia tiền theo số trận (kho cầu chuyển vào phạm vi ngày 25/11/2026: US-37).
 
 ## 4. Tổng hợp
 
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
 | Must | 12 | 11 | 1 (US-22) | 0 |
-| Should | 12 | 4 | 2 (US-24, US-28) | 6 (US-14, US-19, US-20, US-25, US-26, US-35) |
+| Should | 13 | 7 | 2 (US-24, US-28) | 4 (US-19, US-20, US-25, US-26) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **31** | **15** | **3** | **13** |
+| **Tổng** | **32** | **18** | **3** | **11** |
 
 Story **Must** còn lại nằm trên đường găng: **US-22** (xuất số liệu thử nghiệm cho RQ1–RQ3, trước 6.3).
 
@@ -230,3 +231,4 @@ flowchart LR
 | 25/11/2026 | 2.1: US-33 xong (chi phí theo từng khoản); đánh số lại quy tắc đề xuất BR-19 → BR-21; UC-04, UC-05, UC-14 theo cách mới |
 | 25/11/2026 | 2.2: thêm US-37 kho cầu, US-38 ảnh bill và hóa đơn (đã xong); kho cầu không còn ngoài phạm vi |
 | 25/11/2026 | 2.3: thêm US-39 Tổng quan, Cài đặt, chế độ tối, tùy chọn thanh dưới (đã xong) |
+| 25/11/2026 | 2.4: US-14, US-35 xong (chia sẻ kèo, tin thu tiền); thêm US-40 nhắn tin trong app (đã xong); "Kèo của tôi" đổi tên thành "Lịch sử" |

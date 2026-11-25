@@ -178,6 +178,16 @@ const PATHS = {
     </>
   ),
   arrowUp: <path d="M12 19V5M6 11l6-6 6 6" />,
+  chat: <path d="M4.5 5.5h15a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4.5 3.5v-3.5h-1a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" />,
+  send: <path d="M4 12 20 4.5 15.5 20l-3.3-6.7L4 12Zm8.2 1.3L20 4.5" />,
+  share: (
+    <>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1" />
+    </>
+  ),
   arrowDown: <path d="M12 5v14M6 13l6 6 6-6" />,
   userPlus: (
     <>

@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const app = require('./app');
 const connectDatabase = require('./config/database');
+const chatHub = require('./modules/chat/chat.hub');
 
 const PORT = Number(process.env.PORT) || 8080;
 
@@ -19,9 +20,11 @@ const startServer = async () => {
 
     await connectDatabase();
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`Server is running at http://localhost:${PORT}`);
     });
+    // Kênh WebSocket /api/ws: đẩy tin nhắn mới tới người đang mở app
+    chatHub.attach(server);
 };
 
 startServer();

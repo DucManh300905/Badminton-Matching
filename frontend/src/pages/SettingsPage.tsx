@@ -59,7 +59,7 @@ function ThemeCard() {
   );
 }
 
-/** Chọn 3 tiện ích cho thanh dưới (lưu theo tài khoản) */
+/** Tiện ích: chọn 3 mục hiện ở đáy màn hình điện thoại (lưu theo tài khoản) */
 function TabBarCard() {
   const { user, setUser } = useAuth();
   const saved = tabBarOf(user?.tabBar);
@@ -90,7 +90,7 @@ function TabBarCard() {
       const u = await usersApi.setTabBar(items);
       setUser(u);
       setOrder(tabBarOf(u.tabBar));
-      setMessage({ tone: 'success', text: items ? 'Đã lưu thanh dưới.' : 'Đã khôi phục thanh dưới mặc định.' });
+      setMessage({ tone: 'success', text: items ? 'Đã lưu tiện ích.' : 'Đã khôi phục tiện ích mặc định.' });
     } catch (e) {
       setMessage({ tone: 'error', text: toApiError(e).message });
     } finally {
@@ -107,17 +107,17 @@ function TabBarCard() {
   ];
 
   return (
-    <section className="card stack" aria-label="Thanh dưới">
+    <section className="card stack" aria-label="Tiện ích">
       <CardTitle icon="grid" className="mt-0">
-        Thanh dưới
+        Tiện ích
       </CardTitle>
       <p className="hint">
-        Chọn 3 tiện ích hiện ở thanh dưới trên điện thoại. "Đăng kèo" và "Tổng quan" luôn có. Lưu theo tài khoản, đổi
-        máy vẫn giữ.
+        Chọn 3 tiện ích hiện ở đáy màn hình điện thoại. "Đăng kèo" và "Tổng quan" luôn có. Lưu theo tài khoản, đổi máy
+        vẫn giữ.
       </p>
       {message && <Alert tone={message.tone}>{message.text}</Alert>}
 
-      <div className="tabbar-preview" aria-label="Xem trước thanh dưới">
+      <div className="tabbar-preview" aria-label="Xem trước tiện ích">
         {preview.map((p, i) => (
           <span key={i} className={`tabbar-preview__item${p.fixed ? ' tabbar-preview__item--fixed' : ''}`}>
             <Icon name={p.icon} size={18} />
@@ -190,18 +190,18 @@ function TabBarCard() {
           disabled={busy || !full || !changed}
           onClick={() => save(order)}
         >
-          {busy ? 'Đang lưu…' : 'Lưu thanh dưới'}
+          {busy ? 'Đang lưu…' : 'Lưu tiện ích'}
         </button>
       </div>
     </section>
   );
 }
 
-/** Cài đặt (WBS 4.12): hồ sơ, mật khẩu, giao diện sáng / tối, thanh dưới */
+/** Cài đặt (WBS 4.12): hồ sơ, mật khẩu, giao diện sáng / tối, tiện ích */
 export default function SettingsPage() {
   return (
     <>
-      <PageHeader title="Cài đặt" subtitle="Tài khoản, giao diện và thanh dưới" />
+      <PageHeader title="Cài đặt" subtitle="Tài khoản, giao diện và tiện ích" />
       <div className="stack">
         <section className="card settings-links" aria-label="Tài khoản">
           <SettingsLink

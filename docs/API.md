@@ -205,6 +205,14 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | POST | `/shuttles/:id/restock` | Có | Nhập thêm cầu |
 | PATCH | `/shuttles/:id` | Có | Đổi tên / kiểm kê số quả |
 | DELETE | `/shuttles/:id` | Có | Xóa loại cầu |
+| GET | `/chats` | Có | Các cuộc trò chuyện của tôi |
+| GET | `/chats/unread` | Có | Số cuộc trò chuyện có tin chưa đọc |
+| GET | `/chats/direct/:userId` | Có | Khóa nhắn riêng với một người đã cùng chơi |
+| GET | `/chats/:key` | Có | Mở cuộc trò chuyện (tin nhắn, thành viên) |
+| POST | `/chats/:key/messages` | Có | Gửi tin |
+| POST | `/chats/:key/read` | Có | Đánh dấu đã đọc |
+| POST / DELETE | `/chats/blocks/:userId` | Có | Chặn / bỏ chặn nhắn riêng |
+| WebSocket | `/ws` | Có | Nhận tin mới tức thì (xem mục 3.5) |
 
 Ảnh tải lên được phục vụ tĩnh tại `/uploads/avatars/<file>` và `/uploads/covers/<file>` (không qua `/api`; máy chủ chạy thật do Nginx phục vụ).
 
@@ -417,6 +425,47 @@ Body (đều không bắt buộc): `{ name?, quantity? }` — kiểm kê lại s
 #### `DELETE /shuttles/:id`
 - `200` · `404` · `401`. Khoản cầu đã lưu trong kèo giữ nguyên tên và giá.
 
+### 3.5 Nhắn tin (WBS 4.13)
+
+**Khóa cuộc trò chuyện:** `p-<postId>` (nhóm của kèo) · `d-<userIdA>-<userIdB>` (nhắn riêng, hai id xếp tăng dần). Sai dạng → `404`.
+
+**Quyền** (tính lại ở mỗi request):
+- Nhóm: chủ kèo hoặc người **đang** tham gia (người đã rời mất quyền). Người khác → `403 NOT_CONNECTED`.
+- Nhắn riêng: hai người cùng ở trong ít nhất một kèo (một người là chủ kèo, hoặc cả hai cùng tham gia). Người thứ ba mở → `404`.
+- Gửi được tới **2 giờ sau giờ kết thúc** (nhắn riêng: của kèo chung kết thúc muộn nhất); sau đó chỉ xem lại → `409 CHAT_CLOSED`. Bị chặn (một trong hai bên) → `409 CHAT_CLOSED` với lý do tương ứng.
+
+**ChatMessage:** `{ "id": "…", "text": "Mình đến muộn 10 phút", "at": "2026-11-25T12:00:00.000Z", "sender": { "id", "displayName", "avatarUrl" } }`
+
+#### `GET /chats`
+`200` → `data: ChatSummary[]`: `{ key, kind: "post" | "direct", title, subtitle, postId?, startsAt?, coverUrl?, other?, canSend?, lastMessage: { text, at, mine } | null, unread }`.
+- Gồm nhóm của mọi kèo tôi đang ở trong (kèo đã quá hạn mà chưa ai nhắn thì không hiện) và các cuộc nhắn riêng đã có tin. Cuộc có tin trước (mới nhất ở trên), nhóm chưa có tin sau (kèo gần nhất ở trên).
+
+#### `GET /chats/unread`
+`200` → `data: { count }` (số cuộc trò chuyện có tin của người khác mới hơn lần đọc cuối).
+
+#### `GET /chats/direct/:userId`
+`200` → `data: { key }` · `403 NOT_CONNECTED` (chưa từng cùng kèo) · `404` (chính mình / id sai)
+
+#### `GET /chats/:key?before=<ISO>`
+`200` → `data: { conversation: { key, kind, title, subtitle, postId?, other?, blockedByMe?, canSend, openUntil, reason }, members?: [{ id, displayName, avatarUrl, isHost }], messages: ChatMessage[], hasMore }`
+- `messages`: tối đa 50 tin, cũ → mới; `before` để tải các tin cũ hơn.
+
+#### `POST /chats/:key/messages`
+Body: `{ "text": "…" }` (1 – 1.000 ký tự sau khi bỏ khoảng trắng hai đầu).
+- `201` → `data: ChatMessage`; tin được đẩy ngay tới các thành viên đang kết nối WebSocket.
+- `400 VALIDATION_ERROR` · `403 NOT_CONNECTED` · `409 CHAT_CLOSED` · `429 RATE_LIMITED` (quá 20 tin / phút) · `401` · `404`
+
+#### `POST /chats/:key/read`
+`200` — đánh dấu đã đọc tới bây giờ.
+
+#### `POST /chats/blocks/:userId` · `DELETE /chats/blocks/:userId`
+`200` — chặn / bỏ chặn nhắn riêng với người đó (không ảnh hưởng nhóm của kèo).
+
+#### WebSocket `/api/ws`
+- Mở `wss://<tên miền>/api/ws` (máy chủ chỉ nhận từ đúng địa chỉ web `CLIENT_URL`), rồi gửi tin đầu tiên `{ "type": "auth", "token": "<JWT>" }` trong 5 giây. Thành công → `{ "type": "ready" }`; token sai → đóng mã `4003`.
+- Sau đó server đẩy `{ "type": "message", "key", "message": ChatMessage }` khi có tin mới trong cuộc trò chuyện của mình. Gửi tin vẫn dùng REST.
+- Server ping 30 giây một lần; gói tin tối đa 4 KB.
+
 ## 4. Mã lỗi
 
 | `code` | HTTP | Ý nghĩa | Thông báo hiển thị ở frontend |
@@ -443,6 +492,8 @@ Body (đều không bắt buộc): `{ name?, quantity? }` — kiểm kê lại s
 | `FILE_TOO_LARGE` | 413 | Ảnh lớn hơn 5 MB | Ảnh tối đa 5 MB. |
 | `SHUTTLE_LIMIT` | 409 | Đã có 20 loại cầu | Tối đa 20 loại cầu. |
 | `BILL_LIMIT` | 409 | Kèo đã có 7 ảnh bill | Tối đa 7 ảnh bill mỗi kèo. |
+| `NOT_CONNECTED` | 403 | Nhắn tin với người / nhóm chưa cùng ở trong kèo | Chỉ nhắn được cho người đã cùng chơi một kèo. |
+| `CHAT_CLOSED` | 409 | Quá 2 giờ sau kèo, hoặc bị chặn | (lý do do server gửi kèm) |
 | `RATE_LIMITED` | 429 | Thử quá nhiều lần | Bạn thử quá nhiều lần, vui lòng đợi ít phút rồi thử lại. |
 | `INTERNAL_ERROR` | 500 | Lỗi không lường trước | Máy chủ gặp lỗi, vui lòng thử lại sau. |
 

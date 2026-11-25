@@ -31,7 +31,7 @@ export default function AccountLayout() {
         </div>
         <nav>
           <MenuItem icon="grid" label="Tổng quan" to="/tong-quan" end />
-          <MenuItem icon="calendar" label="Kèo của tôi" to="/keo-cua-toi" />
+          <MenuItem icon="calendar" label="Lịch sử" to="/lich-su" />
           <MenuItem icon="plus" label="Đăng kèo mới" to="/keo/moi" />
           <MenuItem icon="shuttle" label="Kho cầu" to="/kho-cau" />
           <div className="menu-divider" />

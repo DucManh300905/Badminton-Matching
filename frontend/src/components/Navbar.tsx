@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../context/AuthContext';
+import { useChat } from '../context/ChatContext';
 import { toDateInput } from '../utils/format';
 import { activeTab, type TabKey } from '../utils/nav';
 import UserMenu from './UserMenu';
@@ -14,7 +15,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { key: 'search', label: 'Tìm kèo', to: () => '/' },
   { key: 'today', label: 'Hôm nay', to: (today) => `/?date=${today}` },
-  { key: 'mine', label: 'Kèo của tôi', to: () => '/keo-cua-toi' },
+  { key: 'mine', label: 'Lịch sử', to: () => '/lich-su' },
   { key: 'overview', label: 'Tổng quan', to: () => '/tong-quan' },
 ];
 
@@ -24,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
  */
 export default function Navbar() {
   const { user } = useAuth();
+  const { unread } = useChat();
   const { pathname, search } = useLocation();
   const [today] = useState(() => toDateInput(new Date()));
   const current = activeTab(pathname, search, today);
@@ -49,6 +51,9 @@ export default function Navbar() {
               aria-current={item.key === active ? 'page' : undefined}
             >
               {item.label}
+              {item.key === 'mine' && unread > 0 && (
+                <span className="dot" aria-label={`${unread} cuộc trò chuyện có tin mới`} />
+              )}
             </Link>
           ))}
         </nav>

@@ -38,6 +38,7 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R16 | Giảng viên chưa đồng ý đổi đề tài và câu hỏi nghiên cứu lúc muộn (Charter 2.0) | Quy trình | 3 | 5 | 15 | Cao | Đang theo dõi |
 | R17 | Thiếu số liệu cho RQ1, RQ2 vì chủ kèo không nhập khoản chi / không đánh dấu đã trả | Nghiên cứu | 3 | 4 | 12 | Trung bình | Đang theo dõi |
 | R18 | Ảnh người dùng tải lên: ảnh không phù hợp, lộ vị trí qua EXIF, file độc hại, đầy ổ đĩa | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
+| R19 | Nhắn tin: quấy rối, spam, lộ tin nhắn cho người ngoài | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
@@ -63,6 +64,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
 - **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
 - **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
+- **Ghi nhận (25/11/2026, lần 3):** thêm 4.13 nhắn tin trong app (13 giờ) theo yêu cầu; chat chuyển từ ngoài phạm vi vào phạm vi Charter. Tổng giai đoạn 1 thành 303 giờ.
 - **Ghi nhận (25/11/2026, lần 2):** thêm 4.12 Tổng quan, Cài đặt, chế độ tối (11 giờ) theo yêu cầu. Tổng giai đoạn 1 thành 290 giờ.
 - **Ghi nhận (25/11/2026):** thêm 4.10 kho cầu và 4.11 ảnh bill, hóa đơn PDF (17 giờ) theo yêu cầu; kho cầu chuyển từ ngoài phạm vi vào phạm vi Charter. Tổng giai đoạn 1 thành 279 giờ.
 - **Ghi nhận (24/11/2026, lần 3):** thêm 4.9 icon và ảnh đại diện / ảnh bìa (12 giờ) theo yêu cầu, làm xong trong ngày; tổng giai đoạn 1 thành 262 giờ, phần việc còn lại không đổi.
@@ -141,6 +143,11 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Mô tả:** ảnh đại diện / ảnh bìa (WBS 4.9) và ảnh bill (WBS 4.11, có thể chụp cả thông tin cá nhân trên hóa đơn) có thể chứa vị trí GPS của người chụp, là file giả dạng ảnh, quá lớn làm đầy ổ đĩa, hoặc có nội dung không phù hợp.
 - **Phòng ngừa:** kiểm tra định dạng theo nội dung file (chỉ JPEG / PNG / WebP), tối đa 5 MB ở cả Nginx và backend, giới hạn số điểm ảnh khi giải mã; server vẽ lại ảnh thành WebP kích thước cố định nên metadata (EXIF, GPS) và dữ liệu thừa bị bỏ; tên file ngẫu nhiên, chỉ xóa đúng dạng tên do server tạo; ảnh cũ bị xóa khi đổi nên mỗi người chỉ chiếm 1 ảnh đại diện, mỗi kèo 1 ảnh bìa (~20–100 KB) và tối đa 7 ảnh bill (~100–300 KB mỗi ảnh); ảnh bill chỉ người trong kèo xem được qua API (đường dẫn file là tên ngẫu nhiên 32 ký tự, không liệt kê được). Test: `backend/tests/post/bills.test.js`. Test: `backend/tests/images.test.js`.
 - **Dự phòng:** ảnh không phù hợp trong thời gian thử nghiệm: xóa file trong `UPLOAD_DIR` và đặt trường `avatar` / `cover` về `null`; chưa làm chức năng báo cáo ảnh vì quy mô thử nghiệm nhỏ.
+
+### R19 — Nhắn tin trong app (Thấp, 6 điểm)
+- **Mô tả:** người dùng nhắn tin quấy rối / spam; người ngoài đọc được tin của kèo; kết nối WebSocket bị lợi dụng.
+- **Phòng ngừa:** chỉ người đã cùng ở trong một kèo mới nhắn được, quyền tính lại ở mỗi lần đọc / gửi; tự đóng 2 giờ sau kèo nên không nhắn mãi cho người lạ; nút **chặn** nhắn riêng; chỉ gửi chữ ≤ 1.000 ký tự, ≤ 20 tin / phút / người; WebSocket chỉ nhận từ đúng địa chỉ web, token gửi trong tin đầu tiên (không nằm trên URL, không vào log), gói tin ≤ 4 KB. Test: `backend/tests/chat/chat.test.js`.
+- **Dự phòng:** chưa có chức năng báo cáo tin nhắn và quản trị viên; trong thử nghiệm, tin vi phạm được xóa trực tiếp trong CSDL theo yêu cầu và ghi lại.
 
 ## 4. Cập nhật sổ rủi ro
 
