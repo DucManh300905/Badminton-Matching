@@ -35,6 +35,7 @@ erDiagram
         date passwordChangedAt
         object bankAccount "bankBin, accountNumber, accountName"
         string avatar "tên file ảnh, null = chưa có"
+        array tabBar "3 tiện ích thanh dưới, không có = mặc định"
     }
     POST {
         ObjectId _id
@@ -90,6 +91,7 @@ Model: `backend/src/modules/user/user.model.js`
 | `bankAccount.bankBin` | String | thuộc danh sách ngân hàng (`utils/banks.js`) | Tài khoản nhận tiền (WBS 4.8.1), **không bắt buộc**; cả object không có khi chưa nhập |
 | `bankAccount.accountNumber` | String | 6 – 19 chữ số | Chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15) |
 | `bankAccount.accountName` | String | 2 – 50 chữ cái **in hoa không dấu** | Server tự chuẩn hóa khi lưu |
+| `tabBar` | [String] | không có, hoặc đúng 3 mã khác nhau trong `search`, `today`, `mine`, `shuttles` | Thanh dưới trên điện thoại (WBS 4.12), lưu theo tài khoản |
 | `avatar` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh đại diện (WBS 4.9). Chỉ lưu **tên file**; API trả `avatarUrl = /uploads/avatars/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |
 

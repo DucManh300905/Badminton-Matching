@@ -386,7 +386,7 @@ export default function ShuttleStockPage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ to: '/tai-khoan', label: 'Tài khoản' }]}
+        breadcrumbs={[{ to: '/tong-quan', label: 'Tổng quan' }]}
         title="Kho cầu"
         subtitle="Cầu bạn đang có. Tự trừ khi bạn nhập khoản Cầu trong kèo của mình."
       />

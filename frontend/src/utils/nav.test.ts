@@ -12,10 +12,11 @@ describe('activeTab', () => {
     ['/keo/moi', '', 'new'],
     ['/keo/665f1f77bcf86cd799439011', '', 'search'],
     ['/keo-cua-toi', '?tab=authored', 'mine'],
-    ['/tai-khoan', '', 'account'],
-    ['/kho-cau', '', 'account'],
-    ['/tai-khoan/doi-mat-khau', '', 'account'],
-    ['/dang-nhap', '', 'account'],
+    ['/kho-cau', '', 'shuttles'],
+    ['/tong-quan', '', 'overview'],
+    ['/tai-khoan/cai-dat', '', null],
+    ['/tai-khoan/doi-mat-khau', '', null],
+    ['/dang-nhap', '', null],
     ['/khong-co', '', null],
   ])('%s%s → %s', (pathname, search, expected) => {
     expect(activeTab(pathname, search, TODAY)).toBe(expected);

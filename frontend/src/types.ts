@@ -18,6 +18,8 @@ export interface User {
   bankAccount?: BankAccount;
   /** Ảnh đại diện (null = dùng chữ cái đầu) */
   avatarUrl?: string | null;
+  /** 3 tiện ích của thanh dưới (WBS 4.12); không có = mặc định */
+  tabBar?: string[];
 }
 
 /** Kết quả đăng ký / đăng nhập */

@@ -110,6 +110,7 @@ Chủ kèo vãng lai thường phải tự thu tiền người lạ, nhắc nợ
 | US-35 | Là **chủ kèo**, tôi muốn sao chép một tin nhắn tổng kết kèo để gửi vào nhóm Zalo / Messenger. | Nút "Sao chép" tạo đoạn tin gồm giờ, sân, danh sách người tham gia, số tiền mỗi người và link kèo; trước buổi chơi dùng làm tin tuyển người (cùng US-14), sau buổi chơi dùng làm tin thu tiền. | S | WBS 4.8.4 | Chưa |
 | US-37 | Là **người chơi hay làm chủ kèo**, tôi muốn lưu số cầu mình đang có để tiền cầu trong kèo tự tính theo số quả và biết lúc nào sắp hết. | Trang "Kho cầu": nhiều loại cầu, mỗi loại có tên, số quả, giá mỗi quả; nhập cầu bằng nút **12 / 24 / 36 quả** hoặc tự nhập, kèm tổng tiền, hệ thống tự chia ra giá mỗi quả (nhập thêm thì giá bình quân); **thanh mức cầu** giảm dần khi dùng; khoản "Cầu" trong kèo chọn loại cầu và số quả, tiền = số quả × giá (làm tròn lên 1.000đ), kho **tự trừ / hoàn**; kho không đủ chỉ cảnh báo nhỏ, vẫn lưu; thống kê số quả đã dùng **theo tuần / tháng**. | S | WBS 4.10 | Xong |
 | US-38 | Là **người trong kèo**, tôi muốn xem ảnh bill và tải hóa đơn của kèo để đối chiếu và lưu lại. | Chủ kèo tải tối đa **7 ảnh bill** (ảnh được thu nhỏ, xóa vị trí GPS), mọi người trong kèo bấm để xem lớn, khách không thấy; nút **"Xuất hóa đơn"** ngay dưới chi phí kèo mở trang hóa đơn (thông tin kèo, từng khoản, mỗi người phải trả, trạng thái đã trả, ảnh bill) và **lưu PDF** bằng chức năng in của trình duyệt. | S | WBS 4.11 | Xong |
+| US-39 | Là **người dùng điện thoại**, tôi muốn mọi tính năng nằm ở một chỗ có tìm kiếm, tự chọn tiện ích ở thanh dưới và dùng được chế độ tối. | Thanh dưới: Tìm kèo, Hôm nay, (+) Đăng kèo, Kèo của tôi, **Tổng quan**; Tổng quan liệt kê mọi tính năng theo nhóm, ô tìm kiếm gõ không dấu vẫn ra, đầu trang có số liệu nhỏ; **nút Tài khoản góc phải trên cùng** (Cài đặt, Đăng xuất); Cài đặt gồm Hồ sơ cá nhân, Đổi mật khẩu, Giao diện **Sáng / Tối / Theo máy** (không nháy trắng khi mở), chọn 3 tiện ích cho thanh dưới, sắp thứ tự, khôi phục mặc định, **lưu theo tài khoản**. | S | WBS 4.12 | Xong |
 | US-36 | Là **người chơi**, tôi muốn xem tổng tiền đã chi cho cầu lông theo từng tháng. | Trong "Kèo của tôi": tổng chi theo tháng, tính theo số tiền đã chốt (US-33), nếu chưa chốt thì theo giá mỗi người. | C | WBS 4.8.5 | Chưa |
 
 ### Ngoài phạm vi (Won't)
@@ -121,9 +122,9 @@ Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài t�
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
 | Must | 12 | 11 | 1 (US-22) | 0 |
-| Should | 11 | 3 | 2 (US-24, US-28) | 6 (US-14, US-19, US-20, US-25, US-26, US-35) |
+| Should | 12 | 4 | 2 (US-24, US-28) | 6 (US-14, US-19, US-20, US-25, US-26, US-35) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **30** | **14** | **3** | **13** |
+| **Tổng** | **31** | **15** | **3** | **13** |
 
 Story **Must** còn lại nằm trên đường găng: **US-22** (xuất số liệu thử nghiệm cho RQ1–RQ3, trước 6.3).
 
@@ -228,3 +229,4 @@ flowchart LR
 | 24/11/2026 | 2.0 (Charter 2.0): xóa US-12, US-13, US-23 (bộ trích xuất bài đăng); US-33 viết lại thành chi phí theo từng khoản; US-32, US-33 lên mức Must |
 | 25/11/2026 | 2.1: US-33 xong (chi phí theo từng khoản); đánh số lại quy tắc đề xuất BR-19 → BR-21; UC-04, UC-05, UC-14 theo cách mới |
 | 25/11/2026 | 2.2: thêm US-37 kho cầu, US-38 ảnh bill và hóa đơn (đã xong); kho cầu không còn ngoài phạm vi |
+| 25/11/2026 | 2.3: thêm US-39 Tổng quan, Cài đặt, chế độ tối, tùy chọn thanh dưới (đã xong) |

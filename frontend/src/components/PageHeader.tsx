@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import Icon from './Icon';
+import UserMenu from './UserMenu';
 
 interface Props {
   title: string;
@@ -42,6 +43,10 @@ export default function PageHeader({ title, subtitle, breadcrumbs, actions }: Pr
         {subtitle && <p className="page-header__subtitle">{subtitle}</p>}
       </div>
       {actions && <div className="actions">{actions}</div>}
+      {/* Điện thoại: nút Tài khoản góc phải (WBS 4.12); máy tính dùng menu ở thanh trên */}
+      <div className="page-header__account">
+        <UserMenu compact />
+      </div>
     </header>
   );
 }

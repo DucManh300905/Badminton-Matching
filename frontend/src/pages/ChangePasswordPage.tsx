@@ -40,7 +40,7 @@ export default function ChangePasswordPage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ to: '/tai-khoan', label: 'Tài khoản' }]}
+        breadcrumbs={[{ to: '/tai-khoan/cai-dat', label: 'Cài đặt' }]}
         title="Đổi mật khẩu"
         subtitle="Sau khi đổi, các thiết bị khác sẽ phải đăng nhập lại"
       />

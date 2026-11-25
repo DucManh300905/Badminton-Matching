@@ -28,7 +28,14 @@ const HANOI_AREAS = /** @type {const} */ ([
     'Khác'
 ]);
 
+// Tiện ích chọn được cho 3 ô của thanh dưới trên điện thoại (WBS 4.12).
+// "Đăng kèo" (giữa) và "Tổng quan" (cuối) luôn cố định nên không nằm trong danh sách.
+const TAB_BAR_ITEMS = ['search', 'today', 'mine', 'shuttles'];
+const TAB_BAR_SIZE = 3;
+
 module.exports = {
+    TAB_BAR_ITEMS,
+    TAB_BAR_SIZE,
     GENDERS,
     SLOT_KINDS,
     POST_STATUSES,
