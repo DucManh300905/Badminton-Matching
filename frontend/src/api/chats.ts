@@ -20,7 +20,8 @@ export interface ChatSummary {
   other?: PublicUser;
   canSend?: boolean;
   lastMessage: { text: string; at: string; mine: boolean } | null;
-  unread: boolean;
+  /** Số tin chưa xem */
+  unread: number;
 }
 
 export interface ChatConversation {
@@ -51,8 +52,9 @@ export const chatsApi = {
     return res.data.data;
   },
 
+  /** Tổng số tin chưa xem (count) và số cuộc trò chuyện có tin chưa xem */
   async unread() {
-    const res = await client.get<ApiResponse<{ count: number }>>('/chats/unread');
+    const res = await client.get<ApiResponse<{ count: number; conversations: number }>>('/chats/unread');
     return res.data.data.count;
   },
 

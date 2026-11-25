@@ -6,6 +6,7 @@ import { featureOf, tabBarOf } from '../utils/features';
 import { toDateInput } from '../utils/format';
 import { activeTab, type TabKey } from '../utils/nav';
 import Icon, { type IconName } from './Icon';
+import { CountBadge } from './ui';
 
 interface Tab {
   key: TabKey;
@@ -58,7 +59,7 @@ export default function TabBar() {
             ) : (
               <span className="tab__icon">
                 <Icon name={tab.icon} size={24} />
-                {tab.key === 'mine' && unread > 0 && <span className="dot" aria-label="Có tin nhắn mới" />}
+                {tab.key === 'mine' && <CountBadge count={unread} className="count-dot--tab" />}
               </span>
             )}
             <span className="tab__label">{tab.label}</span>

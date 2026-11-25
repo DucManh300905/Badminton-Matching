@@ -24,7 +24,7 @@ function FeatureTile({ f, today, guest, badge }: { f: Feature; today: string; gu
           <span className="feature-tile__label">{f.label}</span>
           <span className="feature-tile__desc">{locked ? 'Cần đăng nhập' : f.description}</span>
         </span>
-        {!!badge && <span className="count-badge">{badge} tin mới</span>}
+        {!!badge && <span className="count-badge">{badge > 99 ? '99+' : badge} tin chưa xem</span>}
       </Link>
     </li>
   );

@@ -6,7 +6,7 @@ import Icon from '../components/Icon';
 import PageHeader from '../components/PageHeader';
 import ChatList from '../components/ChatList';
 import PostCard from '../components/PostCard';
-import { Alert, Spinner } from '../components/ui';
+import { Alert, CountBadge, Spinner } from '../components/ui';
 import { useChat } from '../context/ChatContext';
 
 type PostTab = 'joined' | 'authored';
@@ -69,7 +69,7 @@ export default function MyPostsPage() {
           onClick={() => setParams({ tab: 'messages' }, { replace: true })}
         >
           Tin nhắn
-          {unread > 0 && <span className="dot" aria-label={`${unread} cuộc trò chuyện có tin mới`} />}
+          <CountBadge count={unread} />
         </button>
       </div>
 

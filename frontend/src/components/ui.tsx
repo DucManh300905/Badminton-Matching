@@ -42,6 +42,16 @@ export function Avatar({
   );
 }
 
+/** Số tin chưa xem trong vòng đỏ (quá 99 → "99+"); 0 thì không hiện */
+export function CountBadge({ count, className = '' }: { count: number; className?: string }) {
+  if (count <= 0) return null;
+  return (
+    <span className={`count-dot ${className}`.trim()} aria-label={`${count} tin nhắn chưa xem`}>
+      {count > 99 ? '99+' : count}
+    </span>
+  );
+}
+
 /** Tiêu đề thẻ kèm icon nét mảnh */
 export function CardTitle({
   icon,

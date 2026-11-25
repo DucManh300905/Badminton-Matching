@@ -18,11 +18,11 @@ router.get(
     })
 );
 
-// GET /api/chats/unread — số cuộc trò chuyện có tin chưa đọc
+// GET /api/chats/unread — số tin chưa xem (tổng) và số cuộc trò chuyện có tin chưa xem
 router.get(
     '/unread',
     asyncHandler(async (req, res) => {
-        res.json({ success: true, data: { count: await service.unreadCount(req.user.userId, new Date()) } });
+        res.json({ success: true, data: await service.unreadCount(req.user.userId, new Date()) });
     })
 );
 
