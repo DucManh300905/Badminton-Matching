@@ -33,7 +33,7 @@ Lịch được điều chỉnh ngày 17/11/2026 theo hạn hoàn thành 15/12/2
 | Tuần | Thời gian | Việc chính | Mốc |
 |---|---|---|---|
 | 1 | 17/11 – 23/11 | Môi trường chạy thật + **deploy production**; user stories, đặc tả; bảng hỏi và gửi khảo sát; thu thập 100 bài đăng; liên hệ chủ sân / admin nhóm | M1 (23/11) |
-| 2 | 24/11 – 30/11 | **Thử nghiệm thực tế tuần 1**; gỡ bộ trích xuất (4.3); **chi phí theo từng khoản** (4.8.2); icon và ảnh đại diện / ảnh bìa (4.9); kho cầu (4.10); ảnh bill và hóa đơn PDF (4.11); Tổng quan, Cài đặt, chế độ tối (4.12); bảng hỏi và gửi khảo sát (2.1); tin nhắn tổng kết (4.8.4); xuất số liệu (US-22); wireframe; thông báo email | M2 (30/11) |
+| 2 | 24/11 – 30/11 | **Thử nghiệm thực tế tuần 1**; gỡ bộ trích xuất (4.3); **chi phí theo từng khoản** (4.8.2); icon và ảnh đại diện / ảnh bìa (4.9); kho cầu (4.10); ảnh bill và hóa đơn PDF (4.11); Tổng quan, Cài đặt, chế độ tối (4.12); nhắn tin trong app và chia sẻ kèo (4.13, 4.8.4); bảng hỏi và gửi khảo sát (2.1); tin nhắn tổng kết (4.8.4); xuất số liệu (US-22); wireframe; thông báo email | M2 (30/11) |
 | 3 | 01/12 – 07/12 | **Thử nghiệm tuần 2**; usability test chia tiền (5.5); E2E test; phân tích khảo sát; bắt đầu viết báo cáo | M3 (07/12) |
 | 4 | 08/12 – 15/12 | Phân tích số liệu RQ1–RQ3 (6.3); hoàn thiện báo cáo; slide và video demo | M4 (13/12), M5 (15/12) |
 

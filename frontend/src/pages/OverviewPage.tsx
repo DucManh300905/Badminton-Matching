@@ -4,13 +4,14 @@ import { usersApi, type MyPosts } from '../api/users';
 import Icon from '../components/Icon';
 import PageHeader from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
+import { useChat } from '../context/ChatContext';
 import { LEVEL_LABELS } from '../utils/constants';
 import { FEATURE_GROUPS, searchFeatures, type Feature } from '../utils/features';
 import { toDateInput } from '../utils/format';
 import { countUpcoming } from '../utils/myPosts';
 
 /** Một ô tiện ích. Cần đăng nhập mà chưa đăng nhập → sang trang Đăng nhập, xong quay lại đúng tiện ích */
-function FeatureTile({ f, today, guest }: { f: Feature; today: string; guest: boolean }) {
+function FeatureTile({ f, today, guest, badge }: { f: Feature; today: string; guest: boolean; badge?: number }) {
   const target = f.to(today);
   const locked = guest && f.needsAuth;
   return (
@@ -23,6 +24,7 @@ function FeatureTile({ f, today, guest }: { f: Feature; today: string; guest: bo
           <span className="feature-tile__label">{f.label}</span>
           <span className="feature-tile__desc">{locked ? 'Cần đăng nhập' : f.description}</span>
         </span>
+        {!!badge && <span className="count-badge">{badge} tin mới</span>}
       </Link>
     </li>
   );
@@ -34,6 +36,7 @@ function FeatureTile({ f, today, guest }: { f: Feature; today: string; guest: bo
  */
 export default function OverviewPage() {
   const { user } = useAuth();
+  const { unread } = useChat();
   const [query, setQuery] = useState('');
   const [today] = useState(() => toDateInput(new Date()));
   const [now] = useState(() => Date.now());
@@ -59,15 +62,15 @@ export default function OverviewPage() {
 
       {user && (
         <div className="mini-stats" aria-label="Hoạt động của bạn">
-          <Link to="/keo-cua-toi?tab=authored" className="mini-stat">
+          <Link to="/lich-su?tab=authored" className="mini-stat">
             <strong>{count(mine?.authored.length)}</strong>
             <span>Đã đăng</span>
           </Link>
-          <Link to="/keo-cua-toi?tab=joined" className="mini-stat">
+          <Link to="/lich-su?tab=joined" className="mini-stat">
             <strong>{count(mine?.joined.length)}</strong>
             <span>Đã tham gia</span>
           </Link>
-          <Link to="/keo-cua-toi" className="mini-stat">
+          <Link to="/lich-su" className="mini-stat">
             <strong>{mine ? countUpcoming(mine.authored, mine.joined, now) : '–'}</strong>
             <span>Sắp diễn ra</span>
           </Link>
@@ -104,7 +107,7 @@ export default function OverviewPage() {
               <h2 className="feature-group__title">{g.label}</h2>
               <ul className="feature-grid">
                 {items.map((f) => (
-                  <FeatureTile key={f.key} f={f} today={today} guest={!user} />
+                  <FeatureTile key={f.key} f={f} today={today} guest={!user} badge={f.key === 'mine' ? unread : 0} />
                 ))}
               </ul>
             </section>

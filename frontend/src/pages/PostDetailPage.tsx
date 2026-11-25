@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
+import { chatsApi } from '../api/chats';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
@@ -8,6 +9,7 @@ import BillsCard from '../components/BillsCard';
 import CostsCard, { AttendanceCard } from '../components/CostsCard';
 import Icon, { type IconName } from '../components/Icon';
 import { PostCoverBanner } from '../components/PostCover';
+import ShareButtons from '../components/ShareButtons';
 import { Alert, Avatar, CardTitle, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostDetail } from '../types';
@@ -44,6 +46,17 @@ export default function PostDetailPage() {
   const [busy, setBusy] = useState(false);
   // Thời điểm mở trang, dùng để biết kèo đã bắt đầu chưa
   const [openedAt] = useState(() => Date.now());
+  const navigate = useNavigate();
+
+  /** Nhắn riêng với một người cùng kèo (WBS 4.13) */
+  async function messageTo(userId: string) {
+    setActionError(null);
+    try {
+      navigate(`/lich-su/tin-nhan/${await chatsApi.directWith(userId)}`);
+    } catch (e) {
+      setActionError(toApiError(e).message);
+    }
+  }
 
   useEffect(() => {
     postsApi
@@ -151,6 +164,16 @@ export default function PostDetailPage() {
                 <dd className="info-grid__person">
                   <Avatar name={post.author.displayName} url={post.author.avatarUrl} size="xs" />
                   {post.author.displayName}
+                  {hasJoined && (
+                    <button
+                      type="button"
+                      className="icon-btn icon-btn--chat"
+                      aria-label={`Nhắn riêng cho ${post.author.displayName}`}
+                      onClick={() => messageTo(post.author.id)}
+                    >
+                      <Icon name="chat" size={18} />
+                    </button>
+                  )}
                 </dd>
               </div>
               <div>
@@ -177,9 +200,17 @@ export default function PostDetailPage() {
           </article>
 
           <section className="card">
-            <CardTitle icon="users">
-              Người tham gia ({post.participants.length}/{total})
-            </CardTitle>
+            <div className="action-card__status">
+              <CardTitle icon="users" className="mt-0">
+                Người tham gia ({post.participants.length}/{total})
+              </CardTitle>
+              {(isAuthor || hasJoined) && (
+                <Link to={`/lich-su/tin-nhan/p-${post.id}`} className="btn btn--sm btn--outline">
+                  <Icon name="chat" size={16} />
+                  Nhắn nhóm
+                </Link>
+              )}
+            </div>
             {isAuthor && payment?.hasCosts && payment.summary.participantCount > 0 && (
               <p className="pay-summary">
                 Đã thu {payment.summary.paidCount}/{payment.summary.participantCount} người ·{' '}
@@ -209,6 +240,16 @@ export default function PostDetailPage() {
                         {p.attended === false && ' · vắng'}
                       </p>
                     </div>
+                    {(isAuthor || hasJoined) && p.id !== user?.id && (
+                      <button
+                        type="button"
+                        className="icon-btn icon-btn--chat"
+                        aria-label={`Nhắn riêng cho ${p.displayName}`}
+                        onClick={() => messageTo(p.id)}
+                      >
+                        <Icon name="chat" size={18} />
+                      </button>
+                    )}
                     {p.paid !== undefined && p.amountDue === 0 && p.attended === false && (
                       <span className="badge badge--closed">Vắng</span>
                     )}
@@ -288,6 +329,7 @@ export default function PostDetailPage() {
                 <div className="action-card__buttons">{actionButton}</div>
               </>
             )}
+            <ShareButtons post={post} />
           </aside>
           {hasJoined && payment && post.status !== 'closed' && <PaymentCard payment={payment} postId={post.id} />}
         </div>

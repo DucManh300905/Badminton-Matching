@@ -10,6 +10,7 @@ Người dùng (trình duyệt / app)
    │  HTTPS
    ▼
 Cloudflare ──(đường hầm)──► Nginx :80 trên máy chủ
+                              ├─ /api/ws ──► WebSocket tin nhắn (cùng tiến trình Node :8080)
                               ├─ /api/*  ──► Node 24 + Express :8080 (PM2: badminton-backend)
                               │                 └─► MongoDB 8 :27017 (127.0.0.1, replica set rs0)
                               │                        database: badminton_matching
@@ -188,6 +189,7 @@ Trước khi phân tích số liệu thử nghiệm (RQ3), chép một bản sao
 | Console báo 404 `/cdn-cgi/rum` | Script thống kê do Cloudflare chèn vào, không thuộc ứng dụng; bỏ qua |
 | Tải ảnh báo "Nội dung gửi lên quá lớn" (413) | Nginx còn cấu hình cũ (`client_max_body_size 1m`): chép lại `deploy/nginx-badminton.conf`, mục 3.4 |
 | Ảnh đại diện / ảnh bìa không hiện (404 / 403) | `UPLOAD_DIR` trong `backend/.env` phải là `/var/lib/badminton/uploads`; thư mục có quyền 755 (mục 3.4); `pm2 restart badminton-backend --update-env` |
+| Tin nhắn không đến ngay (phải đợi khoảng 10 giây) | Kênh WebSocket không kết nối được, app tự chuyển sang tải lại định kỳ: kiểm tra đã chép `deploy/nginx-badminton.conf` mới (có `location = /api/ws`) và reload Nginx; `CLIENT_URL` trong `backend/.env` phải đúng `https://sv22.bcse-vju.com`; xem `pm2 logs badminton-backend` |
 | Web báo lỗi 502 | Backend không chạy: `pm2 ls`, `pm2 logs badminton-backend --lines 50` |
 | Lỗi 52x trang Cloudflare | Nginx không chạy hoặc máy chủ tắt: `systemctl status nginx` |
 | `deploy.sh` dừng ở "Thiếu backend/.env" | Làm lại mục 3.3 |

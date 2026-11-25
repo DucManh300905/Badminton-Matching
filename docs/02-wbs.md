@@ -3,7 +3,7 @@
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
 Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Phương pháp: phân rã theo **giai đoạn → gói công việc**. Mỗi gói công việc có sản phẩm đầu ra, ước lượng công và mức ưu tiên rõ ràng.
 
-**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 290 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
+**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 303 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
 
 **Ưu tiên (MoSCoW):** M = Must · S = Should · C = Could (chỉ làm nếu còn thời gian)
 **Trạng thái:** Xong · Đang làm · Chưa (chưa bắt đầu)
@@ -38,7 +38,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Xong |
 | 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Xong |
 | 3.4 | Wireframe các màn hình chính (từ giao diện đã làm) | Wireframe (Figma / giấy) | M | 3 | 4.5.1, 4.5.2 | Chưa |
-| **4** | **PHÁT TRIỂN** | | | **144** | | |
+| **4** | **PHÁT TRIỂN** | | | **157** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
 | 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
@@ -56,12 +56,13 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.8.1 | Thu tiền kèo bằng mã QR chuyển khoản (VietQR): số tài khoản trong hồ sơ, QR đúng số tiền từng người, chủ kèo đánh dấu đã trả | API + UI thanh toán kèo (US-32) | M | 6 | 4.4.2 | Xong |
 | 4.8.2 | **Chi phí theo từng khoản** (sân, cầu, nước, ăn, khác): chủ kèo thêm / sửa bất cứ lúc nào, chọn người cùng chịu từng khoản (có "Chọn tất cả"), thêm bạn không dùng app; mọi người trong kèo xem được; điểm danh; "còn thiếu" khi chi phí tăng sau khi đã trả. Thay cho bản chốt chi phí chia đều | API + UI chi phí kèo (US-33, US-28) | M | 10 | 4.8.1 | Xong |
 | 4.8.3 | Cài web lên màn hình chính (PWA: manifest, biểu tượng) | `manifest.webmanifest`, biểu tượng | S | 2 | 4.5.2 | Xong |
-| 4.8.4 | Tin nhắn tổng kết kèo để sao chép / chia sẻ sang Zalo, Facebook | Nút "Sao chép" ở chi tiết kèo (US-35, gộp US-14) | S | 1 | 4.8.1 | Chưa |
+| 4.8.4 | Tin nhắn tổng kết kèo để sao chép / chia sẻ sang Zalo, Facebook | Nút "Chia sẻ kèo", "Gửi tin thu tiền" ở chi tiết kèo (US-35, gộp US-14) | S | 1 | 4.8.1 | Xong |
 | 4.8.5 | Lịch sử chi tiêu theo tháng | Mục trong "Kèo của tôi" (US-36) | C | 1 | 4.8.2 | Chưa |
 | 4.9 | Icon nét mảnh cạnh chữ khắp giao diện; **ảnh đại diện** và **ảnh bìa kèo** (tải lên, cắt, đổi WebP, xóa EXIF / GPS; chưa có ảnh thì dùng chữ cái đầu / dải màu xanh) | `Icon.tsx`, `utils/images.js`, API `/users/me/avatar`, `/posts/:id/cover` | S | 12 | 4.5.3, 4.5.4 | Xong |
 | 4.10 | **Kho cầu**: nhiều loại cầu, nhập theo số quả (12 / 24 / 36 hoặc tự nhập) + tổng tiền → giá mỗi quả (bình quân khi nhập thêm), thanh mức cầu; khoản "Cầu" theo số quả tự trừ / hoàn kho; thống kê số quả đã dùng theo tuần / tháng | Module `shuttle`, trang `/kho-cau` (US-37) | S | 11 | 4.8.2 | Xong |
 | 4.11 | Ảnh bill (tối đa 7 ảnh / kèo) và trang **hóa đơn** in / lưu PDF cho mọi người trong kèo | API `/posts/:id/bills`, trang `/keo/:id/hoa-don` (US-38) | S | 6 | 4.8.2, 4.9 | Xong |
 | 4.12 | **Tổng quan và Cài đặt**: tab "Tổng quan" chứa mọi tính năng (ô tìm kiếm không dấu, hàng số liệu nhỏ); nút Tài khoản ở góc phải trên cùng (Cài đặt, Đăng xuất); Cài đặt gồm Hồ sơ, Đổi mật khẩu, **chế độ Sáng / Tối / Theo máy**, chọn 3 tiện ích cho thanh dưới (lưu theo tài khoản) | `utils/features.ts`, `OverviewPage`, `SettingsPage`, `UserMenu`, API `/users/me/tab-bar` (US-39) | S | 11 | 4.5.4 | Xong |
+| 4.13 | **Nhắn tin trong app**: nhóm chat theo kèo + nhắn riêng giữa người đã cùng chơi; mở tới 2 giờ sau giờ kết thúc rồi chỉ xem lại; tin mới qua WebSocket; chưa đọc, chặn, giới hạn tốc độ; "Kèo của tôi" đổi thành "Lịch sử" (tab Tin nhắn) | Module `chat`, `/api/chats`, `/api/ws`, trang `/lich-su/tin-nhan/:key` (US-40) | S | 13 | 4.12 | Xong |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **28** | | |
 | 5.1 | Unit test (liên tục, coverage ≥ 80%) | `backend/tests/` (Jest), test frontend (Vitest) | M | 12 | 4.1.2 | Đang làm |
 | 5.2 | Integration / API test | Jest + Supertest + MongoDB trong RAM | M | 6 | 4.4.2 | Xong |
@@ -75,7 +76,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.5, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | Chưa |
-| | **TỔNG GIAI ĐOẠN 1** | | | **290** | | |
+| | **TỔNG GIAI ĐOẠN 1** | | | **303** | | |
 
 ## 3. Tổng hợp khối lượng
 
@@ -83,7 +84,7 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 
 | | Giờ công |
 |---|---:|
-| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 290 |
+| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 303 |
 | Còn lại tính từ 24/11 (không tính 7.3 Bảo vệ) | ~106 |
 | Số tuần còn lại (24/11/2026 → 15/12/2026) | 3 |
 | **Trung bình cần làm** | **~35 giờ/tuần** |
@@ -101,6 +102,8 @@ Cỡ mẫu đã giảm so với kế hoạch ban đầu: khảo sát ≥ 30 ph�
 **Bổ sung 25/11/2026:** thêm 4.10 Kho cầu (11h) và 4.11 Ảnh bill, hóa đơn PDF (6h) theo yêu cầu; kho cầu chuyển từ ngoài phạm vi vào phạm vi (Charter mục 5). Đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **279 giờ**.
 
 **Bổ sung 25/11/2026 (lần 2):** thêm 4.12 Tổng quan và Cài đặt (11h) theo yêu cầu; đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **290 giờ**.
+
+**Bổ sung 25/11/2026 (lần 3):** 4.8.4 xong; thêm 4.13 Nhắn tin trong app (13h, gồm WebSocket) theo yêu cầu, chuyển "chat" từ ngoài phạm vi vào phạm vi Charter. Đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **303 giờ**.
 
 Nếu trễ so với lịch, cắt theo thứ tự: 4.7 Uy tín → 4.8.5 Lịch sử chi tiêu → 4.6 Thông báo email → 5.3 E2E test → 3.4 Wireframe (dùng ảnh chụp giao diện). Xem [Gantt](03-gantt.md) mục 5.
 
@@ -122,6 +125,8 @@ Giai đoạn 2 (app di động, mục 5) **không** nằm trong khối lượng 
 
 **4.12 Tổng quan và Cài đặt.** Danh mục tiện ích nằm ở một chỗ (`frontend/src/utils/features.ts`): trang Tổng quan, ô tìm kiếm và thanh dưới đều đọc từ đây, nên tính năng mới chỉ cần thêm một dòng. Thanh dưới: 3 ô tự chọn + "Đăng kèo" ở giữa + "Tổng quan" ở cuối (cố định); lựa chọn lưu theo tài khoản (trường `tabBar`). Chế độ màu lưu trên thiết bị; một đoạn script trong `index.html` đặt màu trước khi vẽ trang để không nháy trắng; mọi màu trong CSS đi qua biến, chế độ tối chỉ đổi giá trị biến; khi in luôn dùng màu sáng. Menu Tài khoản chỉ có Cài đặt và Đăng xuất, không lặp lại tính năng. **Tiêu chí chấp nhận:** test API cho thanh dưới (thiếu, trùng, ô cố định, null về mặc định); e2e cả sáng lẫn tối ở 390 px và 1366 px.
 
+**4.13 Nhắn tin trong app.** Mỗi cuộc trò chuyện có một khóa: `p-<mã kèo>` (nhóm của kèo) hoặc `d-<người A>-<người B>` (nhắn riêng, hai mã xếp tăng dần). Quyền được tính lại ở **mỗi** lần đọc / gửi từ dữ liệu kèo, không lưu danh sách thành viên riêng: người trong kèo mới vào nhóm; hai người phải cùng ở trong ít nhất một kèo mới nhắn riêng; gửi được tới 2 giờ sau giờ kết thúc của kèo (nhắn riêng: kèo chung muộn nhất), sau đó chỉ xem lại; bị chặn thì không nhắn riêng được cho nhau. Gửi tin qua REST; tin mới được đẩy qua WebSocket `/api/ws` (đăng nhập bằng tin đầu tiên, chỉ nhận từ đúng địa chỉ web), mất kết nối thì trang chat tự tải lại 10 giây một lần và tự kết nối lại. **Tiêu chí chấp nhận:** test API cho quyền, thời hạn, chặn, giới hạn tốc độ, chưa đọc, phân trang và kết nối WebSocket thật; e2e hai trình duyệt nhắn qua lại.
+
 **5.1 Unit test.** Mọi logic nghiệp vụ và bộ trích xuất phải có unit test. CI chạy typecheck + test + coverage trên mỗi lần push và Pull Request. Không merge vào `main` khi CI đỏ. Backend dùng Jest + Supertest với MongoDB chạy trong RAM (dạng replica set để test được transaction); frontend dùng Vitest. Ngưỡng coverage backend: lines/functions/statements ≥ 80%, branches ≥ 70%.
 
 **6.2 Pilot.** 2 tuần tại Hà Nội, phối hợp với ít nhất 1 chủ sân hoặc admin group. Ghi log ẩn danh: số kèo đăng, tỉ lệ kèo đủ người, thời gian từ lúc đăng đến lúc đủ người. Kết thúc bằng khảo sát SUS.
@@ -138,8 +143,8 @@ Bắt đầu **ngay sau mốc M5** (hạn hoàn thành dự án 15/12/2026): d�
 | 8.2 | Đăng ký, đăng nhập, lưu token an toàn (SecureStore) | Màn hình đăng nhập / đăng ký | M | 6 | 8.1 | Chưa |
 | 8.3 | Danh sách kèo + bộ lọc | Màn hình Tìm kèo | M | 10 | 8.2 | Chưa |
 | 8.4 | Chi tiết kèo: tham gia, rời, hủy | Màn hình chi tiết | M | 8 | 8.3 | Chưa |
-| 8.5 | Đăng kèo + dán bài tự điền | Màn hình đăng kèo | M | 10 | 8.4 | Chưa |
-| 8.6 | Kèo của tôi, Tài khoản, hồ sơ, đổi mật khẩu | Các màn hình tài khoản | M | 8 | 8.2 | Chưa |
+| 8.5 | Đăng kèo, chi phí theo từng khoản, kho cầu | Màn hình đăng kèo, chi phí | M | 10 | 8.4 | Chưa |
+| 8.6 | Lịch sử, tin nhắn, Tổng quan, Cài đặt (hồ sơ, đổi mật khẩu, giao diện) | Các màn hình tài khoản | M | 8 | 8.2 | Chưa |
 | 8.7 | Thông báo đẩy khi có người tham gia / kèo sắp diễn ra | Expo Notifications + API đăng ký thiết bị | S | 8 | 8.4 | Chưa |
 | 8.8 | Kiểm thử trên điện thoại thật, phát hành bản thử Android | File APK, danh sách lỗi đã sửa | M | 8 | 8.1–8.7 | Chưa |
 | | **TỔNG GIAI ĐOẠN 2** | | | **63** | | |

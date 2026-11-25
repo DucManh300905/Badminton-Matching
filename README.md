@@ -104,6 +104,7 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 | **Chi phí theo từng khoản**: sân / cầu / nước / ăn / khác, chọn người cùng chịu (có "Chọn tất cả"), bạn không dùng app, ai trong kèo cũng xem được, chỉ chủ kèo sửa bất cứ lúc nào; còn thiếu / trả dư; điểm danh (`PUT /posts/:id/costs`, `PUT /posts/:id/attendance`) | Xong |
 | Giao diện web responsive (CSS thuần): thanh điều hướng trên cùng, bộ lọc cột trái, lưới kèo, khu Tài khoản có menu dọc (Tổng quan, Kèo của tôi, Hồ sơ, Đổi mật khẩu; `GET /api/users/me/posts`) | Xong |
 | Giao diện kiểu app trên điện thoại (dưới 1024px): thanh tab đáy 5 mục, thanh tiêu đề có nút quay lại, chip lọc nhanh, nút hành động dính ở đáy; cài lên màn hình chính (PWA: manifest, biểu tượng) | Xong |
+| **Nhắn tin trong app**: nhóm chat theo kèo + nhắn riêng giữa người đã cùng chơi, mở tới 2 giờ sau kèo rồi xem lại trong **Lịch sử**, tin mới qua WebSocket, chặn (`/api/chats`, `/api/ws`); **chia sẻ kèo** và tin thu tiền sang Zalo / Messenger | Xong |
 | Tab **Tổng quan** chứa mọi tính năng (tìm kiếm không dấu); nút Tài khoản góc phải; **Cài đặt**: hồ sơ, mật khẩu, chế độ Sáng / Tối / Theo máy, chọn 3 tiện ích cho thanh dưới (`PUT /users/me/tab-bar`) | Xong |
 | **Kho cầu**: nhiều loại cầu, nhập 12 / 24 / 36 quả hoặc tự nhập + tổng tiền → giá mỗi quả, thanh mức cầu, khoản Cầu theo số quả tự trừ kho, thống kê theo tuần / tháng (`/api/shuttles`) | Xong |
 | Ảnh bill (tối đa 7) và trang hóa đơn in / lưu PDF cho người trong kèo (`/posts/:id/bills`, `/keo/:id/hoa-don`) | Xong |
