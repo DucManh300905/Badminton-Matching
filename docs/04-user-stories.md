@@ -52,7 +52,7 @@ Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Mã WBS: **2.4.1** (produc
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
 | US-18 | Là **người chơi**, tôi muốn xem các kèo mình đã đăng và đã tham gia ở một chỗ để nắm lịch chơi. | Hai tab "Đã tham gia", "Đã đăng" có số lượng; kèo đã qua ghi "Đã diễn ra"; trang Tổng quan có số kèo sắp diễn ra. | M | F6 | Xong |
-| US-40 | Là **người trong kèo**, tôi muốn nhắn tin với mọi người trong kèo và nhắn riêng với người đã cùng chơi mà không cần xin Zalo. | Nhóm chat cho mỗi kèo (chủ kèo + người tham gia) và nhắn riêng; **chỉ người đã cùng ở trong một kèo** mới nhắn được, người rời kèo mất quyền vào nhóm; gửi được tới **2 giờ sau giờ kết thúc**, sau đó chỉ xem lại trong "Lịch sử" → "Tin nhắn"; tin mới đến ngay không cần tải lại; chấm đỏ báo tin chưa đọc; chỉ gửi chữ ≤ 1.000 ký tự, ≤ 20 tin / phút; **chặn** được người nhắn riêng. | S | WBS 4.13 | Xong |
+| US-40 | Là **người trong kèo**, tôi muốn nhắn tin với mọi người trong kèo và nhắn riêng với người đã cùng chơi mà không cần xin Zalo. | Nhóm chat cho mỗi kèo (chủ kèo + người tham gia) và nhắn riêng; **chỉ người đã cùng ở trong một kèo** mới nhắn được, người rời kèo mất quyền vào nhóm; gửi được tới **2 giờ sau giờ kết thúc**, sau đó chỉ xem lại trong "Lịch sử" → "Tin nhắn"; tin mới đến ngay không cần tải lại; hiện **số tin chưa xem** ở "Lịch sử" (thanh dưới, thanh trên, Tổng quan) và ở từng cuộc trò chuyện; chỉ gửi chữ ≤ 1.000 ký tự, ≤ 20 tin / phút; **chặn** được người nhắn riêng. | S | WBS 4.13 | Xong |
 
 ### E5 — Thông báo
 

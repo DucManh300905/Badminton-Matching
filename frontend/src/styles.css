@@ -3392,29 +3392,9 @@ a.mini-stat:hover {
 }
 
 /* ================= Tin nhắn, chia sẻ (WBS 4.13, 4.8.4) ================= */
-.dot {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin-left: 6px;
-  border-radius: 50%;
-  vertical-align: middle;
-  background: var(--danger);
-}
-
 .tab__icon {
   position: relative;
   display: inline-flex;
-}
-
-.tab__icon .dot {
-  position: absolute;
-  top: -2px;
-  right: -6px;
-  margin: 0;
-  border: 2px solid var(--card);
-  width: 11px;
-  height: 11px;
 }
 
 .count-badge {
@@ -3706,4 +3686,36 @@ a.mini-stat:hover {
   .chat__composer {
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
   }
+}
+
+/* Số tin chưa xem (WBS 4.13) */
+.count-dot {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: middle;
+  color: #fff;
+  background: var(--danger);
+}
+
+.chat-item .count-dot {
+  flex-shrink: 0;
+}
+
+.count-dot--tab {
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  margin: 0;
+  border: 2px solid var(--card);
+  min-width: 20px;
+  height: 20px;
+  font-size: 10.5px;
 }

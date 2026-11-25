@@ -4,7 +4,7 @@ import { chatsApi, type ChatSummary } from '../api/chats';
 import { toApiError } from '../api/client';
 import { useChat } from '../context/ChatContext';
 import Icon from './Icon';
-import { Alert, Avatar, Spinner } from './ui';
+import { Alert, Avatar, CountBadge, Spinner } from './ui';
 
 const whenOf = (iso: string) => {
   const d = new Date(iso);
@@ -50,7 +50,7 @@ export default function ChatList() {
     <ul className="card chat-list">
       {items.map((c) => (
         <li key={c.key}>
-          <Link to={`/lich-su/tin-nhan/${c.key}`} className={`chat-item${c.unread ? ' chat-item--unread' : ''}`}>
+          <Link to={`/lich-su/tin-nhan/${c.key}`} className={`chat-item${c.unread > 0 ? ' chat-item--unread' : ''}`}>
             {c.kind === 'direct' && c.other ? (
               <Avatar name={c.other.displayName} url={c.other.avatarUrl} />
             ) : (
@@ -71,7 +71,7 @@ export default function ChatList() {
                     : ''}
               </span>
             </span>
-            {c.unread && <span className="dot" aria-label="Có tin mới" />}
+            <CountBadge count={c.unread} />
           </Link>
         </li>
       ))}

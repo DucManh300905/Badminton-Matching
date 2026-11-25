@@ -5,6 +5,7 @@ import { useChat } from '../context/ChatContext';
 import { toDateInput } from '../utils/format';
 import { activeTab, type TabKey } from '../utils/nav';
 import UserMenu from './UserMenu';
+import { CountBadge } from './ui';
 
 interface NavItem {
   key: TabKey;
@@ -51,9 +52,7 @@ export default function Navbar() {
               aria-current={item.key === active ? 'page' : undefined}
             >
               {item.label}
-              {item.key === 'mine' && unread > 0 && (
-                <span className="dot" aria-label={`${unread} cuộc trò chuyện có tin mới`} />
-              )}
+              {item.key === 'mine' && <CountBadge count={unread} />}
             </Link>
           ))}
         </nav>
