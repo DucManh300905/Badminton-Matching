@@ -2,6 +2,7 @@
 // Mỗi hàm trả về chain MỚI (chain của express-validator không được dùng lại giữa các route).
 const { body } = require('express-validator');
 const { GENDERS, TAB_BAR_ITEMS, TAB_BAR_SIZE } = require('../../utils/constants');
+const { normalizePhone } = require('../../utils/phone');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { BANK_BINS } = require('../../utils/banks');
 const { toBankText } = require('../../utils/vietqr');
@@ -72,7 +73,17 @@ const tabBarRules = () => [
         .withMessage(`Chọn đúng ${TAB_BAR_SIZE} tiện ích khác nhau cho thanh dưới`)
 ];
 
+/** Số điện thoại (không bắt buộc): "" hoặc null = xóa; còn lại phải là số di động Việt Nam */
+const phoneRule = () =>
+    body('phone')
+        .optional()
+        .custom((value) => normalizePhone(value) !== null)
+        .withMessage('Số điện thoại di động Việt Nam gồm 10 chữ số, ví dụ 0912345678')
+        .bail()
+        .customSanitizer((value) => normalizePhone(value));
+
 module.exports = {
+    phoneRule,
     tabBarRules,
     emailRule,
     displayNameRule,

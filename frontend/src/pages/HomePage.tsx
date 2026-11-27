@@ -5,7 +5,7 @@ import { postsApi } from '../api/posts';
 import PostCard from '../components/PostCard';
 import UserMenu from '../components/UserMenu';
 import Icon from '../components/Icon';
-import { Alert, CardTitle, IconText, Spinner } from '../components/ui';
+import { Alert, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostFilter, PostSummary } from '../types';
 import { HANOI_AREAS } from '../utils/constants';
@@ -67,7 +67,21 @@ export default function HomePage() {
         <UserMenu compact />
       </header>
 
-      {/* Điện thoại: lọc nhanh bằng hàng chip cuộn ngang (máy tính dùng bộ lọc cột trái) */}
+      <section className="hero">
+        <div>
+          <h1 className="hero__title">{isToday ? 'Kèo cầu lông hôm nay' : 'Tìm kèo cầu lông, ghép đội nhanh'}</h1>
+          <p className="hero__subtitle">
+            {user
+              ? `Chào ${user.displayName}. Chọn khu vực và ngày để tìm kèo còn chỗ, hoặc đăng kèo của bạn để tìm thêm người.`
+              : 'Xem các kèo còn chỗ tại Hà Nội, lọc theo khu vực, ngày và trình độ. Đăng nhập để tham gia hoặc đăng kèo.'}
+          </p>
+        </div>
+        <Link to="/keo/moi" className="btn btn--light btn--lg">
+          Đăng kèo
+        </Link>
+      </section>
+
+      {/* Lọc nhanh dùng chung cho điện thoại và máy tính (WBS 4.15): "Hôm nay" là một bộ lọc, không còn là tiện ích riêng */}
       <div className="chips" role="group" aria-label="Lọc nhanh">
         <button type="button" className={chip(!date)} aria-pressed={!date} onClick={() => update('date', '')}>
           Mọi ngày
@@ -106,100 +120,39 @@ export default function HomePage() {
             Hợp trình độ
           </button>
         )}
+        {hasFilter && (
+          <button type="button" className="chip chip--clear" onClick={() => setParams({}, { replace: true })}>
+            Xóa bộ lọc
+          </button>
+        )}
       </div>
 
-      <section className="hero">
-        <div>
-          <h1 className="hero__title">{isToday ? 'Kèo cầu lông hôm nay' : 'Tìm kèo cầu lông, ghép đội nhanh'}</h1>
-          <p className="hero__subtitle">
-            {user
-              ? `Chào ${user.displayName}. Chọn khu vực và ngày để tìm kèo còn chỗ, hoặc đăng kèo của bạn để tìm thêm người.`
-              : 'Xem các kèo còn chỗ tại Hà Nội, lọc theo khu vực, ngày và trình độ. Đăng nhập để tham gia hoặc đăng kèo.'}
-          </p>
+      <section aria-label="Danh sách kèo">
+        <div className="results-header">
+          <h2 className="section-title mt-0">{isToday ? 'Kèo hôm nay' : 'Kèo sắp diễn ra'}</h2>
+          {posts && <span className="results-header__count">{posts.length} kèo</span>}
         </div>
-        <Link to="/keo/moi" className="btn btn--light btn--lg">
-          Đăng kèo
-        </Link>
+
+        {error && <Alert>{error}</Alert>}
+        {loading && <Spinner />}
+        {posts && posts.length === 0 && (
+          <div className="card empty">
+            <Icon name="shuttle" size={40} className="empty__icon" />
+            <p>
+              Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+            </p>
+          </div>
+        )}
+        {posts && posts.length > 0 && (
+          <ul className="post-grid">
+            {posts.map((p) => (
+              <li key={p.id}>
+                <PostCard post={p} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
-
-      <div className="with-sidebar">
-        <aside className="card sticky filters-panel" aria-label="Bộ lọc">
-          <CardTitle icon="filter">Bộ lọc</CardTitle>
-          <div className="filters">
-            <div className="field">
-              <label htmlFor="f-district" className="label">
-                <IconText icon="mapPin">Khu vực</IconText>
-              </label>
-              <select
-                id="f-district"
-                className="input"
-                value={district}
-                onChange={(e) => update('district', e.target.value)}
-              >
-                <option value="">Tất cả</option>
-                {HANOI_AREAS.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="f-date" className="label">
-                <IconText icon="calendar">Ngày</IconText>
-              </label>
-              <input
-                id="f-date"
-                type="date"
-                className="input"
-                value={date}
-                onChange={(e) => update('date', e.target.value)}
-              />
-            </div>
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={myLevel}
-                disabled={!user}
-                onChange={(e) => update('myLevel', e.target.checked ? '1' : '')}
-              />
-              <span>Chỉ hiện kèo hợp trình độ của tôi {!user && <span className="hint">(cần đăng nhập)</span>}</span>
-            </label>
-            {hasFilter && (
-              <div className="filters__footer">
-                <button type="button" className="btn btn--link" onClick={() => setParams({}, { replace: true })}>
-                  Xóa bộ lọc
-                </button>
-              </div>
-            )}
-          </div>
-        </aside>
-
-        <section aria-label="Danh sách kèo">
-          <div className="results-header">
-            <h2 className="section-title mt-0">{isToday ? 'Kèo hôm nay' : 'Kèo sắp diễn ra'}</h2>
-            {posts && <span className="results-header__count">{posts.length} kèo</span>}
-          </div>
-
-          {error && <Alert>{error}</Alert>}
-          {loading && <Spinner />}
-          {posts && posts.length === 0 && (
-            <div className="card empty">
-              <Icon name="shuttle" size={40} className="empty__icon" />
-              <p>
-                Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
-              </p>
-            </div>
-          )}
-          {posts && posts.length > 0 && (
-            <ul className="post-grid">
-              {posts.map((p) => (
-                <li key={p.id}>
-                  <PostCard post={p} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
     </>
   );
 }

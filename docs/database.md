@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu — Badminton Matching
 
-> Cập nhật: 25/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
+> Cập nhật: 27/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
 > Tài liệu liên quan: [API.md](API.md) · [project.md](project.md) (quy tắc BR-xx)
 
 ## 1. Nguyên tắc thiết kế
@@ -91,7 +91,9 @@ Model: `backend/src/modules/user/user.model.js`
 | `bankAccount.bankBin` | String | thuộc danh sách ngân hàng (`utils/banks.js`) | Tài khoản nhận tiền (WBS 4.8.1), **không bắt buộc**; cả object không có khi chưa nhập |
 | `bankAccount.accountNumber` | String | 6 – 19 chữ số | Chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15) |
 | `bankAccount.accountName` | String | 2 – 50 chữ cái **in hoa không dấu** | Server tự chuẩn hóa khi lưu |
-| `tabBar` | [String] | không có, hoặc đúng 3 mã khác nhau trong `search`, `today`, `mine`, `shuttles` | Thanh dưới trên điện thoại (WBS 4.12), lưu theo tài khoản |
+| `phone` | String | không có, hoặc số di động `0(3|5|7|8|9)` + 8 chữ số | WBS 4.15; chỉ người cùng kèo thấy |
+| `resetTokenHash`, `resetTokenExpires`, `resetRequestedAt` | String, Date, Date | `select: false`, không bao giờ trả ra ngoài | Quên mật khẩu (WBS 4.14): mã băm SHA-256 của link, hết hạn 30 phút, chống gửi liên tục |
+| `tabBar` | [String] | không có, hoặc đúng 3 mã khác nhau trong `search`, `mine`, `shuttles` | Thanh dưới trên điện thoại (WBS 4.12), lưu theo tài khoản |
 | `avatar` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh đại diện (WBS 4.9). Chỉ lưu **tên file**; API trả `avatarUrl = /uploads/avatars/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |
 
@@ -135,6 +137,7 @@ Số chỗ còn trống **không lưu** mà tính khi cần (`remainingSlots` tr
 | `paidAt` | Date \| null | Lúc chủ kèo đánh dấu người này đã chuyển tiền (BR-14); `null` = chưa trả. Giữ nguyên khi người khác vào / rời; ghi bằng toán tử vị trí `participants.$.paidAt` (một lệnh, không cần transaction) |
 | `paidAmount` | Number \| null | Số tiền phải trả tại lúc được đánh dấu đã trả (BR-18); so với số hiện tại để biết "còn thiếu" / "trả dư" |
 | `attended` | Boolean \| null | Điểm danh từ giờ bắt đầu: `true` có mặt, `false` vắng, `null` chưa điểm danh. Số liệu bùng kèo; không tự đổi phần chia tiền |
+| `proofs[]`, `proofAt` | [String], Date | Ảnh chuyển khoản người chơi gửi (WBS 4.14), tối đa 3; chỉ chủ kèo và người gửi thấy |
 
 Không có `_id` riêng (`_id: false`).
 

@@ -15,7 +15,6 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { key: 'search', label: 'Tìm kèo', to: () => '/' },
-  { key: 'today', label: 'Hôm nay', to: (today) => `/?date=${today}` },
   { key: 'mine', label: 'Lịch sử', to: () => '/lich-su' },
   { key: 'overview', label: 'Tổng quan', to: () => '/tong-quan' },
 ];
@@ -27,9 +26,9 @@ const NAV_ITEMS: NavItem[] = [
 export default function Navbar() {
   const { user } = useAuth();
   const { unread } = useChat();
-  const { pathname, search } = useLocation();
+  const { pathname } = useLocation();
   const [today] = useState(() => toDateInput(new Date()));
-  const current = activeTab(pathname, search, today);
+  const current = activeTab(pathname);
   // Trang tiện ích không có trên thanh (vd Kho cầu) → sáng "Tổng quan"
   const active =
     current && NAV_ITEMS.some((i) => i.key === current) ? current : current === 'shuttles' ? 'overview' : current;

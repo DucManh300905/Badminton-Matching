@@ -5,52 +5,10 @@ import { postsApi } from '../api/posts';
 import type { PostDetail } from '../types';
 import { checkImage, IMAGE_ACCEPT } from '../utils/images';
 import Icon from './Icon';
+import Lightbox from './Lightbox';
 import { Alert, CardTitle } from './ui';
 
 export const MAX_BILLS = 7;
-
-/** Xem ảnh bill cỡ lớn; Esc hoặc bấm nền để đóng, mũi tên để chuyển ảnh */
-function Lightbox({ urls, index, onClose }: { urls: string[]; index: number; onClose: () => void }) {
-  const [i, setI] = useState(index);
-  const go = (d: number) => setI((x) => (x + d + urls.length) % urls.length);
-  return (
-    <div
-      className="lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`Ảnh bill ${i + 1} / ${urls.length}`}
-      tabIndex={-1}
-      ref={(el) => el?.focus()}
-      onClick={onClose}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') onClose();
-        if (e.key === 'ArrowRight') go(1);
-        if (e.key === 'ArrowLeft') go(-1);
-      }}
-    >
-      <img src={urls[i]} alt={`Ảnh bill ${i + 1}`} onClick={(e) => e.stopPropagation()} />
-      <div className="lightbox__bar" onClick={(e) => e.stopPropagation()}>
-        {urls.length > 1 && (
-          <button type="button" className="btn btn--sm btn--overlay" onClick={() => go(-1)} aria-label="Ảnh trước">
-            <Icon name="back" size={16} />
-          </button>
-        )}
-        <span>
-          {i + 1} / {urls.length}
-        </span>
-        {urls.length > 1 && (
-          <button type="button" className="btn btn--sm btn--overlay" onClick={() => go(1)} aria-label="Ảnh sau">
-            <Icon name="chevron" size={16} />
-          </button>
-        )}
-        <button type="button" className="btn btn--sm btn--overlay" onClick={onClose}>
-          <Icon name="close" size={16} />
-          Đóng
-        </button>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Thẻ "Bill và hóa đơn" ngay dưới Chi phí kèo (WBS 4.11):
@@ -175,7 +133,9 @@ export default function BillsCard({
           onChange={handleFiles}
         />
       )}
-      {open !== null && <Lightbox urls={bills.map((b) => b.url)} index={open} onClose={() => setOpen(null)} />}
+      {open !== null && (
+        <Lightbox urls={bills.map((b) => b.url)} index={open} label="Ảnh bill" onClose={() => setOpen(null)} />
+      )}
     </section>
   );
 }

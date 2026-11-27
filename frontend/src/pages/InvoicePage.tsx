@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import QRCode from 'qrcode';
 import { Link, useParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
@@ -8,6 +9,7 @@ import { Alert, Spinner } from '../components/ui';
 import type { CostMember, PostDetail } from '../types';
 import { expenseName } from '../utils/costs';
 import { formatMoney, formatTimeRange } from '../utils/format';
+import { buildPdf, deliverPdf } from '../utils/pdf';
 
 const STATUS: Record<string, (diff: number) => string> = {
   none: () => '—',
@@ -41,6 +43,13 @@ export default function InvoicePage() {
   const [post, setPost] = useState<PostDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [issuedAt] = useState(() => new Date());
+  const sheet = useRef<HTMLElement>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [pdf, setPdf] = useState<{ busy: boolean; ready: File | null; note: string | null }>({
+    busy: false,
+    ready: null,
+    note: null,
+  });
 
   useEffect(() => {
     postsApi
@@ -58,6 +67,40 @@ export default function InvoicePage() {
       document.title = before;
     };
   }, [post]);
+
+  // QR trên hóa đơn (WBS 4.14): người chơi = đúng số còn phải trả; chủ kèo / đã trả đủ = QR không ghi số tiền
+  const qrPayload = post?.payment?.qr ?? post?.payment?.qrOpen ?? null;
+  useEffect(() => {
+    if (!qrPayload) return;
+    let cancelled = false;
+    QRCode.toDataURL(qrPayload, { width: 360, margin: 1, errorCorrectionLevel: 'M' })
+      .then((u) => !cancelled && setQrUrl(u))
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [qrPayload]);
+
+  async function exportPdf() {
+    if (!sheet.current || !post) return;
+    setPdf({ busy: true, ready: null, note: null });
+    let file: File | null = null;
+    try {
+      file = await buildPdf(sheet.current, `${fileTitle(post)}.pdf`);
+      const how = await deliverPdf(file);
+      setPdf({ busy: false, ready: null, note: how === 'downloaded' ? 'Đã tải file PDF xuống máy.' : null });
+    } catch (e) {
+      // Trình duyệt chặn mở bảng chia sẻ vì đã quá lâu kể từ lần bấm → bấm lại một lần
+      if (file && (e as DOMException)?.name === 'NotAllowedError') setPdf({ busy: false, ready: file, note: null });
+      else setPdf({ busy: false, ready: null, note: 'Không tạo được file PDF, vui lòng thử lại.' });
+    }
+  }
+
+  async function sendReady() {
+    if (!pdf.ready) return;
+    const how = await deliverPdf(pdf.ready).catch(() => 'downloaded' as const);
+    setPdf({ busy: false, ready: null, note: how === 'downloaded' ? 'Đã tải file PDF xuống máy.' : null });
+  }
 
   const crumbs = [{ to: `/keo/${id}`, label: post?.courtName ?? 'Chi tiết kèo' }];
 
@@ -88,17 +131,32 @@ export default function InvoicePage() {
       <PageHeader title="Hóa đơn kèo" subtitle={post.courtName} breadcrumbs={crumbs} />
 
       <div className="invoice-toolbar">
-        <button type="button" className="btn btn--primary" onClick={() => window.print()}>
-          <Icon name="receipt" size={18} />
-          Tải PDF / In
+        {pdf.ready ? (
+          <button type="button" className="btn btn--primary" onClick={sendReady}>
+            <Icon name="share" size={18} />
+            Lưu / chia sẻ PDF
+          </button>
+        ) : (
+          <button type="button" className="btn btn--primary" onClick={exportPdf} disabled={pdf.busy}>
+            <Icon name="receipt" size={18} />
+            {pdf.busy ? 'Đang tạo PDF…' : 'Tải PDF'}
+          </button>
+        )}
+        <button type="button" className="btn btn--outline invoice-toolbar__print" onClick={() => window.print()}>
+          In
         </button>
         <Link to={`/keo/${post.id}`} className="btn btn--outline">
           Quay lại kèo
         </Link>
-        <p className="hint">Trong hộp thoại in, chọn máy in "Lưu dưới dạng PDF" (Save as PDF).</p>
+        {pdf.ready && <p className="hint">File PDF đã sẵn sàng, bấm nút trên để lưu hoặc gửi.</p>}
+        {pdf.note && (
+          <p className="hint" role="status">
+            {pdf.note}
+          </p>
+        )}
       </div>
 
-      <article className="invoice" aria-label="Hóa đơn">
+      <article className="invoice" aria-label="Hóa đơn" ref={sheet}>
         <header className="invoice__head">
           <div>
             <p className="invoice__brand">Badminton Matching</p>
@@ -229,20 +287,38 @@ export default function InvoicePage() {
         {pay?.bank && pay.accountNumber && (
           <section className="invoice__section">
             <h2 className="invoice__h2">Chuyển khoản cho chủ kèo</h2>
-            <dl className="invoice__info">
-              <div>
-                <dt>Ngân hàng</dt>
-                <dd>{pay.bank.shortName}</dd>
-              </div>
-              <div>
-                <dt>Số tài khoản</dt>
-                <dd>{pay.accountNumber}</dd>
-              </div>
-              <div>
-                <dt>Chủ tài khoản</dt>
-                <dd>{pay.accountName}</dd>
-              </div>
-            </dl>
+            <div className="invoice__pay">
+              {qrUrl && (
+                <figure className="invoice__qr">
+                  <img src={qrUrl} alt="Mã QR chuyển khoản cho chủ kèo" />
+                  <figcaption>
+                    {pay.qr && (pay.toPay ?? 0) > 0
+                      ? `Quét để chuyển ${formatMoney(pay.toPay ?? 0)}`
+                      : 'Quét bằng ứng dụng ngân hàng, nhập số tiền của bạn'}
+                  </figcaption>
+                </figure>
+              )}
+              <dl className="invoice__info">
+                <div>
+                  <dt>Ngân hàng</dt>
+                  <dd>{pay.bank.shortName}</dd>
+                </div>
+                <div>
+                  <dt>Số tài khoản</dt>
+                  <dd>{pay.accountNumber}</dd>
+                </div>
+                <div>
+                  <dt>Chủ tài khoản</dt>
+                  <dd>{pay.accountName}</dd>
+                </div>
+                {pay.content && (
+                  <div>
+                    <dt>Nội dung</dt>
+                    <dd>{pay.content}</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
           </section>
         )}
 

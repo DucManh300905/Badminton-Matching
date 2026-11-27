@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
-import type { PostPayment } from '../types';
+import type { PostDetail, PostPayment } from '../types';
+import ProofsBox from './ProofsBox';
 import { formatMoney } from '../utils/format';
 import { Alert, CardTitle } from './ui';
 
@@ -56,7 +57,16 @@ const STATUS_BADGE: Record<string, { text: string; tone: string }> = {
  * Thẻ "Thanh toán" cho người đã tham gia kèo: số tiền của riêng mình theo các khoản chi,
  * mã QR VietQR đúng số còn phải chuyển (còn thiếu nếu chi phí tăng sau khi đã trả).
  */
-export default function PaymentCard({ payment, postId }: { payment: PostPayment; postId: string }) {
+export default function PaymentCard({
+  payment,
+  postId,
+  onSaved,
+}: {
+  payment: PostPayment;
+  postId: string;
+  /** Có thì hiện phần gửi ảnh chuyển khoản (WBS 4.14) */
+  onSaved?: (p: PostDetail) => void;
+}) {
   const [qrUrl, setQrUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -170,6 +180,7 @@ export default function PaymentCard({ payment, postId }: { payment: PostPayment;
             </p>
           </>
         ))}
+      {onSaved && <ProofsBox postId={postId} proofs={payment.myProofs ?? []} paid={!!payment.paid} onSaved={onSaved} />}
     </section>
   );
 }

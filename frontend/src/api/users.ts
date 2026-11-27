@@ -1,7 +1,10 @@
 import client, { imageForm, type ApiResponse } from './client';
 import type { BankAccount, PostSummary, User } from '../types';
 
-export type ProfileInput = Partial<Pick<User, 'displayName' | 'gender' | 'level'>>;
+export type ProfileInput = Partial<Pick<User, 'displayName' | 'gender' | 'level'>> & {
+  /** "" = xóa số điện thoại */
+  phone?: string;
+};
 
 export interface MyPosts {
   /** Kèo tôi đã đăng */

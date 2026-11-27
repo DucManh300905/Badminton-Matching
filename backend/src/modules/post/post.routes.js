@@ -6,7 +6,7 @@ const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover, addBill, removeBill } = require('./post.controller');
+const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover, addBill, removeBill, addProof, removeProof } = require('./post.controller');
 const { receiveImage } = require('../../utils/images');
 
 const router = express.Router();
@@ -112,5 +112,9 @@ router.delete('/:id/cover', authenticate, deleteCover);
 // Ảnh bill / hóa đơn (WBS 4.11): chủ kèo thêm / xóa, người trong kèo xem trong chi tiết kèo
 router.post('/:id/bills', authenticate, receiveImage, addBill);
 router.delete('/:id/bills/:file', authenticate, removeBill);
+
+// Ảnh chuyển khoản (WBS 4.14): người chơi gửi / xóa; chủ kèo xem trong chi tiết kèo
+router.post('/:id/proofs', authenticate, receiveImage, addProof);
+router.delete('/:id/proofs/:file', authenticate, removeProof);
 
 module.exports = router;

@@ -78,10 +78,19 @@ MONGODB_URI=mongodb://127.0.0.1:27017/badminton_matching?replicaSet=rs0
 JWT_SECRET=<chuỗi 96 ký tự vừa tạo>
 TRUST_PROXY=1
 UPLOAD_DIR=/var/lib/badminton/uploads
+SMTP_USER=<gmail riêng của app>@gmail.com
+SMTP_PASS=<mật khẩu ứng dụng 16 ký tự, viết liền>
+MAIL_FROM=Badminton Matching <gmail riêng của app>@gmail.com
 ```
 
 - `JWT_SECRET` chỉ nằm trên máy chủ; **không** commit, không gửi qua chat. Đổi giá trị này làm mọi người dùng phải đăng nhập lại.
 - `TRUST_PROXY=1`: Nginx đã đặt `X-Forwarded-For` = IP thật của người dùng (lấy từ header `CF-Connecting-IP` của Cloudflare), nên giới hạn số lần đăng nhập sai đếm đúng theo từng người.
+- `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` (WBS 4.14): gửi thư quên mật khẩu và thư báo chủ kèo có ảnh chuyển khoản qua Gmail. Cách lấy mật khẩu ứng dụng:
+  1. Tạo một tài khoản Gmail **riêng cho app** (không dùng Gmail cá nhân).
+  2. Bật **Xác minh 2 bước**: Tài khoản Google → Bảo mật → Xác minh 2 bước.
+  3. Mở https://myaccount.google.com/apppasswords, đặt tên "Badminton Matching", bấm Tạo → chép 16 ký tự (bỏ khoảng trắng) vào `SMTP_PASS`.
+  4. `pm2 restart badminton-backend --update-env`, rồi thử "Quên mật khẩu" trên web với email của bạn.
+  Không điền thì app vẫn chạy, chỉ không gửi được thư (log ghi "chưa cấu hình SMTP"). Gmail cho tối đa khoảng 500 thư / ngày.
 - `UPLOAD_DIR`: nơi backend ghi ảnh đại diện / ảnh bìa (đã cắt, đổi WebP, xóa EXIF / GPS). Nằm ngoài thư mục repo để `deploy.sh` không xóa mất; tạo ở mục 3.4.
 - Bỏ dòng `DEMO_PASSWORD`: **không chạy `npm run seed:demo` trên máy chủ chạy thật**, để số liệu thử nghiệm không lẫn dữ liệu mẫu.
 
@@ -189,6 +198,7 @@ Trước khi phân tích số liệu thử nghiệm (RQ3), chép một bản sao
 | Console báo 404 `/cdn-cgi/rum` | Script thống kê do Cloudflare chèn vào, không thuộc ứng dụng; bỏ qua |
 | Tải ảnh báo "Nội dung gửi lên quá lớn" (413) | Nginx còn cấu hình cũ (`client_max_body_size 1m`): chép lại `deploy/nginx-badminton.conf`, mục 3.4 |
 | Ảnh đại diện / ảnh bìa không hiện (404 / 403) | `UPLOAD_DIR` trong `backend/.env` phải là `/var/lib/badminton/uploads`; thư mục có quyền 755 (mục 3.4); `pm2 restart badminton-backend --update-env` |
+| Không nhận được thư quên mật khẩu / thư báo ảnh chuyển khoản | `pm2 logs badminton-backend --lines 50 | grep mail`: "chưa cấu hình SMTP" → điền `SMTP_USER`, `SMTP_PASS` (mục 3.3) rồi `pm2 restart badminton-backend --update-env`; "Invalid login" → mật khẩu ứng dụng sai hoặc chưa bật xác minh 2 bước; thư vào mục Spam → đánh dấu "Không phải spam" một lần |
 | Tin nhắn không đến ngay (phải đợi khoảng 10 giây) | Kênh WebSocket không kết nối được, app tự chuyển sang tải lại định kỳ: kiểm tra đã chép `deploy/nginx-badminton.conf` mới (có `location = /api/ws`) và reload Nginx; `CLIENT_URL` trong `backend/.env` phải đúng `https://sv22.bcse-vju.com`; xem `pm2 logs badminton-backend` |
 | Web báo lỗi 502 | Backend không chạy: `pm2 ls`, `pm2 logs badminton-backend --lines 50` |
 | Lỗi 52x trang Cloudflare | Nginx không chạy hoặc máy chủ tắt: `systemctl status nginx` |

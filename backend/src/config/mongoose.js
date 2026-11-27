@@ -13,6 +13,9 @@ mongoose.plugin((schema) => {
             delete ret._id;
             delete ret.password;
             delete ret.tokenVersion;
+            delete ret.resetTokenHash;
+            delete ret.resetTokenExpires;
+            delete ret.resetRequestedAt;
             return ret;
         }
     });

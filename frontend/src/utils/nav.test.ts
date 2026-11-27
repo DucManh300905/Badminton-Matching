@@ -7,7 +7,7 @@ describe('activeTab', () => {
   it.each([
     ['/', '', 'search'],
     ['/', '?district=Cầu+Giấy', 'search'],
-    ['/', `?date=${TODAY}`, 'today'],
+    ['/', `?date=${TODAY}`, 'search'],
     ['/', '?date=2026-11-20', 'search'],
     ['/keo/moi', '', 'new'],
     ['/keo/665f1f77bcf86cd799439011', '', 'search'],
@@ -20,7 +20,7 @@ describe('activeTab', () => {
     ['/tai-khoan/doi-mat-khau', '', null],
     ['/dang-nhap', '', null],
     ['/khong-co', '', null],
-  ])('%s%s → %s', (pathname, search, expected) => {
-    expect(activeTab(pathname, search, TODAY)).toBe(expected);
+  ])('%s%s → %s', (pathname, _search, expected) => {
+    expect(activeTab(pathname)).toBe(expected);
   });
 });

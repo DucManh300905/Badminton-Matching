@@ -45,7 +45,10 @@ const participantSchema = new mongoose.Schema(
         attended: {
             type: Boolean,
             default: null
-        }
+        },
+        // Ảnh chuyển khoản người chơi tự gửi (WBS 4.14), tối đa MAX_PROOFS; chủ kèo xem rồi tự đánh dấu đã trả
+        proofs: { type: [String], default: [] },
+        proofAt: { type: Date, default: null }
     },
     { _id: false }
 );

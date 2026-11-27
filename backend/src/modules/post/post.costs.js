@@ -23,6 +23,8 @@ const MAX_SHUTTLES = 500;
 const MAX_UNIT_PRICE = 1_000_000;
 // Ảnh bill mỗi kèo (WBS 4.11)
 const MAX_BILLS = 7;
+// Ảnh chuyển khoản mỗi người trong một kèo (WBS 4.14)
+const MAX_PROOFS = 3;
 
 /** Tiền cầu = số quả × giá mỗi quả, làm tròn lên 1.000đ (12 quả × 23.333đ = 279.996đ → 280.000đ) */
 const shuttleAmount = (quantity, unitPrice) => Math.ceil(Math.round(quantity * unitPrice) / ROUND_TO) * ROUND_TO;
@@ -229,6 +231,7 @@ module.exports = {
     MAX_SHUTTLES,
     MAX_UNIT_PRICE,
     MAX_BILLS,
+    MAX_PROOFS,
     shuttleAmount,
     MAX_EXPENSES,
     MAX_GUESTS,

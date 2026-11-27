@@ -35,7 +35,14 @@ const registerLimiter = limiter({ windowMs: 60 * MINUTE, limit: 10 });
 // Đổi mật khẩu sai quá 5 lần / 15 phút / IP
 const changePasswordLimiter = limiter({ windowMs: 15 * MINUTE, limit: 5, onlyFailures: true });
 
+// Quên mật khẩu: tối đa 5 yêu cầu / giờ / IP (mỗi email còn bị giới hạn 1 thư / phút trong controller)
+const forgotPasswordLimiter = limiter({ windowMs: 60 * MINUTE, limit: 5 });
+// Đặt lại mật khẩu bằng link: tối đa 10 lần / 15 phút / IP (chống dò mã)
+const resetPasswordLimiter = limiter({ windowMs: 15 * MINUTE, limit: 10 });
+
 module.exports = {
+    forgotPasswordLimiter,
+    resetPasswordLimiter,
     limiter,
     loginLimiter,
     registerLimiter,
