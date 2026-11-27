@@ -35,6 +35,17 @@ export const postsApi = {
   },
 
   /** Chỉ chủ kèo, bất cứ lúc nào (trừ kèo đã hủy): lưu toàn bộ khoản chi + bạn không dùng app */
+  /** Người chơi gửi ảnh chuyển khoản (tối đa 3); chủ kèo nhận email */
+  async addProof(id: string, file: File) {
+    const res = await client.post<ApiResponse<PostDetail>>(`/posts/${id}/proofs`, ...imageForm(file));
+    return res.data.data;
+  },
+
+  async removeProof(id: string, file: string) {
+    const res = await client.delete<ApiResponse<PostDetail>>(`/posts/${id}/proofs/${encodeURIComponent(file)}`);
+    return res.data.data;
+  },
+
   /** Chủ kèo thêm ảnh bill (tối đa 7) */
   async addBill(id: string, file: File) {
     const res = await client.post<ApiResponse<PostDetail>>(`/posts/${id}/bills`, ...imageForm(file));

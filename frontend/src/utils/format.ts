@@ -57,3 +57,8 @@ export function initials(name: string): string {
   const last = name.trim().split(/\s+/).pop() ?? '';
   return last ? last.charAt(0).toLocaleUpperCase('vi-VN') : '?';
 }
+
+/** Số điện thoại 0912345678 → "0912 345 678" */
+export function formatPhone(p: string): string {
+  return p.replace(/^(\d{4})(\d{3})(\d{3})$/, '$1 $2 $3');
+}

@@ -39,6 +39,7 @@ Thang ảnh hưởng: 1 không đáng kể · 2 nhỏ · 3 trễ < 1 tuần ho�
 | R17 | Thiếu số liệu cho RQ1, RQ2 vì chủ kèo không nhập khoản chi / không đánh dấu đã trả | Nghiên cứu | 3 | 4 | 12 | Trung bình | Đang theo dõi |
 | R18 | Ảnh người dùng tải lên: ảnh không phù hợp, lộ vị trí qua EXIF, file độc hại, đầy ổ đĩa | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
 | R19 | Nhắn tin: quấy rối, spam, lộ tin nhắn cho người ngoài | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
+| R20 | Email: thư vào Spam, lộ link đặt lại mật khẩu, bị dùng để gửi thư hàng loạt | Bảo mật | 2 | 3 | 6 | Thấp | Đã có biện pháp |
 
 Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử lý.
 
@@ -64,6 +65,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Ghi nhận (17/11/2026):** app di động được đưa vào kế hoạch dưới dạng **giai đoạn 2, sau khi bảo vệ** (khoảng 63 giờ, [WBS](02-wbs.md) mục 5). Quy tắc: **không làm bất kỳ phần nào của app trước mốc M5**; giai đoạn 1 chỉ giữ thiết kế API độc lập với giao diện để app dùng lại được.
 - **Ghi nhận (24/11/2026):** thêm gói **4.8 Thu tiền và chi phí kèo** (15 giờ, ý tưởng từ một ứng dụng chia tiền cầu lông, tự làm lại theo nhu cầu kèo vãng lai) và **bỏ bộ trích xuất LLM / hybrid** (13 giờ) để bù. Tổng khối lượng chỉ tăng 2 giờ; các tính năng quỹ nhóm, kho cầu, chia theo số trận ghi vào ngoài phạm vi (Charter mục 5.2).
 - **Ghi nhận (24/11/2026, lần 2):** thêm 4.5.4 giao diện kiểu app trên điện thoại (8 giờ) theo yêu cầu; giữ nguyên mọi tính năng, máy tính vẫn dùng bố cục web. Đây là thay đổi ngoài kế hoạch thứ ba trong tuần; từ giờ tới M2 (30/11) ưu tiên bộ dữ liệu RQ1 và thử nghiệm thực tế.
+- **Ghi nhận (27/11/2026):** thêm 4.14 email, hóa đơn PDF, ảnh chuyển khoản, quên mật khẩu và 4.15 số điện thoại, "Hôm nay" thành bộ lọc (15 giờ) theo yêu cầu. Tổng giai đoạn 1 thành 318 giờ.
 - **Ghi nhận (25/11/2026, lần 3):** thêm 4.13 nhắn tin trong app (13 giờ) theo yêu cầu; chat chuyển từ ngoài phạm vi vào phạm vi Charter. Tổng giai đoạn 1 thành 303 giờ.
 - **Ghi nhận (25/11/2026, lần 2):** thêm 4.12 Tổng quan, Cài đặt, chế độ tối (11 giờ) theo yêu cầu. Tổng giai đoạn 1 thành 290 giờ.
 - **Ghi nhận (25/11/2026):** thêm 4.10 kho cầu và 4.11 ảnh bill, hóa đơn PDF (17 giờ) theo yêu cầu; kho cầu chuyển từ ngoài phạm vi vào phạm vi Charter. Tổng giai đoạn 1 thành 279 giờ.
@@ -83,7 +85,7 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 
 ### R6 — Vi phạm quy định bảo vệ dữ liệu cá nhân (Trung bình, 10 điểm)
 - **Mô tả:** thu thập bài đăng hoặc thông tin người dùng trái Nghị định 13/2023/NĐ-CP và Luật Bảo vệ dữ liệu cá nhân.
-- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác. **Ảnh đại diện / ảnh bìa** (WBS 4.9) không bắt buộc, xóa được, server bỏ toàn bộ EXIF kể cả vị trí GPS (R18). **Số tài khoản nhận tiền** (WBS 4.8.1) do người dùng tự nhập và tự xóa được, không bắt buộc, chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15, TC-Q2-09); hệ thống không lưu giao dịch chuyển tiền.
+- **Phòng ngừa:** không tự động thu thập dữ liệu từ Facebook; bài chép tay xóa tên, số điện thoại, ảnh, đường dẫn hồ sơ ngay khi chép; `data/raw/` không lên Git; ứng dụng chỉ lưu email, tên hiển thị, giới tính, trình độ; API không trả email người khác. **Số điện thoại** (WBS 4.15) không bắt buộc, xóa được, chỉ người cùng kèo thấy, không có trong danh sách kèo. **Ảnh chuyển khoản** (WBS 4.14) chỉ chủ kèo và người gửi thấy. **Ảnh đại diện / ảnh bìa** (WBS 4.9) không bắt buộc, xóa được, server bỏ toàn bộ EXIF kể cả vị trí GPS (R18). **Số tài khoản nhận tiền** (WBS 4.8.1) do người dùng tự nhập và tự xóa được, không bắt buộc, chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15, TC-Q2-09); hệ thống không lưu giao dịch chuyển tiền.
 
 ### R7 — Mã QR chuyển khoản sai (Thấp, 6 điểm)
 - **Mô tả:** chủ kèo nhập sai số tài khoản hoặc mã QR sinh sai số tiền / nội dung, người chơi chuyển nhầm (gói 4.8). Thay cho rủi ro chi phí API LLM trước đây (đã bỏ LLM ngày 24/11/2026).
@@ -148,6 +150,11 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Mô tả:** người dùng nhắn tin quấy rối / spam; người ngoài đọc được tin của kèo; kết nối WebSocket bị lợi dụng.
 - **Phòng ngừa:** chỉ người đã cùng ở trong một kèo mới nhắn được, quyền tính lại ở mỗi lần đọc / gửi; tự đóng 2 giờ sau kèo nên không nhắn mãi cho người lạ; nút **chặn** nhắn riêng; chỉ gửi chữ ≤ 1.000 ký tự, ≤ 20 tin / phút / người; WebSocket chỉ nhận từ đúng địa chỉ web, token gửi trong tin đầu tiên (không nằm trên URL, không vào log), gói tin ≤ 4 KB. Test: `backend/tests/chat/chat.test.js`.
 - **Dự phòng:** chưa có chức năng báo cáo tin nhắn và quản trị viên; trong thử nghiệm, tin vi phạm được xóa trực tiếp trong CSDL theo yêu cầu và ghi lại.
+
+### R20 — Email (Thấp, 6 điểm)
+- **Mô tả:** thư quên mật khẩu / thư báo ảnh chuyển khoản vào mục Spam hoặc không tới; link đặt lại mật khẩu bị lộ; kẻ xấu dùng chức năng quên mật khẩu để gửi thư hàng loạt hoặc dò email đã đăng ký.
+- **Phòng ngừa:** link chứa mã ngẫu nhiên 32 byte, CSDL chỉ lưu mã băm, hết hạn sau 30 phút, dùng một lần, đặt xong thì mọi phiên cũ hết hiệu lực; luôn trả cùng một câu dù email có tồn tại hay không; mỗi email 1 thư / phút, mỗi IP 5 yêu cầu / giờ; Gmail riêng cho app với mật khẩu ứng dụng chỉ nằm trong `.env` máy chủ; gửi thư hỏng không làm hỏng thao tác chính. Test: `backend/tests/auth/reset-password.test.js`, `tests/post/proofs.test.js`.
+- **Dự phòng:** thư vào Spam → hướng dẫn người dùng đánh dấu "Không phải spam"; vượt hạn mức Gmail (~500 thư / ngày) → chuyển sang dịch vụ gửi thư (Brevo, Resend) chỉ bằng cách đổi `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`.
 
 ## 4. Cập nhật sổ rủi ro
 

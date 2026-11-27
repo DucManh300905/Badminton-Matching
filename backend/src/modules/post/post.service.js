@@ -9,6 +9,8 @@ const { saveImage, removeImage } = require('../../utils/images');
 const AppError = require('../../utils/AppError');
 const { SKILL_LEVELS, levelIndex } = require('../../utils/skillLevel');
 const { vnDayRange } = require('../../utils/vnTime');
+const User = require('../user/user.model');
+const { sendMail, appUrl } = require('../../utils/mailer');
 const Shuttle = require('../shuttle/shuttle.model');
 const shuttleService = require('../shuttle/shuttle.service');
 
@@ -17,9 +19,9 @@ const LIST_LIMIT = 100;
 const notFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy kèo');
 
 const AUTHOR_FIELDS = 'displayName avatar';
-const PARTICIPANT_FIELDS = 'displayName gender level avatar';
+const PARTICIPANT_FIELDS = 'displayName gender level avatar phone';
 // Trang chi tiết cần thêm tài khoản nhận tiền của chủ kèo; serializer chỉ đưa cho người trong kèo (BR-15)
-const AUTHOR_DETAIL_FIELDS = 'displayName avatar bankAccount';
+const AUTHOR_DETAIL_FIELDS = 'displayName avatar bankAccount phone';
 
 /** Đọc kèo kèm tên chủ kèo + thông tin người tham gia */
 const findDetail = (id) =>
@@ -373,7 +375,73 @@ const removeBill = async (postId, actorId, fileName) => {
     return getPost(postId);
 };
 
+/**
+ * Người chơi gửi ảnh chuyển khoản (WBS 4.14), tối đa MAX_PROOFS ảnh mỗi người.
+ * Không tự đánh dấu đã trả: chủ kèo xem ảnh rồi tự bấm. Gửi email báo chủ kèo.
+ */
+const addProof = async (postId, userId, buffer, now) => {
+    const post = await Post.findById(postId).select('author status courtName startsAt participants.user participants.proofs');
+    if (!post) {
+        throw notFound();
+    }
+    if (post.status === 'closed') {
+        throw new AppError(409, 'POST_NOT_OPEN', 'Kèo đã bị hủy');
+    }
+    const me = post.participants.find((p) => String(p.user) === userId);
+    if (!me) {
+        throw new AppError(403, 'NOT_JOINED', 'Chỉ người tham gia kèo mới gửi được ảnh chuyển khoản');
+    }
+    if (me.proofs.length >= costs.MAX_PROOFS) {
+        throw new AppError(409, 'PROOF_LIMIT', `Tối đa ${costs.MAX_PROOFS} ảnh chuyển khoản`);
+    }
+
+    const fileName = await saveImage('proofs', buffer);
+    const res = await Post.updateOne(
+        { _id: postId, participants: { $elemMatch: { user: userId, [`proofs.${costs.MAX_PROOFS - 1}`]: { $exists: false } } } },
+        { $push: { 'participants.$.proofs': fileName }, $set: { 'participants.$.proofAt': now } }
+    );
+    if (res.modifiedCount === 0) {
+        await removeImage('proofs', fileName);
+        throw new AppError(409, 'PROOF_LIMIT', `Tối đa ${costs.MAX_PROOFS} ảnh chuyển khoản`);
+    }
+
+    const [host, player] = await Promise.all([
+        User.findById(post.author).select('email displayName'),
+        User.findById(userId).select('displayName')
+    ]);
+    if (host?.email) {
+        await sendMail({
+            to: host.email,
+            subject: `${player?.displayName ?? 'Người chơi'} đã gửi ảnh chuyển khoản`,
+            paragraphs: [
+                `Chào ${host.displayName},`,
+                `${player?.displayName ?? 'Một người chơi'} vừa gửi ảnh chuyển khoản cho kèo "${post.courtName}".`,
+                'Mở trang kèo để xem ảnh, đối chiếu với tài khoản ngân hàng của bạn, rồi bấm "Đã trả" cho người này.'
+            ],
+            button: { label: 'Xem kèo', url: `${appUrl()}/keo/${postId}` }
+        });
+    }
+    return getPost(postId);
+};
+
+/** Người chơi xóa ảnh chuyển khoản mình đã gửi (gửi nhầm ảnh) */
+const removeProof = async (postId, userId, fileName) => {
+    const post = await Post.findById(postId).select('participants.user participants.proofs');
+    if (!post) {
+        throw notFound();
+    }
+    const me = post.participants.find((p) => String(p.user) === userId);
+    if (!me || !me.proofs.includes(fileName)) {
+        throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy ảnh chuyển khoản');
+    }
+    await Post.updateOne({ _id: postId, 'participants.user': userId }, { $pull: { 'participants.$.proofs': fileName } });
+    await removeImage('proofs', fileName);
+    return getPost(postId);
+};
+
 module.exports = {
+    addProof,
+    removeProof,
     addBill,
     removeBill,
     setCover,

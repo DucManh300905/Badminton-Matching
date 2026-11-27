@@ -3,7 +3,7 @@
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
 Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Phương pháp: phân rã theo **giai đoạn → gói công việc**. Mỗi gói công việc có sản phẩm đầu ra, ước lượng công và mức ưu tiên rõ ràng.
 
-**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 303 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
+**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 318 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
 
 **Ưu tiên (MoSCoW):** M = Must · S = Should · C = Could (chỉ làm nếu còn thời gian)
 **Trạng thái:** Xong · Đang làm · Chưa (chưa bắt đầu)
@@ -38,7 +38,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 3.2 | Thiết kế CSDL (MongoDB collections, index) | `docs/database.md` | M | 4 | 3.1 | Xong |
 | 3.3 | Đặc tả API (endpoint, định dạng response, mã lỗi) | `docs/API.md` | M | 4 | 3.1 | Xong |
 | 3.4 | Wireframe các màn hình chính (từ giao diện đã làm) | Wireframe (Figma / giấy) | M | 3 | 4.5.1, 4.5.2 | Chưa |
-| **4** | **PHÁT TRIỂN** | | | **157** | | |
+| **4** | **PHÁT TRIỂN** | | | **172** | | |
 | 4.1.1 | Khởi tạo repo, cấu trúc mã nguồn | Repo + TypeScript + Vitest | M | 2 | – | Xong |
 | 4.1.2 | Cấu hình CI (GitHub Actions) + quy ước Git/PR | `.github/workflows/ci.yml`, `docs/GIT.md` | M | 2 | 4.1.1 | Xong |
 | 4.1.3 | Khung dự án + môi trường chạy thật (máy chủ Ubuntu: Nginx, PM2, MongoDB; [DEPLOY.md](DEPLOY.md)) | Ứng dụng chạy được ở local và trên máy chủ | M | 3 | 3.1 | Xong |
@@ -63,6 +63,8 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.11 | Ảnh bill (tối đa 7 ảnh / kèo) và trang **hóa đơn** in / lưu PDF cho mọi người trong kèo | API `/posts/:id/bills`, trang `/keo/:id/hoa-don` (US-38) | S | 6 | 4.8.2, 4.9 | Xong |
 | 4.12 | **Tổng quan và Cài đặt**: tab "Tổng quan" chứa mọi tính năng (ô tìm kiếm không dấu, hàng số liệu nhỏ); nút Tài khoản ở góc phải trên cùng (Cài đặt, Đăng xuất); Cài đặt gồm Hồ sơ, Đổi mật khẩu, **chế độ Sáng / Tối / Theo máy**, chọn 3 tiện ích cho thanh dưới (lưu theo tài khoản) | `utils/features.ts`, `OverviewPage`, `SettingsPage`, `UserMenu`, API `/users/me/tab-bar` (US-39) | S | 11 | 4.5.4 | Xong |
 | 4.13 | **Nhắn tin trong app**: nhóm chat theo kèo + nhắn riêng giữa người đã cùng chơi; mở tới 2 giờ sau giờ kết thúc rồi chỉ xem lại; tin mới qua WebSocket; chưa đọc, chặn, giới hạn tốc độ; "Kèo của tôi" đổi thành "Lịch sử" (tab Tin nhắn) | Module `chat`, `/api/chats`, `/api/ws`, trang `/lich-su/tin-nhan/:key` (US-40) | S | 13 | 4.12 | Xong |
+| 4.14 | **Email, hóa đơn, chuyển khoản, quên mật khẩu**: gửi thư Gmail SMTP; sửa xuất PDF không phản hồi trên điện thoại (tạo PDF trong trình duyệt); QR trên hóa đơn; người chơi gửi ảnh chuyển khoản (tối đa 3), chủ kèo nhận email, thấy "Chờ xác nhận"; quên mật khẩu qua email | `utils/mailer.js`, `utils/pdf.ts`, API `/auth/forgot-password`, `/auth/reset-password`, `/posts/:id/proofs` (US-41, US-42) | S | 12 | 4.11, 4.13 | Xong |
+| 4.15 | **Số điện thoại** trong hồ sơ / đăng ký, chỉ người cùng kèo thấy (gọi, Zalo); **"Hôm nay" thành bộ lọc** dùng chung điện thoại và máy tính, bỏ khỏi tiện ích | `utils/phone.js`, `PhoneLinks`, hàng chip lọc (US-43) | S | 3 | 4.12 | Xong |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **28** | | |
 | 5.1 | Unit test (liên tục, coverage ≥ 80%) | `backend/tests/` (Jest), test frontend (Vitest) | M | 12 | 4.1.2 | Đang làm |
 | 5.2 | Integration / API test | Jest + Supertest + MongoDB trong RAM | M | 6 | 4.4.2 | Xong |
@@ -76,7 +78,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.5, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | Chưa |
-| | **TỔNG GIAI ĐOẠN 1** | | | **303** | | |
+| | **TỔNG GIAI ĐOẠN 1** | | | **318** | | |
 
 ## 3. Tổng hợp khối lượng
 
@@ -84,7 +86,7 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 
 | | Giờ công |
 |---|---:|
-| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 303 |
+| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 318 |
 | Còn lại tính từ 24/11 (không tính 7.3 Bảo vệ) | ~106 |
 | Số tuần còn lại (24/11/2026 → 15/12/2026) | 3 |
 | **Trung bình cần làm** | **~35 giờ/tuần** |
@@ -104,6 +106,8 @@ Cỡ mẫu đã giảm so với kế hoạch ban đầu: khảo sát ≥ 30 ph�
 **Bổ sung 25/11/2026 (lần 2):** thêm 4.12 Tổng quan và Cài đặt (11h) theo yêu cầu; đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **290 giờ**.
 
 **Bổ sung 25/11/2026 (lần 3):** 4.8.4 xong; thêm 4.13 Nhắn tin trong app (13h, gồm WebSocket) theo yêu cầu, chuyển "chat" từ ngoài phạm vi vào phạm vi Charter. Đã làm xong nên **không** làm tăng phần việc còn lại. Tổng **303 giờ**.
+
+**Bổ sung 27/11/2026:** thêm 4.14 Email, hóa đơn PDF, ảnh chuyển khoản, quên mật khẩu (12h) và 4.15 Số điện thoại, "Hôm nay" thành bộ lọc (3h) theo yêu cầu; đã làm xong. Tổng **318 giờ**.
 
 Nếu trễ so với lịch, cắt theo thứ tự: 4.7 Uy tín → 4.8.5 Lịch sử chi tiêu → 4.6 Thông báo email → 5.3 E2E test → 3.4 Wireframe (dùng ảnh chụp giao diện). Xem [Gantt](03-gantt.md) mục 5.
 
@@ -126,6 +130,10 @@ Giai đoạn 2 (app di động, mục 5) **không** nằm trong khối lượng 
 **4.12 Tổng quan và Cài đặt.** Danh mục tiện ích nằm ở một chỗ (`frontend/src/utils/features.ts`): trang Tổng quan, ô tìm kiếm và thanh dưới đều đọc từ đây, nên tính năng mới chỉ cần thêm một dòng. Thanh dưới: 3 ô tự chọn + "Đăng kèo" ở giữa + "Tổng quan" ở cuối (cố định); lựa chọn lưu theo tài khoản (trường `tabBar`). Chế độ màu lưu trên thiết bị; một đoạn script trong `index.html` đặt màu trước khi vẽ trang để không nháy trắng; mọi màu trong CSS đi qua biến, chế độ tối chỉ đổi giá trị biến; khi in luôn dùng màu sáng. Menu Tài khoản chỉ có Cài đặt và Đăng xuất, không lặp lại tính năng. **Tiêu chí chấp nhận:** test API cho thanh dưới (thiếu, trùng, ô cố định, null về mặc định); e2e cả sáng lẫn tối ở 390 px và 1366 px.
 
 **4.13 Nhắn tin trong app.** Mỗi cuộc trò chuyện có một khóa: `p-<mã kèo>` (nhóm của kèo) hoặc `d-<người A>-<người B>` (nhắn riêng, hai mã xếp tăng dần). Quyền được tính lại ở **mỗi** lần đọc / gửi từ dữ liệu kèo, không lưu danh sách thành viên riêng: người trong kèo mới vào nhóm; hai người phải cùng ở trong ít nhất một kèo mới nhắn riêng; gửi được tới 2 giờ sau giờ kết thúc của kèo (nhắn riêng: kèo chung muộn nhất), sau đó chỉ xem lại; bị chặn thì không nhắn riêng được cho nhau. Gửi tin qua REST; tin mới được đẩy qua WebSocket `/api/ws` (đăng nhập bằng tin đầu tiên, chỉ nhận từ đúng địa chỉ web), mất kết nối thì trang chat tự tải lại 10 giây một lần và tự kết nối lại. **Tiêu chí chấp nhận:** test API cho quyền, thời hạn, chặn, giới hạn tốc độ, chưa đọc, phân trang và kết nối WebSocket thật; e2e hai trình duyệt nhắn qua lại.
+
+**4.14 Email, hóa đơn PDF, ảnh chuyển khoản, quên mật khẩu.** Gửi thư qua Gmail SMTP (`utils/mailer.js`); gửi hỏng không làm hỏng thao tác chính. Quên mật khẩu: link chứa mã ngẫu nhiên 32 byte, CSDL chỉ lưu mã băm SHA-256, hết hạn sau 30 phút, dùng một lần; luôn trả cùng một câu (không lộ email đã đăng ký); mỗi email tối đa 1 thư / phút, mỗi IP 5 yêu cầu / giờ; đặt xong thì mọi phiên đăng nhập cũ hết hiệu lực. Ảnh chuyển khoản: người chơi gửi tối đa 3 ảnh, chỉ chủ kèo và người gửi thấy, chủ kèo nhận email và tự bấm "Đã trả". Hóa đơn: mã QR (đúng số tiền của người xem, chủ kèo thì không ghi số tiền); PDF tạo ngay trong trình duyệt vì chức năng in không chạy khi web mở như app trên điện thoại. **Tiêu chí chấp nhận:** test API cho mã đặt lại (hết hạn, dùng lại, sai), không lộ email, quyền xem ảnh, giới hạn 3 ảnh, nội dung thư; e2e tải PDF thật trên máy tính và chia sẻ file trên điện thoại.
+
+**4.15 Số điện thoại, "Hôm nay" thành bộ lọc.** Số di động Việt Nam 10 chữ số, `+84` tự đổi thành `0`, không bắt buộc, nhập ở Đăng ký và Hồ sơ; chỉ người cùng kèo thấy, có nút gọi và Zalo. "Hôm nay" bỏ khỏi tiện ích; trang Tìm kèo dùng chung một hàng chip lọc cho điện thoại và máy tính; tiện ích mặc định: Tìm kèo, Lịch sử, Kho cầu.
 
 **5.1 Unit test.** Mọi logic nghiệp vụ và bộ trích xuất phải có unit test. CI chạy typecheck + test + coverage trên mỗi lần push và Pull Request. Không merge vào `main` khi CI đỏ. Backend dùng Jest + Supertest với MongoDB chạy trong RAM (dạng replica set để test được transaction); frontend dùng Vitest. Ngưỡng coverage backend: lines/functions/statements ≥ 80%, branches ≥ 70%.
 

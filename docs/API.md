@@ -1,6 +1,6 @@
 # Đặc tả API — Badminton Matching
 
-> Cập nhật: 25/11/2026. Địa chỉ gốc khi chạy trên máy: `http://localhost:8080/api`.
+> Cập nhật: 27/11/2026. Địa chỉ gốc khi chạy trên máy: `http://localhost:8080/api`.
 > Tài liệu liên quan: [project.md](project.md) (quy tắc BR-xx) · [database.md](database.md)
 
 ## 1. Quy ước chung
@@ -69,7 +69,9 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
   "bankAccount": { "bankBin": "970436", "accountNumber": "0123456789", "accountName": "NGUYEN VAN MINH" } }
 ```
 - `bankAccount` (tài khoản nhận tiền) chỉ có khi người dùng đã nhập; chỉ trả cho chính chủ.
-- `tabBar` (WBS 4.12): 3 tiện ích của thanh dưới trên điện thoại, theo thứ tự, ví dụ `["search", "shuttles", "mine"]`; không có trường này = mặc định (`search`, `today`, `mine`). Chỉ trả cho chính chủ.
+- `tabBar` (WBS 4.12): 3 tiện ích của thanh dưới trên điện thoại, theo thứ tự, ví dụ `["search", "shuttles", "mine"]`; không có trường này = mặc định (`search`, `mine`, `shuttles`). Chỉ trả cho chính chủ.
+- `phone` (WBS 4.15): số di động `0xxxxxxxxx`, không bắt buộc. Người khác chỉ thấy khi **cùng kèo** (`author.phone`, `participants[].phone` trong PostDetail).
+- Đăng ký và `PUT /users/me` nhận thêm `phone` (không bắt buộc): bỏ khoảng trắng / dấu chấm / gạch, `+84` → `0`, phải là số di động Việt Nam 10 chữ số; `""` = xóa số.
 - `avatarUrl`: đường dẫn ảnh đại diện **cùng tên miền với web** (`null` = chưa có ảnh, giao diện dùng chữ cái đầu của tên). Mọi chỗ trả thông tin người khác (`author`, `participants[]`) cũng có `avatarUrl`.
 
 **PostSummary** (danh sách kèo)
@@ -178,6 +180,8 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | POST | `/auth/register` | | Đăng ký (đăng nhập luôn) |
 | POST | `/auth/login` | | Đăng nhập |
 | PUT | `/auth/change-password` | Có | Đổi mật khẩu, trả token mới |
+| POST | `/auth/forgot-password` | | Gửi link đặt lại mật khẩu qua email |
+| POST | `/auth/reset-password` | | Đặt mật khẩu mới bằng mã trong link |
 | GET | `/users/me` | Có | Thông tin của mình |
 | PUT | `/users/me` | Có | Sửa tên, giới tính, trình độ |
 | GET | `/users/me/posts` | Có | Kèo mình đã đăng và đã tham gia |
@@ -198,6 +202,8 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | PUT | `/posts/:id/cover` | Có | Tải ảnh bìa (multipart, chỉ chủ kèo) |
 | DELETE | `/posts/:id/cover` | Có | Xóa ảnh bìa (chỉ chủ kèo) |
 | POST | `/posts/:id/bills` | Có | Thêm ảnh bill (multipart, chỉ chủ kèo, tối đa 7) |
+| POST | `/posts/:id/proofs` | Có | Người chơi gửi ảnh chuyển khoản (multipart, tối đa 3) |
+| DELETE | `/posts/:id/proofs/:file` | Có | Người chơi xóa ảnh chuyển khoản của mình |
 | DELETE | `/posts/:id/bills/:file` | Có | Xóa ảnh bill (chỉ chủ kèo) |
 | GET | `/shuttles` | Có | Kho cầu của tôi |
 | GET | `/shuttles/stats` | Có | Số quả đã dùng theo tuần / tháng |
@@ -243,6 +249,14 @@ Body: `{ currentPassword, newPassword }` (`newPassword` theo cùng chính sách 
 - `200` → `data: { token }`: **mọi token cũ hết hiệu lực ngay**; client phải lưu token mới.
 - `400 INVALID_PASSWORD` (sai mật khẩu hiện tại) · `400 VALIDATION_ERROR` · `401` · `429 RATE_LIMITED`
 
+#### `POST /auth/forgot-password`
+Body: `{ "email": "…" }`. Luôn `200` với **cùng một câu**, dù email có tồn tại hay không (không lộ email đã đăng ký). Có tài khoản thì gửi thư chứa link `<web>/dat-lai-mat-khau?token=<64 hex>`, hiệu lực **30 phút**, dùng **một lần**; CSDL chỉ lưu mã băm SHA-256. Cùng email: tối đa 1 thư / phút. Tối đa 5 yêu cầu / giờ / IP → `429`.
+
+#### `POST /auth/reset-password`
+Body: `{ "token": "<64 hex>", "password": "…" }` (mật khẩu theo chính sách như đăng ký).
+- `200` → mật khẩu mới có hiệu lực, **mọi token cũ hết hiệu lực** (tăng `tokenVersion`).
+- `400 INVALID_RESET_TOKEN` (sai, hết hạn, đã dùng) · `400 VALIDATION_ERROR` · `429` (quá 10 lần / 15 phút / IP)
+
 ### 3.2 Người dùng
 
 #### `GET /users/me`
@@ -276,7 +290,7 @@ Gửi `multipart/form-data`, một file ở trường **`image`**.
 
 #### `PUT /users/me/tab-bar`
 Body: `{ "items": ["search", "shuttles", "mine"] }` hoặc `{ "items": null }` (về mặc định).
-- Đúng **3** mã **khác nhau** trong: `search` (Tìm kèo), `today` (Hôm nay), `mine` (Kèo của tôi), `shuttles` (Kho cầu). "Đăng kèo" và "Tổng quan" luôn cố định trên thanh nên không chọn được.
+- Đúng **3** mã **khác nhau** trong: `search` (Tìm kèo), `mine` (Lịch sử), `shuttles` (Kho cầu). "Hôm nay" đã thành bộ lọc của Tìm kèo (27/11/2026); tài khoản còn lưu `today` được tự đưa về mặc định khi máy chủ khởi động. "Đăng kèo" và "Tổng quan" luôn cố định trên thanh nên không chọn được.
 - `200` → `data: User` (có / không có `tabBar`) · `400 VALIDATION_ERROR` · `401`
 
 #### `DELETE /users/me/avatar`
@@ -383,6 +397,17 @@ Gửi `multipart/form-data`, một file ở trường **`image`** (JPEG / PNG / 
 - Chỉ chủ kèo, kèo chưa hủy; tối đa **7 ảnh** mỗi kèo (kiểm tra ngay trong lệnh ghi).
 - `PostDetail.bills` = `[{ "file": "<32 hex>.webp", "url": "/uploads/bills/<file>" }]`, **chỉ trả cho người trong kèo** (như `costs`).
 - `200` → `data: PostDetail` · `409 BILL_LIMIT` · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` · `400 INVALID_IMAGE` · `413 FILE_TOO_LARGE` · `401` · `404 NOT_FOUND`
+
+#### `POST /posts/:id/proofs`
+Người chơi (đang tham gia kèo, kèo chưa hủy) gửi ảnh chụp màn hình chuyển khoản: `multipart/form-data`, trường `image`, xử lý như ảnh bill. Tối đa **3 ảnh** mỗi người.
+- Không tự đánh dấu đã trả. Chủ kèo nhận **email** "<tên> đã gửi ảnh chuyển khoản" kèm link kèo.
+- Trong PostDetail: chủ kèo thấy `participants[].proofs` (`[{ file, url }]`) và `pendingProof` (đã gửi ảnh, chưa "Đã trả") của mọi người; người chơi chỉ thấy của mình (`payment.myProofs`).
+- `200` → `data: PostDetail` · `403 NOT_JOINED` · `409 PROOF_LIMIT` · `409 POST_NOT_OPEN` · `400 INVALID_IMAGE` · `413 FILE_TOO_LARGE` · `401` · `404`
+
+#### `DELETE /posts/:id/proofs/:file`
+Người gửi xóa ảnh của mình. `200` · `404` (không phải ảnh của mình)
+
+`payment.qrOpen` (WBS 4.14): mã VietQR **không ghi số tiền** (người quét tự nhập), có khi chủ kèo đã nhập số tài khoản và kèo chưa hủy; in lên hóa đơn của chủ kèo / người đã trả đủ.
 
 #### `DELETE /posts/:id/bills/:file`
 - `200` → `data: PostDetail` (đã bỏ ảnh, xóa file) · `404 NOT_FOUND` (tên không có trong kèo) · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` · `401`
@@ -492,6 +517,8 @@ Body: `{ "text": "…" }` (1 – 1.000 ký tự sau khi bỏ khoảng trắng ha
 | `FILE_TOO_LARGE` | 413 | Ảnh lớn hơn 5 MB | Ảnh tối đa 5 MB. |
 | `SHUTTLE_LIMIT` | 409 | Đã có 20 loại cầu | Tối đa 20 loại cầu. |
 | `BILL_LIMIT` | 409 | Kèo đã có 7 ảnh bill | Tối đa 7 ảnh bill mỗi kèo. |
+| `INVALID_RESET_TOKEN` | 400 | Link đặt lại mật khẩu sai / hết hạn / đã dùng | Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Hãy yêu cầu link mới. |
+| `PROOF_LIMIT` | 409 | Đã gửi đủ 3 ảnh chuyển khoản | Tối đa 3 ảnh chuyển khoản. |
 | `NOT_CONNECTED` | 403 | Nhắn tin với người / nhóm chưa cùng ở trong kèo | Chỉ nhắn được cho người đã cùng chơi một kèo. |
 | `CHAT_CLOSED` | 409 | Quá 2 giờ sau kèo, hoặc bị chặn | (lý do do server gửi kèm) |
 | `RATE_LIMITED` | 429 | Thử quá nhiều lần | Bạn thử quá nhiều lần, vui lòng đợi ít phút rồi thử lại. |

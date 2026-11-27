@@ -20,6 +20,8 @@ export interface User {
   avatarUrl?: string | null;
   /** 3 tiện ích của thanh dưới (WBS 4.12); không có = mặc định */
   tabBar?: string[];
+  /** Số di động (WBS 4.15), không bắt buộc */
+  phone?: string;
 }
 
 /** Kết quả đăng ký / đăng nhập */
@@ -43,6 +45,14 @@ export interface PublicUser {
   id: string;
   displayName: string;
   avatarUrl?: string | null;
+  /** Chỉ có khi người xem ở trong kèo (WBS 4.15) */
+  phone?: string | null;
+}
+
+/** Ảnh đã tải lên: tên file (để xóa) và đường dẫn */
+export interface UploadedImage {
+  file: string;
+  url: string;
 }
 
 /** Kèo trong danh sách */
@@ -78,6 +88,10 @@ export interface Participant extends PublicUser {
   /** Số tiền người này phải trả; null = chủ kèo chưa nhập khoản chi nào */
   amountDue?: number | null;
   paymentStatus?: PaymentStatus;
+  /** Ảnh chuyển khoản (WBS 4.14): chủ kèo thấy của mọi người, người chơi chỉ thấy của mình */
+  proofs?: UploadedImage[];
+  /** Đã gửi ảnh chuyển khoản nhưng chủ kèo chưa đánh dấu đã trả */
+  pendingProof?: boolean;
 }
 
 /** none: chưa có khoản phải trả · unpaid · paid · owe: còn thiếu · overpaid: trả dư */
@@ -194,6 +208,10 @@ export interface PostPayment {
   available?: boolean;
   content?: string;
   qr?: string | null;
+  /** QR không ghi số tiền (in lên hóa đơn của chủ kèo); null khi chưa có số tài khoản */
+  qrOpen?: string | null;
+  /** Ảnh chuyển khoản mình đã gửi (người chơi) */
+  myProofs?: UploadedImage[];
 }
 
 /** Kèo ở trang chi tiết */
@@ -231,4 +249,5 @@ export interface RegisterInput {
   displayName: string;
   gender: Gender;
   level: SkillLevel;
+  phone?: string;
 }

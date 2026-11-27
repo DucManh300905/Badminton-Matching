@@ -33,11 +33,13 @@ describe('PUT /api/users/me/tab-bar', () => {
     test('sai số lượng, trùng, tiện ích lạ (kể cả ô cố định "Đăng kèo", "Tổng quan") → 400', async () => {
         const me = await createUserAndLogin();
         for (const items of [
-            ['search', 'today'],
-            ['search', 'today', 'mine', 'shuttles'],
+            ['search', 'mine'],
+            ['search', 'mine', 'shuttles', 'search'],
+            // "Hôm nay" đã thành bộ lọc của Tìm kèo (WBS 4.15)
+            ['search', 'today', 'mine'],
             ['search', 'search', 'mine'],
-            ['search', 'today', 'new'],
-            ['search', 'today', 'overview'],
+            ['search', 'mine', 'new'],
+            ['search', 'mine', 'overview'],
             'search',
             undefined
         ]) {

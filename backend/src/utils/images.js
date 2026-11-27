@@ -18,7 +18,9 @@ const KINDS = {
     avatars: { width: 256, height: 256 },
     covers: { width: 1200, height: 630 },
     // Ảnh bill / hóa đơn (WBS 4.11): giữ nguyên tỉ lệ để đọc được chữ, cạnh dài tối đa 1600
-    bills: { width: 1600, height: 1600, fit: 'inside' }
+    bills: { width: 1600, height: 1600, fit: 'inside' },
+    // Ảnh chụp màn hình chuyển khoản (WBS 4.14): chỉ chủ kèo và người gửi xem
+    proofs: { width: 1600, height: 1600, fit: 'inside' }
 };
 
 const FILE_NAME = /^[a-f0-9]{32}\.webp$/;
@@ -48,7 +50,7 @@ const receiveImage = (req, res, next) => {
 
 /**
  * Kiểm tra, xử lý và lưu ảnh. Trả về tên file mới.
- * @param {'avatars' | 'covers' | 'bills'} kind
+ * @param {'avatars' | 'covers' | 'bills' | 'proofs'} kind
  * @param {Buffer | undefined} buffer
  */
 const saveImage = async (kind, buffer) => {

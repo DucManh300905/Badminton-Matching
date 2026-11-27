@@ -11,13 +11,14 @@ describe('searchFeatures (ô tìm kiếm ở Tổng quan)', () => {
   const keys = (q: string) => searchFeatures(q).map((f) => f.key);
 
   it('trống → mọi tiện ích', () => {
-    expect(keys('')).toEqual(['search', 'today', 'new', 'mine', 'shuttles']);
+    expect(keys('')).toEqual(['search', 'new', 'mine', 'shuttles']);
   });
 
   it('gõ có dấu hoặc không dấu đều ra', () => {
     expect(keys('kho cau')).toEqual(['shuttles']);
     expect(keys('Kho cầu')).toEqual(['shuttles']);
-    expect(keys('hom nay')).toEqual(['today']);
+    // "Hôm nay" là bộ lọc của Tìm kèo
+    expect(keys('hom nay')).toEqual(['search']);
   });
 
   it('tìm theo mô tả / từ khóa; không khớp → rỗng', () => {
@@ -32,7 +33,9 @@ describe('tabBarOf (3 ô tự chọn của thanh dưới)', () => {
     expect(tabBarOf(undefined)).toEqual(DEFAULT_TAB_BAR);
     expect(tabBarOf(['search', 'today'])).toEqual(DEFAULT_TAB_BAR);
     expect(tabBarOf(['search', 'search', 'mine'])).toEqual(DEFAULT_TAB_BAR);
-    expect(tabBarOf(['search', 'today', 'new'])).toEqual(DEFAULT_TAB_BAR);
+    expect(tabBarOf(['search', 'mine', 'new'])).toEqual(DEFAULT_TAB_BAR);
+    // Ai còn lưu "Hôm nay" (đã bỏ) → mặc định
+    expect(tabBarOf(['search', 'today', 'mine'])).toEqual(DEFAULT_TAB_BAR);
   });
 
   it('hợp lệ → giữ đúng thứ tự', () => {

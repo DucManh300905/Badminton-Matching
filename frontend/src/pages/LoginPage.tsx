@@ -58,9 +58,14 @@ export default function LoginPage() {
             />
           </div>
           <div className="field">
-            <label htmlFor="password" className="label">
-              Mật khẩu
-            </label>
+            <div className="label-row">
+              <label htmlFor="password" className="label">
+                Mật khẩu
+              </label>
+              <Link to="/quen-mat-khau" className="label-row__link">
+                Quên mật khẩu?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"

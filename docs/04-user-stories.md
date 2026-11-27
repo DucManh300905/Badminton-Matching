@@ -53,6 +53,9 @@ Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Mã WBS: **2.4.1** (produc
 |---|---|---|:-:|---|---|
 | US-18 | Là **người chơi**, tôi muốn xem các kèo mình đã đăng và đã tham gia ở một chỗ để nắm lịch chơi. | Hai tab "Đã tham gia", "Đã đăng" có số lượng; kèo đã qua ghi "Đã diễn ra"; trang Tổng quan có số kèo sắp diễn ra. | M | F6 | Xong |
 | US-40 | Là **người trong kèo**, tôi muốn nhắn tin với mọi người trong kèo và nhắn riêng với người đã cùng chơi mà không cần xin Zalo. | Nhóm chat cho mỗi kèo (chủ kèo + người tham gia) và nhắn riêng; **chỉ người đã cùng ở trong một kèo** mới nhắn được, người rời kèo mất quyền vào nhóm; gửi được tới **2 giờ sau giờ kết thúc**, sau đó chỉ xem lại trong "Lịch sử" → "Tin nhắn"; tin mới đến ngay không cần tải lại; hiện **số tin chưa xem** ở "Lịch sử" (thanh dưới, thanh trên, Tổng quan) và ở từng cuộc trò chuyện; chỉ gửi chữ ≤ 1.000 ký tự, ≤ 20 tin / phút; **chặn** được người nhắn riêng. | S | WBS 4.13 | Xong |
+| US-41 | Là **người chơi**, tôi muốn gửi ảnh chụp màn hình chuyển khoản để chủ kèo biết mình đã trả mà không phải nhắn riêng. | Ở thẻ Thanh toán, gửi tối đa 3 ảnh (xóa được ảnh gửi nhầm); chỉ chủ kèo và người gửi thấy ảnh; chủ kèo **nhận email** và thấy nhãn **"Chờ xác nhận"** cạnh tên, bấm xem ảnh rồi tự bấm "Đã trả"; hóa đơn có **mã QR** chuyển khoản. | S | WBS 4.14 | Xong |
+| US-42 | Là **người dùng quên mật khẩu**, tôi muốn đặt lại mật khẩu qua email. | Link "Quên mật khẩu?" ở trang đăng nhập; thư có link hiệu lực 30 phút, dùng một lần; không cho biết email có tồn tại hay không; đặt xong thì mọi máy khác phải đăng nhập lại. | S | WBS 4.14 | Xong |
+| US-43 | Là **người trong kèo**, tôi muốn thấy số điện thoại của người cùng kèo để gọi hoặc nhắn Zalo khi cần gấp. | Số điện thoại không bắt buộc, nhập ở Đăng ký và Hồ sơ (kiểm tra số di động Việt Nam); chỉ người cùng kèo thấy, có nút gọi và nút mở Zalo; khách và người ngoài kèo không thấy. | S | WBS 4.15 | Xong |
 
 ### E5 — Thông báo
 
@@ -123,9 +126,9 @@ Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài t�
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
 | Must | 12 | 11 | 1 (US-22) | 0 |
-| Should | 13 | 7 | 2 (US-24, US-28) | 4 (US-19, US-20, US-25, US-26) |
+| Should | 16 | 10 | 2 (US-24, US-28) | 4 (US-19, US-20, US-25, US-26) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **32** | **18** | **3** | **11** |
+| **Tổng** | **35** | **21** | **3** | **11** |
 
 Story **Must** còn lại nằm trên đường găng: **US-22** (xuất số liệu thử nghiệm cho RQ1–RQ3, trước 6.3).
 
@@ -232,3 +235,4 @@ flowchart LR
 | 25/11/2026 | 2.2: thêm US-37 kho cầu, US-38 ảnh bill và hóa đơn (đã xong); kho cầu không còn ngoài phạm vi |
 | 25/11/2026 | 2.3: thêm US-39 Tổng quan, Cài đặt, chế độ tối, tùy chọn thanh dưới (đã xong) |
 | 25/11/2026 | 2.4: US-14, US-35 xong (chia sẻ kèo, tin thu tiền); thêm US-40 nhắn tin trong app (đã xong); "Kèo của tôi" đổi tên thành "Lịch sử" |
+| 27/11/2026 | 2.5: thêm US-41 ảnh chuyển khoản, US-42 quên mật khẩu, US-43 số điện thoại (đã xong); "Hôm nay" thành bộ lọc của Tìm kèo |

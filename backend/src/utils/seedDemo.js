@@ -14,8 +14,8 @@ const { vnDateTime } = require('./vnTime');
 const DEMO_DOMAIN = '@example.com';
 
 const PEOPLE = [
-    { email: 'minh@example.com', displayName: 'Minh', gender: 'male', level: 'TB' },
-    { email: 'lan@example.com', displayName: 'Lan', gender: 'female', level: 'TB_MINUS' },
+    { email: 'minh@example.com', displayName: 'Minh', gender: 'male', level: 'TB', phone: '0912000001' },
+    { email: 'lan@example.com', displayName: 'Lan', gender: 'female', level: 'TB_MINUS', phone: '0912000002' },
     { email: 'hung@example.com', displayName: 'Hùng', gender: 'male', level: 'KHA' },
     { email: 'thu@example.com', displayName: 'Thu', gender: 'female', level: 'TB_PLUS' }
 ];

@@ -117,8 +117,11 @@ const toPayment = (post, viewerId, isAuthor, money, now) => {
     const payers = [...money.byUser.values()].filter((m) => m.due > 0);
     const marked = post.participants.filter((p) => p.paidAt && (money.byUser.get(userIdOf(p))?.due ?? 0) > 0);
 
+    // QR không ghi số tiền (người quét tự nhập): in lên hóa đơn của chủ kèo (WBS 4.14)
+    const openContent = transferContent(post._id, '');
     const common = {
         hasCosts,
+        qrOpen: bank && post.status !== 'closed' ? buildVietQr({ bin: bank.bin, accountNumber: account.accountNumber, content: openContent }) : null,
         estimate: post.pricePerPerson,
         bank: bank && { bin: bank.bin, shortName: bank.shortName },
         accountNumber: bank ? account.accountNumber : null,
@@ -146,6 +149,7 @@ const toPayment = (post, viewerId, isAuthor, money, now) => {
     const content = transferContent(post._id, me.user?.displayName ?? '');
     return {
         ...common,
+        myProofs: (me.proofs ?? []).map((f) => ({ file: f, url: publicUrl('proofs', f) })),
         amount: hasCosts ? mine.due : 0,
         status: hasCosts ? mine.status : 'none',
         toPay,
@@ -173,10 +177,14 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
     const insider = isAuthor || isParticipant;
     const money = insider ? moneyOf(post) : null;
 
+    const summary = toPostSummary(post);
     return {
-        ...toPostSummary(post),
+        ...summary,
+        // Số điện thoại chỉ cho người trong kèo (WBS 4.15)
+        ...(insider && { author: { ...summary.author, phone: post.author?.phone ?? null } }),
         participants: post.participants.map((p) => ({
             ...toPublicUser(p.user),
+            ...(insider && { phone: p.user?.phone ?? null }),
             gender: p.user?.gender ?? null,
             level: p.user?.level ?? null,
             slot: p.slot,
@@ -186,6 +194,11 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
                 attended: p.attended ?? null,
                 amountDue: money.dues ? money.byUser.get(userIdOf(p)).due : null,
                 paymentStatus: money.dues ? money.byUser.get(userIdOf(p)).status : 'none'
+            }),
+            // Ảnh chuyển khoản: chủ kèo thấy của mọi người, người chơi chỉ thấy của mình
+            ...((isAuthor || userIdOf(p) === viewerId) && {
+                proofs: (p.proofs ?? []).map((f) => ({ file: f, url: publicUrl('proofs', f) })),
+                pendingProof: (p.proofs ?? []).length > 0 && !p.paidAt
             })
         })),
         ...(insider && {

@@ -110,7 +110,23 @@ const removeBill = asyncHandler(async (req, res) => {
     res.json({ success: true, message: 'Đã xóa ảnh bill', data: toPostDetail(post, req.user.userId) });
 });
 
+// POST /api/posts/:id/proofs — người chơi gửi ảnh chuyển khoản (WBS 4.14)
+const addProof = asyncHandler(async (req, res) => {
+    const post = await postService.addProof(req.params.id, req.user.userId, req.file?.buffer, new Date());
+
+    res.json({ success: true, message: 'Đã gửi ảnh chuyển khoản cho chủ kèo', data: toPostDetail(post, req.user.userId) });
+});
+
+// DELETE /api/posts/:id/proofs/:file
+const removeProof = asyncHandler(async (req, res) => {
+    const post = await postService.removeProof(req.params.id, req.user.userId, req.params.file);
+
+    res.json({ success: true, message: 'Đã xóa ảnh chuyển khoản', data: toPostDetail(post, req.user.userId) });
+});
+
 module.exports = {
+    addProof,
+    removeProof,
     addBill,
     removeBill,
     setCover,

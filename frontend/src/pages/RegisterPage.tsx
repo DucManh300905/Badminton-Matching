@@ -17,6 +17,7 @@ export default function RegisterPage() {
     displayName: '',
     gender: 'male',
     level: 'TB',
+    phone: '',
   });
   const [error, setError] = useState<string | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
@@ -69,6 +70,23 @@ export default function RegisterPage() {
               onChange={(e) => set('displayName', e.target.value)}
             />
             <FieldError message={fields.displayName} />
+          </div>
+          <div className="field">
+            <label htmlFor="phone" className="label">
+              Số điện thoại <span className="label__note">(không bắt buộc)</span>
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              className="input"
+              placeholder="Ví dụ: 0912 345 678"
+              value={form.phone ?? ''}
+              onChange={(e) => set('phone', e.target.value)}
+            />
+            <p className="hint">Chỉ người cùng kèo với bạn mới thấy, để gọi hoặc nhắn Zalo khi cần.</p>
+            <FieldError message={fields.phone} />
           </div>
           <div className="field">
             <label htmlFor="email" className="label">

@@ -15,6 +15,8 @@ import RegisterPage from './pages/RegisterPage';
 import OverviewPage from './pages/OverviewPage';
 import SettingsPage from './pages/SettingsPage';
 import ChatPage from './pages/ChatPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import InvoicePage from './pages/InvoicePage';
 import ShuttleStockPage from './pages/ShuttleStockPage';
 
@@ -49,6 +51,8 @@ export default function App() {
         </Route>
         <Route path="dang-nhap" element={<LoginPage />} />
         <Route path="dang-ky" element={<RegisterPage />} />
+        <Route path="quen-mat-khau" element={<ForgotPasswordPage />} />
+        <Route path="dat-lai-mat-khau" element={<ResetPasswordPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

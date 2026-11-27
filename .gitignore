@@ -25,3 +25,8 @@ data/raw/
 
 # Ảnh người dùng tải lên khi chạy trên máy (máy chủ lưu ở /var/lib/badminton/uploads)
 backend/uploads/
+
+
+# Hướng dẫn cho trợ lý lập trình AI, chỉ dùng trên máy
+AGENTS.md
+CLAUDE.md
