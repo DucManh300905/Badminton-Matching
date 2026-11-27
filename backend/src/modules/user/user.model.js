@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { GENDERS, TAB_BAR_ITEMS, TAB_BAR_SIZE } = require('../../utils/constants');
+const { VN_MOBILE } = require('../../utils/phone');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { BANK_BINS } = require('../../utils/banks');
 const { publicUrl } = require('../../utils/images');
@@ -61,6 +62,16 @@ const userSchema = new mongoose.Schema(
         passwordChangedAt: {
             type: Date
         },
+        // Số di động (WBS 4.15), không bắt buộc; chỉ người cùng kèo mới thấy
+        phone: {
+            type: String,
+            default: undefined,
+            match: [VN_MOBILE, 'Số điện thoại không hợp lệ']
+        },
+        // Quên mật khẩu (WBS 4.14): chỉ lưu mã băm SHA-256 của link, hết hạn sau 30 phút, dùng một lần
+        resetTokenHash: { type: String, select: false },
+        resetTokenExpires: { type: Date, select: false },
+        resetRequestedAt: { type: Date, select: false },
         bankAccount: {
             type: bankAccountSchema,
             default: undefined

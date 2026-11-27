@@ -2,7 +2,8 @@
 // Thêm tính năng mới = thêm một dòng ở FEATURES; nó tự xuất hiện ở Tổng quan và tìm kiếm được.
 import type { IconName } from '../components/Icon';
 
-export type FeatureKey = 'search' | 'today' | 'new' | 'mine' | 'shuttles';
+// "Hôm nay" đã thành bộ lọc của Tìm kèo (WBS 4.15)
+export type FeatureKey = 'search' | 'new' | 'mine' | 'shuttles';
 /** Tiện ích chọn được cho 3 ô của thanh dưới (khớp backend TAB_BAR_ITEMS) */
 export type TabItemKey = Exclude<FeatureKey, 'new'>;
 
@@ -30,23 +31,12 @@ export const FEATURES: Feature[] = [
     key: 'search',
     label: 'Tìm kèo',
     short: 'Tìm kèo',
-    description: 'Kèo còn chỗ, lọc theo khu vực, ngày, trình độ',
+    description: 'Kèo còn chỗ, lọc hôm nay, ngày mai, khu vực, trình độ',
     icon: 'search',
     group: 'match',
-    keywords: 'danh sach loc khu vuc trinh do',
+    keywords: 'danh sach loc khu vuc trinh do hom nay ngay mai',
     needsAuth: false,
     to: () => '/',
-  },
-  {
-    key: 'today',
-    label: 'Kèo hôm nay',
-    short: 'Hôm nay',
-    description: 'Các kèo diễn ra trong hôm nay',
-    icon: 'clock',
-    group: 'match',
-    keywords: 'hom nay toi nay',
-    needsAuth: false,
-    to: (today) => `/?date=${today}`,
   },
   {
     key: 'new',
@@ -83,8 +73,8 @@ export const FEATURES: Feature[] = [
   },
 ];
 
-export const TAB_ITEM_KEYS: TabItemKey[] = ['search', 'today', 'mine', 'shuttles'];
-export const DEFAULT_TAB_BAR: TabItemKey[] = ['search', 'today', 'mine'];
+export const TAB_ITEM_KEYS: TabItemKey[] = ['search', 'mine', 'shuttles'];
+export const DEFAULT_TAB_BAR: TabItemKey[] = ['search', 'mine', 'shuttles'];
 
 export const featureOf = (key: FeatureKey) => FEATURES.find((f) => f.key === key)!;
 

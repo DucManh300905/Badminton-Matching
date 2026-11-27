@@ -23,10 +23,10 @@ interface Tab {
 export default function TabBar() {
   const { user } = useAuth();
   const { unread } = useChat();
-  const { pathname, search } = useLocation();
-  // Lấy ngày một lần khi mở app (đủ dùng cho tab "Hôm nay")
+  const { pathname } = useLocation();
+  // Ngày hôm nay (đường dẫn của một số tiện ích có thể cần)
   const [today] = useState(() => toDateInput(new Date()));
-  const current = activeTab(pathname, search, today);
+  const current = activeTab(pathname);
 
   const [a, b, c] = tabBarOf(user?.tabBar).map((k) => {
     const f = featureOf(k);

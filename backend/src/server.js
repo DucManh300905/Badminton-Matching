@@ -3,6 +3,7 @@ require('dotenv').config();
 const app = require('./app');
 const connectDatabase = require('./config/database');
 const chatHub = require('./modules/chat/chat.hub');
+const User = require('./modules/user/user.model');
 
 const PORT = Number(process.env.PORT) || 8080;
 
@@ -19,6 +20,9 @@ const startServer = async () => {
     }
 
     await connectDatabase();
+
+    // Tiện ích "Hôm nay" đã bỏ (WBS 4.15): ai còn lưu thì về thanh dưới mặc định
+    await User.updateMany({ tabBar: 'today' }, { $unset: { tabBar: 1 } });
 
     const server = app.listen(PORT, () => {
         console.log(`Server is running at http://localhost:${PORT}`);

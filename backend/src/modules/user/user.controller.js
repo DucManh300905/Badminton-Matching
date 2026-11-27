@@ -25,7 +25,14 @@ const updateMe = asyncHandler(async (req, res) => {
         }
     }
 
-    const user = await User.findByIdAndUpdate(req.user.userId, { $set: changes }, { returnDocument: 'after', runValidators: true });
+    // Số điện thoại: "" (đã chuẩn hóa từ ""/null) = xóa
+    const update = { $set: changes };
+    if (req.body.phone !== undefined) {
+        if (req.body.phone) changes.phone = req.body.phone;
+        else update.$unset = { phone: 1 };
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.userId, update, { returnDocument: 'after', runValidators: true });
     if (!user) {
         throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy người dùng');
     }

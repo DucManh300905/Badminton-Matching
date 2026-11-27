@@ -4,7 +4,9 @@ import { chatsApi } from '../api/chats';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
 import PageHeader from '../components/PageHeader';
+import Lightbox from '../components/Lightbox';
 import PaymentCard from '../components/PaymentCard';
+import PhoneLinks from '../components/PhoneLinks';
 import BillsCard from '../components/BillsCard';
 import CostsCard, { AttendanceCard } from '../components/CostsCard';
 import Icon, { type IconName } from '../components/Icon';
@@ -47,6 +49,8 @@ export default function PostDetailPage() {
   // Thời điểm mở trang, dùng để biết kèo đã bắt đầu chưa
   const [openedAt] = useState(() => Date.now());
   const navigate = useNavigate();
+  // Chủ kèo xem ảnh chuyển khoản của một người (WBS 4.14)
+  const [proofView, setProofView] = useState<{ name: string; urls: string[] } | null>(null);
 
   /** Nhắn riêng với một người cùng kèo (WBS 4.13) */
   async function messageTo(userId: string) {
@@ -164,6 +168,7 @@ export default function PostDetailPage() {
                 <dd className="info-grid__person">
                   <Avatar name={post.author.displayName} url={post.author.avatarUrl} size="xs" />
                   {post.author.displayName}
+                  {hasJoined && <PhoneLinks phone={post.author.phone} name={post.author.displayName} />}
                   {hasJoined && (
                     <button
                       type="button"
@@ -239,6 +244,19 @@ export default function PostDetailPage() {
                         {SLOT_LABELS[p.slot]}
                         {p.attended === false && ' · vắng'}
                       </p>
+                      {(isAuthor || hasJoined) && <PhoneLinks phone={p.phone} name={p.displayName} />}
+                      {isAuthor && (p.proofs?.length ?? 0) > 0 && (
+                        <p className="people__proofs">
+                          {p.pendingProof && <span className="badge badge--warn">Chờ xác nhận</span>}
+                          <button
+                            type="button"
+                            className="btn btn--link"
+                            onClick={() => setProofView({ name: p.displayName, urls: p.proofs!.map((x) => x.url) })}
+                          >
+                            Xem ảnh chuyển khoản ({p.proofs!.length})
+                          </button>
+                        </p>
+                      )}
                     </div>
                     {(isAuthor || hasJoined) && p.id !== user?.id && (
                       <button
@@ -331,9 +349,20 @@ export default function PostDetailPage() {
             )}
             <ShareButtons post={post} />
           </aside>
-          {hasJoined && payment && post.status !== 'closed' && <PaymentCard payment={payment} postId={post.id} />}
+          {hasJoined && payment && post.status !== 'closed' && (
+            <PaymentCard payment={payment} postId={post.id} onSaved={setPost} />
+          )}
         </div>
       </div>
+
+      {proofView && (
+        <Lightbox
+          urls={proofView.urls}
+          index={0}
+          label={`Ảnh chuyển khoản của ${proofView.name}`}
+          onClose={() => setProofView(null)}
+        />
+      )}
 
       {/* Điện thoại: thanh hành động dính ở đáy, ngay trên thanh tab */}
       {post.status !== 'closed' && !started && (
