@@ -54,16 +54,14 @@ router.put(
     changePassword
 );
 
-// Quên mật khẩu (WBS 4.14)
+// Quên mật khẩu bằng mã OTP 4 số qua email (WBS 4.14)
 router.post('/forgot-password', forgotPasswordLimiter, [emailRule()], validate, forgotPassword);
 router.post(
     '/reset-password',
     resetPasswordLimiter,
     [
-        body('token')
-            .isString()
-            .matches(/^[a-f0-9]{64}$/)
-            .withMessage('Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn'),
+        emailRule(),
+        body('code').isString().matches(/^\d{4}$/).withMessage('Mã gồm 4 chữ số'),
         newPasswordRule('password')
     ],
     validate,

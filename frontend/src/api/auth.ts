@@ -13,15 +13,15 @@ export const authApi = {
     return res.data.data;
   },
 
-  /** Gửi link đặt lại mật khẩu qua email (luôn trả cùng một câu) */
+  /** Gửi mã 4 số qua email (luôn trả cùng một câu) */
   async forgotPassword(email: string) {
     const res = await client.post<ApiResponse<null>>('/auth/forgot-password', { email });
     return res.data.message ?? '';
   },
 
-  /** Đặt mật khẩu mới bằng mã trong link email; mọi phiên đăng nhập cũ hết hiệu lực */
-  async resetPassword(token: string, password: string) {
-    const res = await client.post<ApiResponse<null>>('/auth/reset-password', { token, password });
+  /** Đặt mật khẩu mới bằng email + mã 4 số; mọi phiên đăng nhập cũ hết hiệu lực */
+  async resetPassword(email: string, code: string, password: string) {
+    const res = await client.post<ApiResponse<null>>('/auth/reset-password', { email, code, password });
     return res.data.message ?? '';
   },
 

@@ -85,11 +85,11 @@ MAIL_FROM=Badminton Matching <gmail riêng của app>@gmail.com
 
 - `JWT_SECRET` chỉ nằm trên máy chủ; **không** commit, không gửi qua chat. Đổi giá trị này làm mọi người dùng phải đăng nhập lại.
 - `TRUST_PROXY=1`: Nginx đã đặt `X-Forwarded-For` = IP thật của người dùng (lấy từ header `CF-Connecting-IP` của Cloudflare), nên giới hạn số lần đăng nhập sai đếm đúng theo từng người.
-- `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` (WBS 4.14): gửi thư quên mật khẩu và thư báo chủ kèo có ảnh chuyển khoản qua Gmail. Cách lấy mật khẩu ứng dụng:
+- `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` (WBS 4.14): gửi thư quên mật khẩu (mã 4 số) và thư báo chủ kèo có ảnh chuyển khoản qua Gmail. Gửi thành công, log ghi `[mail] đã gửi "…" tới m***@gmail.com` (che email và mã). Cách lấy mật khẩu ứng dụng:
   1. Tạo một tài khoản Gmail **riêng cho app** (không dùng Gmail cá nhân).
   2. Bật **Xác minh 2 bước**: Tài khoản Google → Bảo mật → Xác minh 2 bước.
   3. Mở https://myaccount.google.com/apppasswords, đặt tên "Badminton Matching", bấm Tạo → chép 16 ký tự (bỏ khoảng trắng) vào `SMTP_PASS`.
-  4. `pm2 restart badminton-backend --update-env`, rồi thử "Quên mật khẩu" trên web với email của bạn.
+  4. `pm2 restart badminton-backend --update-env`, rồi thử "Quên mật khẩu" trên web với email của bạn: phải nhận được thư có mã 4 số.
   Không điền thì app vẫn chạy, chỉ không gửi được thư (log ghi "chưa cấu hình SMTP"). Gmail cho tối đa khoảng 500 thư / ngày.
 - `UPLOAD_DIR`: nơi backend ghi ảnh đại diện / ảnh bìa (đã cắt, đổi WebP, xóa EXIF / GPS). Nằm ngoài thư mục repo để `deploy.sh` không xóa mất; tạo ở mục 3.4.
 - Bỏ dòng `DEMO_PASSWORD`: **không chạy `npm run seed:demo` trên máy chủ chạy thật**, để số liệu thử nghiệm không lẫn dữ liệu mẫu.
