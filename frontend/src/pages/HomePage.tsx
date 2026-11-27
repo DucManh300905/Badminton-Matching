@@ -99,7 +99,20 @@ export default function HomePage() {
         </button>
         <label className={`${chip(!!customDate)} chip--picker`}>
           <span>{customDate ? formatDateShort(date) : 'Chọn ngày'}</span>
-          <input type="date" aria-label="Chọn ngày" value={date} onChange={(e) => update('date', e.target.value)} />
+          {/* Máy tính chỉ mở lịch khi bấm đúng biểu tượng nhỏ của ô ngày (đang trong suốt) → bấm vào chip là mở */}
+          <input
+            type="date"
+            aria-label="Chọn ngày"
+            value={date}
+            onClick={(e) => {
+              try {
+                e.currentTarget.showPicker();
+              } catch {
+                // Trình duyệt cũ không có showPicker: vẫn dùng ô ngày như thường
+              }
+            }}
+            onChange={(e) => update('date', e.target.value)}
+          />
         </label>
         <label className={`${chip(!!district)} chip--picker`}>
           <span>{district || 'Khu vực'}</span>

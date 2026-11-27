@@ -16,7 +16,6 @@ import OverviewPage from './pages/OverviewPage';
 import SettingsPage from './pages/SettingsPage';
 import ChatPage from './pages/ChatPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
 import InvoicePage from './pages/InvoicePage';
 import ShuttleStockPage from './pages/ShuttleStockPage';
 
@@ -52,7 +51,8 @@ export default function App() {
         <Route path="dang-nhap" element={<LoginPage />} />
         <Route path="dang-ky" element={<RegisterPage />} />
         <Route path="quen-mat-khau" element={<ForgotPasswordPage />} />
-        <Route path="dat-lai-mat-khau" element={<ResetPasswordPage />} />
+        {/* Link đặt lại mật khẩu cũ (trước khi đổi sang mã 4 số) */}
+        <Route path="dat-lai-mat-khau" element={<Navigate to="/quen-mat-khau" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

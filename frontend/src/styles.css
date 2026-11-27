@@ -3861,3 +3861,19 @@ a.mini-stat:hover {
   color: var(--danger);
   border-style: dashed;
 }
+
+/* ── Mã OTP quên mật khẩu (WBS 4.14) ── */
+.otp-input {
+  max-width: 180px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 12px;
+  text-align: center;
+}
+
+.otp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}

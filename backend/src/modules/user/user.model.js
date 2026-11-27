@@ -68,9 +68,11 @@ const userSchema = new mongoose.Schema(
             default: undefined,
             match: [VN_MOBILE, 'Số điện thoại không hợp lệ']
         },
-        // Quên mật khẩu (WBS 4.14): chỉ lưu mã băm SHA-256 của link, hết hạn sau 30 phút, dùng một lần
-        resetTokenHash: { type: String, select: false },
-        resetTokenExpires: { type: Date, select: false },
+        // Quên mật khẩu (WBS 4.14): mã OTP 4 số gửi qua email. Chỉ lưu mã băm HMAC, hết hạn sau 10 phút,
+        // dùng một lần, sai quá 5 lần thì hủy mã (4 số chỉ có 10.000 khả năng → phải chặn dò)
+        resetCodeHash: { type: String, select: false },
+        resetCodeExpires: { type: Date, select: false },
+        resetAttempts: { type: Number, select: false },
         resetRequestedAt: { type: Date, select: false },
         bankAccount: {
             type: bankAccountSchema,

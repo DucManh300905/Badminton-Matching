@@ -5,6 +5,9 @@ const nodemailer = require('nodemailer');
 // - Chưa cấu hình SMTP: không gửi, ghi tiêu đề + người nhận ra log (chạy trên máy: in cả nội dung để thử link).
 // - Test (NODE_ENV=test): giữ thư trong bộ nhớ (`outbox`) để kiểm tra nội dung.
 
+/** "manh.an@gmail.com" → "m***@gmail.com": log không chứa đầy đủ email */
+const maskEmail = (email) => String(email).replace(/^(.)[^@]*(@.*)$/, '$1***$2');
+
 /** Thư đã "gửi" khi chạy test */
 const outbox = [];
 
@@ -32,9 +35,10 @@ const escapeHtml = (s) =>
 
 /**
  * Thư đơn giản: tiêu đề, các đoạn văn, một nút (link). Có bản chữ thường cho ứng dụng thư không hiện HTML.
- * @param {{ to: string, subject: string, paragraphs: string[], button?: { label: string, url: string } }} mail
+ * `code`: mã OTP hiện to, dễ đọc (thư quên mật khẩu).
+ * @param {{ to: string, subject: string, paragraphs: string[], button?: { label: string, url: string }, code?: string }} mail
  */
-const render = ({ subject, paragraphs, button }) => {
+const render = ({ subject, paragraphs, button, code }) => {
     const text = [...paragraphs, button ? `${button.label}: ${button.url}` : '', '', 'Badminton Matching']
         .filter((l, i, a) => l || a[i - 1])
         .join('\n');
@@ -44,6 +48,11 @@ const render = ({ subject, paragraphs, button }) => {
 <div style="background:#fff;border-radius:12px;padding:20px">
 <h1 style="font-size:18px;margin:0 0 12px">${escapeHtml(subject)}</h1>
 ${paragraphs.map((p) => `<p style="margin:0 0 10px;line-height:1.5">${escapeHtml(p)}</p>`).join('\n')}
+${
+    code
+        ? `<p style="margin:16px 0;text-align:center"><span style="display:inline-block;padding:12px 22px;border-radius:10px;background:#ecf8f1;color:#0a7a3c;font-size:30px;font-weight:700;letter-spacing:10px">${escapeHtml(code)}</span></p>`
+        : ''
+}
 ${
     button
         ? `<p style="margin:18px 0 6px"><a href="${escapeHtml(button.url)}" style="display:inline-block;background:#11924c;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:700">${escapeHtml(button.label)}</a></p>
@@ -67,7 +76,7 @@ const sendMail = async (mail) => {
         return true;
     }
     if (!configured()) {
-        console.log(`[mail] chưa cấu hình SMTP, bỏ qua thư "${mail.subject}" tới ${mail.to}`);
+        console.log(`[mail] chưa cấu hình SMTP, bỏ qua thư "${mail.subject.replace(/\d{4}$/, '****')}" tới ${maskEmail(mail.to)}`);
         // Chạy trên máy: in nội dung để thử được link (không bao giờ in ở máy chủ chạy thật)
         if (process.env.NODE_ENV !== 'production') console.log(text);
         return false;
@@ -80,11 +89,12 @@ const sendMail = async (mail) => {
             text,
             html
         });
+        console.log(`[mail] đã gửi "${mail.subject.replace(/\d{4}$/, '****')}" tới ${maskEmail(mail.to)}`);
         return true;
     } catch (err) {
-        console.error(`[mail] gửi thất bại "${mail.subject}":`, err.message);
+        console.error(`[mail] gửi thất bại "${mail.subject.replace(/\d{4}$/, '****')}" tới ${maskEmail(mail.to)}:`, err.message);
         return false;
     }
 };
 
-module.exports = { sendMail, appUrl, outbox, escapeHtml };
+module.exports = { sendMail, appUrl, outbox, escapeHtml, maskEmail };

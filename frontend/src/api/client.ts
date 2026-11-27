@@ -93,7 +93,7 @@ const CODE_MESSAGES: Record<string, string> = {
   INVALID_IMAGE: 'Chỉ nhận ảnh JPEG, PNG hoặc WebP.',
   SHUTTLE_LIMIT: 'Tối đa 20 loại cầu.',
   BILL_LIMIT: 'Tối đa 7 ảnh bill mỗi kèo.',
-  INVALID_RESET_TOKEN: 'Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Hãy yêu cầu link mới.',
+  INVALID_RESET_CODE: 'Mã không đúng hoặc đã hết hạn. Kiểm tra lại, hoặc bấm "Gửi lại mã".',
   PROOF_LIMIT: 'Tối đa 3 ảnh chuyển khoản.',
   NOT_STARTED: 'Chỉ điểm danh được từ giờ bắt đầu kèo.',
   NETWORK: 'Không kết nối được máy chủ. Kiểm tra mạng hoặc backend.',
