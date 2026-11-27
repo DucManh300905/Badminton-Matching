@@ -92,7 +92,7 @@ Model: `backend/src/modules/user/user.model.js`
 | `bankAccount.accountNumber` | String | 6 – 19 chữ số | Chỉ người đã tham gia kèo của chủ tài khoản mới thấy (BR-15) |
 | `bankAccount.accountName` | String | 2 – 50 chữ cái **in hoa không dấu** | Server tự chuẩn hóa khi lưu |
 | `phone` | String | không có, hoặc số di động `0(3|5|7|8|9)` + 8 chữ số | WBS 4.15; chỉ người cùng kèo thấy |
-| `resetTokenHash`, `resetTokenExpires`, `resetRequestedAt` | String, Date, Date | `select: false`, không bao giờ trả ra ngoài | Quên mật khẩu (WBS 4.14): mã băm SHA-256 của link, hết hạn 30 phút, chống gửi liên tục |
+| `resetCodeHash`, `resetCodeExpires`, `resetAttempts`, `resetRequestedAt` | String, Date, Number, Date | `select: false`, không bao giờ trả ra ngoài | Quên mật khẩu (WBS 4.14): mã băm HMAC của mã OTP 4 số, hết hạn 10 phút, số lần nhập sai (5 lần thì hủy), chống gửi liên tục |
 | `tabBar` | [String] | không có, hoặc đúng 3 mã khác nhau trong `search`, `mine`, `shuttles` | Thanh dưới trên điện thoại (WBS 4.12), lưu theo tài khoản |
 | `avatar` | String | mặc định `null`; dạng `<32 hex>.webp` | Ảnh đại diện (WBS 4.9). Chỉ lưu **tên file**; API trả `avatarUrl = /uploads/avatars/<tên>` |
 | `createdAt`, `updatedAt` | Date | tự động | |

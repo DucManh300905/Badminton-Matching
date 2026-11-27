@@ -5,7 +5,7 @@ const User = require('../user/user.model');
 const AppError = require('../../utils/AppError');
 const asyncHandler = require('../../utils/asyncHandler');
 const { signToken, BCRYPT_ROUNDS } = require('./auth.service');
-const { sendMail, appUrl } = require('../../utils/mailer');
+const { sendMail } = require('../../utils/mailer');
 
 // Hash giả để khi email không tồn tại vẫn tốn thời gian bcrypt như bình thường
 // → không đo được thời gian phản hồi để dò email nào đã đăng ký.
@@ -76,69 +76,96 @@ const changePassword = asyncHandler(async (req, res) => {
     });
 });
 
-// ── Quên mật khẩu (WBS 4.14) ──
+// ── Quên mật khẩu bằng mã OTP 4 số qua email (WBS 4.14) ──
 
-const RESET_TTL_MS = 30 * 60 * 1000;
-// Cùng một email: chỉ gửi lại thư sau 60 giây (chống bấm liên tục / gửi thư hàng loạt)
+const CODE_TTL_MS = 10 * 60 * 1000;
+const MAX_ATTEMPTS = 5;
+// Cùng một email: chỉ gửi lại mã sau 60 giây (chống bấm liên tục / gửi thư hàng loạt)
 const RESEND_GAP_MS = 60 * 1000;
 
-const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+/** Mã băm gắn với từng tài khoản và khóa bí mật của máy chủ: lộ CSDL cũng không tra ngược được bằng bảng có sẵn */
+const hashCode = (userId, code) =>
+    crypto.createHmac('sha256', process.env.JWT_SECRET).update(`${userId}:${code}`).digest('hex');
 
-// POST /api/auth/forgot-password — luôn trả cùng một câu, không cho biết email có tồn tại hay không
+const sameHash = (a, b) => !!a && !!b && a.length === b.length && crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+
+const invalidCode = () => new AppError(400, 'INVALID_RESET_CODE', 'Mã không đúng hoặc đã hết hạn');
+
+// POST /api/auth/forgot-password — gửi mã 4 số; luôn trả cùng một câu, không cho biết email có tồn tại hay không
 const forgotPassword = asyncHandler(async (req, res) => {
     const now = new Date();
     const user = await User.findOne({ email: req.body.email }).select('+resetRequestedAt');
 
     if (user && !(user.resetRequestedAt && now - user.resetRequestedAt < RESEND_GAP_MS)) {
-        const token = crypto.randomBytes(32).toString('hex');
+        const code = String(crypto.randomInt(0, 10_000)).padStart(4, '0');
         await User.updateOne(
             { _id: user._id },
             {
                 $set: {
-                    resetTokenHash: hashToken(token),
-                    resetTokenExpires: new Date(now.getTime() + RESET_TTL_MS),
+                    resetCodeHash: hashCode(user._id, code),
+                    resetCodeExpires: new Date(now.getTime() + CODE_TTL_MS),
+                    resetAttempts: 0,
                     resetRequestedAt: now
                 }
             }
         );
         await sendMail({
             to: user.email,
-            subject: 'Đặt lại mật khẩu Badminton Matching',
+            subject: `Mã đặt lại mật khẩu: ${code}`,
             paragraphs: [
                 `Chào ${user.displayName},`,
-                'Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu. Bấm nút bên dưới để đặt mật khẩu mới. Link có hiệu lực trong 30 phút và chỉ dùng được một lần.',
-                'Nếu không phải bạn yêu cầu, hãy bỏ qua thư này, mật khẩu của bạn không thay đổi.'
+                `Mã đặt lại mật khẩu Badminton Matching của bạn là: ${code}`,
+                'Nhập mã này ở trang "Quên mật khẩu" để đặt mật khẩu mới. Mã có hiệu lực trong 10 phút, chỉ dùng được một lần; nhập sai 5 lần thì mã bị hủy.',
+                'Không chia sẻ mã này cho ai. Nếu không phải bạn yêu cầu, hãy bỏ qua thư này, mật khẩu của bạn không thay đổi.'
             ],
-            button: { label: 'Đặt lại mật khẩu', url: `${appUrl()}/dat-lai-mat-khau?token=${token}` }
+            code
         });
     }
 
     res.json({
         success: true,
-        message: 'Nếu email này đã đăng ký, chúng tôi đã gửi link đặt lại mật khẩu. Hãy kiểm tra hộp thư (cả mục Spam).'
+        message: 'Nếu email này đã đăng ký, chúng tôi đã gửi mã 4 số. Hãy kiểm tra hộp thư (cả mục Spam).'
     });
 });
 
-// POST /api/auth/reset-password — đặt mật khẩu mới bằng link trong thư; mọi phiên đăng nhập cũ hết hiệu lực
+// POST /api/auth/reset-password — email + mã 4 số + mật khẩu mới; mọi phiên đăng nhập cũ hết hiệu lực
 const resetPassword = asyncHandler(async (req, res) => {
-    const { token, password } = req.body;
-    const user = await User.findOne({
-        resetTokenHash: hashToken(token),
-        resetTokenExpires: { $gt: new Date() }
-    }).select('+tokenVersion');
+    const { email, code, password } = req.body;
+    const user = await User.findOne({ email }).select('+resetCodeHash +resetCodeExpires +resetAttempts');
 
-    if (!user) {
-        throw new AppError(400, 'INVALID_RESET_TOKEN', 'Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
+    // Email không tồn tại / chưa yêu cầu mã / mã hết hạn / đã sai quá số lần: cùng một lỗi
+    if (!user?.resetCodeHash || !(user.resetCodeExpires > new Date()) || (user.resetAttempts ?? 0) >= MAX_ATTEMPTS) {
+        throw invalidCode();
     }
 
-    await User.updateOne(
-        { _id: user._id },
+    if (!sameHash(hashCode(user._id, code), user.resetCodeHash)) {
+        // Tăng số lần sai ngay trong lệnh ghi (an toàn khi gửi đồng thời); đủ 5 lần thì hủy mã
+        const after = await User.findOneAndUpdate(
+            { _id: user._id, resetCodeHash: user.resetCodeHash },
+            { $inc: { resetAttempts: 1 } },
+            { returnDocument: 'after', projection: { resetAttempts: 1 } }
+        ).select('+resetAttempts');
+        if ((after?.resetAttempts ?? MAX_ATTEMPTS) >= MAX_ATTEMPTS) {
+            await User.updateOne(
+                { _id: user._id },
+                { $unset: { resetCodeHash: 1, resetCodeExpires: 1, resetAttempts: 1 } }
+            );
+        }
+        throw invalidCode();
+    }
+
+    // Chỉ một request dùng được mã: điều kiện nằm trong lệnh ghi
+    const used = await User.updateOne(
+        { _id: user._id, resetCodeHash: user.resetCodeHash },
         {
             $set: { password: await bcrypt.hash(password, BCRYPT_ROUNDS), passwordChangedAt: new Date() },
             $inc: { tokenVersion: 1 },
-            $unset: { resetTokenHash: 1, resetTokenExpires: 1 }
+            $unset: { resetCodeHash: 1, resetCodeExpires: 1, resetAttempts: 1 }
         }
     );
+    if (used.modifiedCount === 0) {
+        throw invalidCode();
+    }
 
     res.json({ success: true, message: 'Đã đặt mật khẩu mới, vui lòng đăng nhập lại' });
 });

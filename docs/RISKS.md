@@ -152,8 +152,8 @@ Ký hiệu "16 → 4": điểm trước và sau khi đã có biện pháp xử l
 - **Dự phòng:** chưa có chức năng báo cáo tin nhắn và quản trị viên; trong thử nghiệm, tin vi phạm được xóa trực tiếp trong CSDL theo yêu cầu và ghi lại.
 
 ### R20 — Email (Thấp, 6 điểm)
-- **Mô tả:** thư quên mật khẩu / thư báo ảnh chuyển khoản vào mục Spam hoặc không tới; link đặt lại mật khẩu bị lộ; kẻ xấu dùng chức năng quên mật khẩu để gửi thư hàng loạt hoặc dò email đã đăng ký.
-- **Phòng ngừa:** link chứa mã ngẫu nhiên 32 byte, CSDL chỉ lưu mã băm, hết hạn sau 30 phút, dùng một lần, đặt xong thì mọi phiên cũ hết hiệu lực; luôn trả cùng một câu dù email có tồn tại hay không; mỗi email 1 thư / phút, mỗi IP 5 yêu cầu / giờ; Gmail riêng cho app với mật khẩu ứng dụng chỉ nằm trong `.env` máy chủ; gửi thư hỏng không làm hỏng thao tác chính. Test: `backend/tests/auth/reset-password.test.js`, `tests/post/proofs.test.js`.
+- **Mô tả:** thư quên mật khẩu / thư báo ảnh chuyển khoản vào mục Spam hoặc không tới; mã đặt lại mật khẩu bị lộ hoặc bị dò (mã 4 số chỉ có 10.000 khả năng); kẻ xấu dùng chức năng quên mật khẩu để gửi thư hàng loạt hoặc dò email đã đăng ký.
+- **Phòng ngừa:** mã OTP 4 số ngẫu nhiên an toàn, CSDL chỉ lưu mã băm HMAC, hết hạn sau 10 phút, dùng một lần, **sai 5 lần thì hủy mã** (xác suất đoán trúng ≤ 5 / 10.000 cho mỗi mã), mỗi IP tối đa 10 lần thử / 15 phút, đặt xong thì mọi phiên cũ hết hiệu lực; log không chứa mã và chỉ ghi email đã che bớt (`m***@gmail.com`); luôn trả cùng một câu dù email có tồn tại hay không; mỗi email 1 thư / phút, mỗi IP 5 yêu cầu / giờ; Gmail riêng cho app với mật khẩu ứng dụng chỉ nằm trong `.env` máy chủ; gửi thư hỏng không làm hỏng thao tác chính. Test: `backend/tests/auth/reset-password.test.js`, `tests/post/proofs.test.js`.
 - **Dự phòng:** thư vào Spam → hướng dẫn người dùng đánh dấu "Không phải spam"; vượt hạn mức Gmail (~500 thư / ngày) → chuyển sang dịch vụ gửi thư (Brevo, Resend) chỉ bằng cách đổi `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`.
 
 ## 4. Cập nhật sổ rủi ro

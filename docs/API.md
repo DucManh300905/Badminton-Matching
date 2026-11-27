@@ -180,8 +180,8 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | POST | `/auth/register` | | Đăng ký (đăng nhập luôn) |
 | POST | `/auth/login` | | Đăng nhập |
 | PUT | `/auth/change-password` | Có | Đổi mật khẩu, trả token mới |
-| POST | `/auth/forgot-password` | | Gửi link đặt lại mật khẩu qua email |
-| POST | `/auth/reset-password` | | Đặt mật khẩu mới bằng mã trong link |
+| POST | `/auth/forgot-password` | | Gửi mã 4 số qua email |
+| POST | `/auth/reset-password` | | Đặt mật khẩu mới bằng email + mã 4 số |
 | GET | `/users/me` | Có | Thông tin của mình |
 | PUT | `/users/me` | Có | Sửa tên, giới tính, trình độ |
 | GET | `/users/me/posts` | Có | Kèo mình đã đăng và đã tham gia |
@@ -250,12 +250,13 @@ Body: `{ currentPassword, newPassword }` (`newPassword` theo cùng chính sách 
 - `400 INVALID_PASSWORD` (sai mật khẩu hiện tại) · `400 VALIDATION_ERROR` · `401` · `429 RATE_LIMITED`
 
 #### `POST /auth/forgot-password`
-Body: `{ "email": "…" }`. Luôn `200` với **cùng một câu**, dù email có tồn tại hay không (không lộ email đã đăng ký). Có tài khoản thì gửi thư chứa link `<web>/dat-lai-mat-khau?token=<64 hex>`, hiệu lực **30 phút**, dùng **một lần**; CSDL chỉ lưu mã băm SHA-256. Cùng email: tối đa 1 thư / phút. Tối đa 5 yêu cầu / giờ / IP → `429`.
+Body: `{ "email": "…" }`. Luôn `200` với **cùng một câu**, dù email có tồn tại hay không (không lộ email đã đăng ký). Có tài khoản thì gửi thư chứa **mã OTP 4 số** (ngẫu nhiên an toàn), hiệu lực **10 phút**, dùng **một lần**; yêu cầu mã mới thì mã cũ hết hiệu lực. CSDL chỉ lưu mã băm HMAC-SHA256 gắn với tài khoản. Cùng email: tối đa 1 thư / phút. Tối đa 5 yêu cầu / giờ / IP → `429`. (27/11/2026: đổi từ link sang mã 4 số.)
 
 #### `POST /auth/reset-password`
-Body: `{ "token": "<64 hex>", "password": "…" }` (mật khẩu theo chính sách như đăng ký).
-- `200` → mật khẩu mới có hiệu lực, **mọi token cũ hết hiệu lực** (tăng `tokenVersion`).
-- `400 INVALID_RESET_TOKEN` (sai, hết hạn, đã dùng) · `400 VALIDATION_ERROR` · `429` (quá 10 lần / 15 phút / IP)
+Body: `{ "email": "…", "code": "1234", "password": "…" }` (mã đúng 4 chữ số; mật khẩu theo chính sách như đăng ký).
+- `200` → mật khẩu mới có hiệu lực, **mọi token cũ hết hiệu lực** (tăng `tokenVersion`), mã bị xóa.
+- **Sai mã 5 lần thì mã bị hủy** (kể cả nhập đúng sau đó), phải yêu cầu mã mới. Số lần sai đếm ngay trong lệnh ghi CSDL.
+- `400 INVALID_RESET_CODE` (email không có, chưa yêu cầu mã, mã sai, hết hạn, đã dùng, đã sai quá 5 lần — cùng một lỗi) · `400 VALIDATION_ERROR` · `429` (quá 10 lần / 15 phút / IP)
 
 ### 3.2 Người dùng
 
@@ -517,7 +518,7 @@ Body: `{ "text": "…" }` (1 – 1.000 ký tự sau khi bỏ khoảng trắng ha
 | `FILE_TOO_LARGE` | 413 | Ảnh lớn hơn 5 MB | Ảnh tối đa 5 MB. |
 | `SHUTTLE_LIMIT` | 409 | Đã có 20 loại cầu | Tối đa 20 loại cầu. |
 | `BILL_LIMIT` | 409 | Kèo đã có 7 ảnh bill | Tối đa 7 ảnh bill mỗi kèo. |
-| `INVALID_RESET_TOKEN` | 400 | Link đặt lại mật khẩu sai / hết hạn / đã dùng | Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Hãy yêu cầu link mới. |
+| `INVALID_RESET_CODE` | 400 | Mã đặt lại mật khẩu sai / hết hạn / đã dùng / sai quá 5 lần | Mã không đúng hoặc đã hết hạn. Kiểm tra lại, hoặc bấm "Gửi lại mã". |
 | `PROOF_LIMIT` | 409 | Đã gửi đủ 3 ảnh chuyển khoản | Tối đa 3 ảnh chuyển khoản. |
 | `NOT_CONNECTED` | 403 | Nhắn tin với người / nhóm chưa cùng ở trong kèo | Chỉ nhắn được cho người đã cùng chơi một kèo. |
 | `CHAT_CLOSED` | 409 | Quá 2 giờ sau kèo, hoặc bị chặn | (lý do do server gửi kèm) |

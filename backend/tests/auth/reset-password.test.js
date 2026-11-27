@@ -1,11 +1,11 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const User = require('../../src/modules/user/user.model');
-const { outbox } = require('../../src/utils/mailer');
+const { outbox, maskEmail } = require('../../src/utils/mailer');
 const { setupDatabase } = require('../helpers/db');
 const { createUserAndLogin, auth } = require('../helpers/auth');
 
-// ── WBS 4.14 — quên mật khẩu qua email ──
+// ── WBS 4.14 — quên mật khẩu bằng mã OTP 4 số qua email ──
 
 setupDatabase();
 
@@ -14,77 +14,97 @@ beforeEach(() => {
 });
 
 const forgot = (email) => request(app).post('/api/auth/forgot-password').send({ email });
-const tokenFrom = (mail) => /token=([a-f0-9]{64})/.exec(mail.text)[1];
+const reset = (email, code, password = 'MatKhauMoi@2026') =>
+    request(app).post('/api/auth/reset-password').send({ email, code, password });
+const codeFrom = (mail) => /:\s*(\d{4})/.exec(mail.subject)[1];
+const otherCode = (code) => String((Number(code) + 1) % 10_000).padStart(4, '0');
 
-describe('Quên mật khẩu', () => {
-    test('email có thật → thư có link; đặt mật khẩu mới → đăng nhập được, token cũ hết hiệu lực, link dùng một lần', async () => {
+describe('Quên mật khẩu (mã OTP 4 số)', () => {
+    test('email có thật → thư có mã 4 số; nhập đúng → đặt được mật khẩu mới, phiên cũ hết hiệu lực, mã dùng một lần', async () => {
         const me = await createUserAndLogin();
-        const res = await forgot(me.user.email);
-        expect(res.status).toBe(200);
+        expect((await forgot(me.user.email)).status).toBe(200);
         expect(outbox).toHaveLength(1);
-        expect(outbox[0]).toMatchObject({ to: me.user.email, subject: 'Đặt lại mật khẩu Badminton Matching' });
-        expect(outbox[0].text).toContain('/dat-lai-mat-khau?token=');
+        const code = codeFrom(outbox[0]);
+        expect(code).toMatch(/^\d{4}$/);
+        expect(outbox[0].to).toBe(me.user.email);
+        expect(outbox[0].text).toContain(code);
+        expect(outbox[0].html).toContain(`>${code}</span>`);
 
-        // CSDL chỉ lưu mã băm, không lưu link gốc
-        const token = tokenFrom(outbox[0]);
-        const stored = await User.findById(me.user.id).select('+resetTokenHash').lean();
-        expect(stored.resetTokenHash).toMatch(/^[a-f0-9]{64}$/);
-        expect(stored.resetTokenHash).not.toBe(token);
+        // CSDL chỉ lưu mã băm
+        const stored = await User.findById(me.user.id).select('+resetCodeHash').lean();
+        expect(stored.resetCodeHash).toMatch(/^[a-f0-9]{64}$/);
+        expect(stored.resetCodeHash).not.toContain(code);
 
-        const reset = await request(app).post('/api/auth/reset-password').send({ token, password: 'MatKhauMoi@2026' });
-        expect(reset.status).toBe(200);
-
+        expect((await reset(me.user.email, code)).status).toBe(200);
         await request(app).get('/api/users/me').set(auth(me.token)).expect(401);
         await request(app).post('/api/auth/login').send({ email: me.user.email, password: me.password }).expect(401);
         await request(app).post('/api/auth/login').send({ email: me.user.email, password: 'MatKhauMoi@2026' }).expect(200);
 
-        const again = await request(app).post('/api/auth/reset-password').send({ token, password: 'MatKhauKhac@2026' });
+        const again = await reset(me.user.email, code, 'MatKhauKhac@2026');
         expect(again.status).toBe(400);
-        expect(again.body.code).toBe('INVALID_RESET_TOKEN');
+        expect(again.body.code).toBe('INVALID_RESET_CODE');
     });
 
-    test('email không tồn tại → cùng câu trả lời, không gửi thư (không lộ email đã đăng ký)', async () => {
+    test('sai 5 lần → mã bị hủy, kể cả nhập đúng sau đó cũng không được', async () => {
+        const me = await createUserAndLogin();
+        await forgot(me.user.email);
+        const code = codeFrom(outbox[0]);
+        for (let i = 0; i < 5; i += 1) {
+            const res = await reset(me.user.email, otherCode(code));
+            expect(res.body.code).toBe('INVALID_RESET_CODE');
+        }
+        expect((await reset(me.user.email, code)).body.code).toBe('INVALID_RESET_CODE');
+        const stored = await User.findById(me.user.id).select('+resetCodeHash').lean();
+        expect(stored.resetCodeHash).toBeUndefined();
+    });
+
+    test('sai vài lần rồi nhập đúng (chưa tới 5 lần) → vẫn được', async () => {
+        const me = await createUserAndLogin();
+        await forgot(me.user.email);
+        const code = codeFrom(outbox[0]);
+        for (let i = 0; i < 4; i += 1) await reset(me.user.email, otherCode(code));
+        expect((await reset(me.user.email, code)).status).toBe(200);
+    });
+
+    test('mã của người này không dùng được cho email khác; email không tồn tại → cùng lỗi', async () => {
+        const a = await createUserAndLogin();
+        const b = await createUserAndLogin();
+        await forgot(a.user.email);
+        const code = codeFrom(outbox[0]);
+        expect((await reset(b.user.email, code)).body.code).toBe('INVALID_RESET_CODE');
+        expect((await reset('khong-ai@test.com', code)).body.code).toBe('INVALID_RESET_CODE');
+    });
+
+    test('hết hạn (quá 10 phút) → 400; mã sai dạng / mật khẩu yếu → 400 VALIDATION_ERROR', async () => {
+        const me = await createUserAndLogin();
+        await forgot(me.user.email);
+        const code = codeFrom(outbox[0]);
+
+        for (const bad of ['123', '12345', 'abcd', '']) {
+            expect((await reset(me.user.email, bad)).body.code).toBe('VALIDATION_ERROR');
+        }
+        expect((await reset(me.user.email, code, '12345678')).body.code).toBe('VALIDATION_ERROR');
+
+        await User.updateOne({ _id: me.user.id }, { $set: { resetCodeExpires: new Date(Date.now() - 1000) } });
+        expect((await reset(me.user.email, code)).body.code).toBe('INVALID_RESET_CODE');
+    });
+
+    test('email không tồn tại → cùng câu trả lời, không gửi thư; gửi liên tục → 1 thư / phút', async () => {
         const me = await createUserAndLogin();
         const real = await forgot(me.user.email);
-        outbox.length = 0;
         const fake = await forgot('khong-ai@test.com');
-        expect(fake.status).toBe(200);
         expect(fake.body.message).toBe(real.body.message);
-        expect(outbox).toHaveLength(0);
-    });
-
-    test('cùng email gửi liên tục → chỉ một thư trong 60 giây', async () => {
-        const me = await createUserAndLogin();
-        await forgot(me.user.email).expect(200);
-        await forgot(me.user.email).expect(200);
+        await forgot(me.user.email);
         expect(outbox).toHaveLength(1);
     });
 
-    test('link hết hạn (quá 30 phút) hoặc sai → 400; mật khẩu mới yếu → 400', async () => {
-        const me = await createUserAndLogin();
-        await forgot(me.user.email);
-        const token = tokenFrom(outbox[0]);
-
-        const weak = await request(app).post('/api/auth/reset-password').send({ token, password: '12345678' });
-        expect(weak.status).toBe(400);
-        expect(weak.body.code).toBe('VALIDATION_ERROR');
-
-        await User.updateOne({ _id: me.user.id }, { $set: { resetTokenExpires: new Date(Date.now() - 1000) } });
-        const expired = await request(app).post('/api/auth/reset-password').send({ token, password: 'MatKhauMoi@2026' });
-        expect(expired.body.code).toBe('INVALID_RESET_TOKEN');
-
-        const wrong = await request(app).post('/api/auth/reset-password').send({ token: 'a'.repeat(64), password: 'MatKhauMoi@2026' });
-        expect(wrong.body.code).toBe('INVALID_RESET_TOKEN');
-        const malformed = await request(app).post('/api/auth/reset-password').send({ token: 'abc', password: 'MatKhauMoi@2026' });
-        expect(malformed.status).toBe(400);
-    });
-
-    test('mã đặt lại không bao giờ có trong dữ liệu trả về', async () => {
+    test('mã không bao giờ có trong dữ liệu trả về; email trong log được che bớt', async () => {
         const me = await createUserAndLogin();
         await forgot(me.user.email);
         const data = (await request(app).get('/api/users/me').set(auth(me.token))).body.data;
-        expect(data.resetTokenHash).toBeUndefined();
-        expect(data.resetTokenExpires).toBeUndefined();
-        expect(data.resetRequestedAt).toBeUndefined();
+        for (const k of ['resetCodeHash', 'resetCodeExpires', 'resetAttempts', 'resetRequestedAt']) {
+            expect(data[k]).toBeUndefined();
+        }
+        expect(maskEmail('manh.an@gmail.com')).toBe('m***@gmail.com');
     });
 });
