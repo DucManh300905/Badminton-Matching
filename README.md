@@ -22,6 +22,7 @@ Nền tảng web ghép kèo cầu lông vãng lai, có cơ chế chia chi phí t
 | [docs/database.md](docs/database.md) | Thiết kế CSDL MongoDB: collection, index, transaction |
 | [docs/QUALITY.md](docs/QUALITY.md) | Kế hoạch chất lượng: ngưỡng đạt, ca kiểm tra, kết quả đo |
 | [docs/RISKS.md](docs/RISKS.md) | Sổ rủi ro: chấm điểm, phòng ngừa, dự phòng |
+| [docs/RELEASE.md](docs/RELEASE.md) | Ghi chú phát hành từng bản, tự nghiệm thu theo user story, điều kiện phát hành v1.0.0 |
 | [docs/GIT.md](docs/GIT.md) | Quy ước nhánh, commit, Pull Request, phát hành |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Triển khai máy chủ chạy thật: Nginx, PM2, sao lưu, cập nhật, xử lý sự cố |
 
