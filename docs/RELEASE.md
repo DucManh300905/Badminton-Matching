@@ -145,7 +145,7 @@ Kiểm tra ngày **29/11/2026** trên bản production, do sinh viên tự thự
 
 Điều kiện phát hành:
 
-- US-22 đạt: lệnh xuất CSV ẩn danh và `summary.txt` cho RQ1 – RQ3.
+- US-22 đạt: lệnh xuất CSV ẩn danh và `summary.txt` cho RQ1 – RQ3. **Xong 29/11/2026** (nhánh `feature/6.3-xuat-so-lieu`; cách chạy: [DEPLOY.md](DEPLOY.md) mục 9).
 - `docs/TEST-REPORT.md` có kết quả E2E và bug log; không còn lỗi mức cao chưa sửa.
 - Số liệu thử nghiệm (nếu có người dùng) đã xuất và phân tích.
 - Ghi chú phát hành theo mẫu mục 2; tự nghiệm thu lại các story đổi từ sau `v0.9.0`.
