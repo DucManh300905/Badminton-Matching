@@ -192,6 +192,15 @@ const PATHS = {
     </>
   ),
   arrowDown: <path d="M12 5v14M6 13l6 6 6-6" />,
+  // Nút "Bộ lọc" trang Tìm kèo (WBS 4.17): ba thanh trượt
+  sliders: (
+    <>
+      <path d="M4 6.5h9M17 6.5h3M4 12h3M11 12h9M4 17.5h11M19 17.5h1" />
+      <circle cx="15" cy="6.5" r="2" />
+      <circle cx="9" cy="12" r="2" />
+      <circle cx="17" cy="17.5" r="2" />
+    </>
+  ),
   userPlus: (
     <>
       <circle cx="10" cy="8" r="3.5" />
