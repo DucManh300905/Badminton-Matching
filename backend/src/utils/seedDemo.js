@@ -8,6 +8,7 @@ const mongoose = require('../config/mongoose');
 const User = require('../modules/user/user.model');
 const Post = require('../modules/post/post.model');
 const Shuttle = require('../modules/shuttle/shuttle.model');
+const { PostEvent } = require('../modules/post/postEvent.model');
 const { Conversation, Message, ChatRead, Block } = require('../modules/chat/chat.model');
 const { vnDateTime } = require('./vnTime');
 
@@ -43,6 +44,7 @@ const run = async () => {
     await ChatRead.deleteMany({ $or: [{ user: { $in: oldIds } }, { key: { $in: oldKeys } }] });
     await Block.deleteMany({ $or: [{ blocker: { $in: oldIds } }, { blocked: { $in: oldIds } }] });
     await Shuttle.deleteMany({ owner: { $in: oldIds } });
+    await PostEvent.deleteMany({ post: { $in: oldPostIds } });
     await Post.deleteMany({ author: { $in: oldIds } });
     await User.deleteMany({ _id: { $in: oldIds } });
 

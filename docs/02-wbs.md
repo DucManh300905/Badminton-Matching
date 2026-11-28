@@ -73,7 +73,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | **6** | **TRIỂN KHAI & PILOT** | | | **22** | | |
 | 6.1 | Deploy production | URL production (D6): https://sv22.bcse-vju.com | M | 3 | 4.1.3 | Xong |
 | 6.2 | Pilot 2 tuần tại Hà Nội | Log hệ thống, phản hồi | M | 12 | 6.1 | Chưa |
-| 6.3 | Xuất số liệu thử nghiệm đã ẩn danh (US-22) và phân tích RQ1–RQ3 | CSV (D3), thống kê, điểm SUS | M | 7 | 6.2 | Chưa |
+| 6.3 | Xuất số liệu thử nghiệm đã ẩn danh (US-22) và phân tích RQ1–RQ3: **nhật ký sự kiện của kèo (xong 28/11)**, lệnh xuất CSV + `summary.txt` H1–H3, phân tích | CSV (D3), thống kê, điểm SUS | M | 7 | 6.2 | Đang làm |
 | **7** | **KẾT THÚC** | | | **29** | | |
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.5, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
