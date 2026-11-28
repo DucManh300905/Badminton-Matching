@@ -81,6 +81,7 @@ UPLOAD_DIR=/var/lib/badminton/uploads
 SMTP_USER=<gmail riêng của app>@gmail.com
 SMTP_PASS=<mật khẩu ứng dụng 16 ký tự, viết liền>
 MAIL_FROM=Badminton Matching <gmail riêng của app>@gmail.com
+RESEARCH_SALT=<chuỗi 64 ký tự từ openssl rand -hex 32>
 ```
 
 - `JWT_SECRET` chỉ nằm trên máy chủ; **không** commit, không gửi qua chat. Đổi giá trị này làm mọi người dùng phải đăng nhập lại.
@@ -92,6 +93,7 @@ MAIL_FROM=Badminton Matching <gmail riêng của app>@gmail.com
   4. `pm2 restart badminton-backend --update-env`, rồi thử "Quên mật khẩu" trên web với email của bạn: phải nhận được thư có mã 4 số.
   Không điền thì app vẫn chạy, chỉ không gửi được thư (log ghi "chưa cấu hình SMTP"). Gmail cho tối đa khoảng 500 thư / ngày.
 - `UPLOAD_DIR`: nơi backend ghi ảnh đại diện / ảnh bìa (đã cắt, đổi WebP, xóa EXIF / GPS). Nằm ngoài thư mục repo để `deploy.sh` không xóa mất; tạo ở mục 3.4.
+- `RESEARCH_SALT` (US-22): khóa tạo mã giả khi xuất số liệu nghiên cứu (mục 9). Tạo **một lần** bằng `openssl rand -hex 32` và **giữ nguyên**: đổi khóa thì mã giả của các lần xuất sau không ghép được với lần trước. Không commit, không gửi qua chat. Thiếu khóa thì app vẫn chạy, chỉ lệnh xuất số liệu báo lỗi.
 - Bỏ dòng `DEMO_PASSWORD`: **không chạy `npm run seed:demo` trên máy chủ chạy thật**, để số liệu thử nghiệm không lẫn dữ liệu mẫu.
 
 ### 3.4 Thư mục ảnh và Nginx
@@ -220,4 +222,27 @@ sudo rm -rf /var/lib/badminton    # ảnh người dùng tải lên
 crontab -e                        # xóa dòng backup.sh
 # Xóa dữ liệu (không khôi phục được nếu không có bản sao lưu):
 # mongosh --quiet --eval 'db.getSiblingDB("badminton_matching").dropDatabase()'
+```
+
+## 9. Xuất số liệu nghiên cứu (US-22, WBS 6.3)
+
+Chạy **trên máy chủ**; không có trang web hay API nào cho việc này.
+
+```bash
+cd ~/apps/badminton-matching/backend
+grep -c '^RESEARCH_SALT=.\+' .env      # phải in 1; in 0 thì thêm khóa theo mục 3.3
+npm run export:research -- --from 2026-12-01 --to 2026-12-14
+```
+
+- `--from` (bắt buộc) / `--to` (mặc định hôm nay): lọc theo **ngày diễn ra kèo**, giờ Việt Nam, tính cả hai đầu. `--out <thư mục>` đổi nơi ghi (mặc định `~/research-exports`).
+- Lệnh in số kèo đã xuất, số kèo đã loại và nội dung `summary.txt` (H1, H2, H3 so với ngưỡng trong Charter mục 4).
+- Kết quả ở `~/research-exports/<ngày>-<giờ phút>/` (chỉ chủ tài khoản đọc được): `posts.csv`, `participants.csv`, `events.csv`, `expenses.csv`, `dues.csv`, `summary.txt`, `README.txt` (giải thích từng cột).
+- Tự loại kèo có tài khoản demo / thử (`@example.com`, `@test.com`, `@smoke.local`) là chủ kèo hoặc người tham gia.
+- **Ẩn danh:** không có tên, email, số điện thoại, số tài khoản, tên sân, địa chỉ, ghi chú, tên khoản "Khác", ảnh, tin nhắn; mã kèo / người là mã giả tạo từ `RESEARCH_SALT`.
+- Thư mục này nằm ngoài repo và ngoài bản sao lưu tự động (mục 6); xóa khi đã phân tích xong.
+
+Tải về máy Windows (PowerShell, nếu vào được máy chủ bằng SSH; thay `<máy-chủ>` và thư mục đúng như lệnh vừa in):
+
+```powershell
+scp -r student@<máy-chủ>:~/research-exports/<ngày>-<giờ phút> "$HOME\Desktop\"
 ```
