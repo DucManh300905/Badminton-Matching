@@ -98,7 +98,7 @@ git switch develop
 |---|---|---|---|
 | M0 | `v0.1.0` | Charter, WBS, Gantt, CI | Đã gắn |
 | M1 (23/11/2026) | `v0.2.0` | Chạy thật (production), bắt đầu thử nghiệm thực tế | Đã gắn |
-| M2 (30/11/2026) | `v0.9.0` | Feature freeze: thu tiền bằng mã QR, chốt chi phí sau buổi | |
+| M2 (30/11/2026) | `v0.9.0` | Feature freeze theo Charter 2.0: thu tiền QR, chi phí theo từng khoản và các tiện ích quanh kèo; ghi chú phát hành và tự nghiệm thu ở [RELEASE.md](RELEASE.md) | Nghiệm thu đạt 29/11; chờ gắn tag |
 | M3, M4 | — | Kết thúc thử nghiệm, xong báo cáo: không đổi code nên không gắn tag | |
 | M5 (15/12/2026) | `v1.0.0` | Hoàn thành dự án | |
 | A1 (18/01/2027) | `mobile-v0.1.0` | Bản thử app di động Android (giai đoạn 2) | |
