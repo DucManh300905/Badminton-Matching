@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { toApiError } from '../api/client';
 import { postsApi } from '../api/posts';
+import FilterPanel from '../components/FilterPanel';
 import PostCard from '../components/PostCard';
 import UserMenu from '../components/UserMenu';
 import Icon from '../components/Icon';
 import { Alert, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import type { PostFilter, PostSummary } from '../types';
-import { HANOI_AREAS } from '../utils/constants';
-import { formatDateShort, toDateInput } from '../utils/format';
+import { toDateInput } from '../utils/format';
+import { EMPTY_FILTER, activeFilters, matchesQuery, readFilter, writeFilter, type FilterValues } from '../utils/postFilter';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -44,17 +45,34 @@ export default function HomePage() {
     };
   }, [filterKey]);
 
-  function update(key: string, value: string) {
-    const next = new URLSearchParams(params);
-    if (value) next.set(key, value);
-    else next.delete(key);
-    setParams(next, { replace: true });
+  const [panelOpen, setPanelOpen] = useState(false);
+  const closePanel = useCallback(() => setPanelOpen(false), []);
+  const current = readFilter(params);
+  const active = activeFilters(current, { today, tomorrow, loggedIn: !!user });
+  // Ô tìm tên sân giữ giá trị riêng (gõ nhanh không mất chữ), URL chỉ đi theo sau để chia sẻ / tải lại vẫn giữ
+  const [query, setQueryText] = useState(() => params.get('q') ?? '');
+  // Ô tìm tên sân lọc ngay trên danh sách đã tải (tối đa 100 kèo sắp diễn ra)
+  const shown = posts?.filter((p) => matchesQuery(p, query)) ?? null;
+
+  function applyFilter(f: FilterValues) {
+    setParams((prev) => writeFilter(prev, f), { replace: true });
+    setPanelOpen(false);
+  }
+
+  function setQuery(q: string) {
+    setQueryText(q);
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (q.trim()) next.set('q', q);
+        else next.delete('q');
+        return next;
+      },
+      { replace: true },
+    );
   }
 
   const isToday = date === today;
-  const hasFilter = !!(district || date || myLevel);
-  const customDate = date && date !== today && date !== tomorrow;
-  const chip = (on: boolean) => `chip${on ? ' chip--on' : ''}`;
 
   return (
     <>
@@ -81,84 +99,94 @@ export default function HomePage() {
         </Link>
       </section>
 
-      {/* Lọc nhanh dùng chung cho điện thoại và máy tính (WBS 4.15): "Hôm nay" là một bộ lọc, không còn là tiện ích riêng */}
-      <div className="chips" role="group" aria-label="Lọc nhanh">
-        <button type="button" className={chip(!date)} aria-pressed={!date} onClick={() => update('date', '')}>
-          Mọi ngày
-        </button>
-        <button type="button" className={chip(isToday)} aria-pressed={isToday} onClick={() => update('date', today)}>
-          Hôm nay
-        </button>
-        <button
-          type="button"
-          className={chip(date === tomorrow)}
-          aria-pressed={date === tomorrow}
-          onClick={() => update('date', tomorrow)}
-        >
-          Ngày mai
-        </button>
-        <label className={`${chip(!!customDate)} chip--picker`}>
-          <span>{customDate ? formatDateShort(date) : 'Chọn ngày'}</span>
-          {/* Máy tính chỉ mở lịch khi bấm đúng biểu tượng nhỏ của ô ngày (đang trong suốt) → bấm vào chip là mở */}
-          <input
-            type="date"
-            aria-label="Chọn ngày"
-            value={date}
-            onClick={(e) => {
-              try {
-                e.currentTarget.showPicker();
-              } catch {
-                // Trình duyệt cũ không có showPicker: vẫn dùng ô ngày như thường
-              }
-            }}
-            onChange={(e) => update('date', e.target.value)}
-          />
-        </label>
-        <label className={`${chip(!!district)} chip--picker`}>
-          <span>{district || 'Khu vực'}</span>
-          <select aria-label="Khu vực" value={district} onChange={(e) => update('district', e.target.value)}>
-            <option value="">Tất cả khu vực</option>
-            {HANOI_AREAS.map((d) => (
-              <option key={d}>{d}</option>
-            ))}
-          </select>
-        </label>
-        {user && (
+      {/* Tìm tên sân + nút "Bộ lọc" (WBS 4.17): mọi bộ lọc gom vào một bảng, ngoài chỉ còn nhãn bộ lọc đang bật */}
+      <div className="filter-bar">
+        <div className="filter-bar__row">
+          <label className="search-box">
+            <Icon name="search" size={18} />
+            <span className="sr-only">Tìm theo tên sân</span>
+            <input
+              type="search"
+              className="search-box__input"
+              placeholder="Tìm tên sân, địa chỉ…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </label>
           <button
             type="button"
-            className={chip(myLevel)}
-            aria-pressed={myLevel}
-            onClick={() => update('myLevel', myLevel ? '' : '1')}
+            className={`btn btn--outline filter-bar__toggle${active.length ? ' filter-bar__toggle--on' : ''}`}
+            aria-haspopup="dialog"
+            aria-expanded={panelOpen}
+            onClick={() => setPanelOpen((o) => !o)}
           >
-            Hợp trình độ
+            <Icon name="sliders" size={18} />
+            Bộ lọc
+            {active.length > 0 && <span className="filter-bar__count">{active.length}</span>}
           </button>
-        )}
-        {hasFilter && (
-          <button type="button" className="chip chip--clear" onClick={() => setParams({}, { replace: true })}>
-            Xóa bộ lọc
-          </button>
+          {panelOpen && (
+            <FilterPanel
+              value={current}
+              today={today}
+              tomorrow={tomorrow}
+              loggedIn={!!user}
+              onApply={applyFilter}
+              onClose={closePanel}
+            />
+          )}
+        </div>
+
+        {active.length > 0 && (
+          <div className="filter-tags" aria-label="Bộ lọc đang bật">
+            {active.map((a) => (
+              <button
+                key={a.key}
+                type="button"
+                className="filter-tag"
+                aria-label={`Bỏ lọc ${a.label}`}
+                onClick={() => applyFilter({ ...current, [a.key]: a.key === 'myLevel' ? false : '' })}
+              >
+                {a.label}
+                <Icon name="close" size={14} />
+              </button>
+            ))}
+            {active.length > 1 && (
+              <button type="button" className="btn btn--link filter-tags__clear" onClick={() => applyFilter(EMPTY_FILTER)}>
+                Xóa tất cả
+              </button>
+            )}
+          </div>
         )}
       </div>
 
       <section aria-label="Danh sách kèo">
         <div className="results-header">
           <h2 className="section-title mt-0">{isToday ? 'Kèo hôm nay' : 'Kèo sắp diễn ra'}</h2>
-          {posts && <span className="results-header__count">{posts.length} kèo</span>}
+          {shown && <span className="results-header__count">{shown.length} kèo</span>}
         </div>
 
         {error && <Alert>{error}</Alert>}
         {loading && <Spinner />}
-        {posts && posts.length === 0 && (
+        {shown && shown.length === 0 && (
           <div className="card empty">
-            <Icon name="shuttle" size={40} className="empty__icon" />
-            <p>
-              Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
-            </p>
+            <Icon name={query ? 'search' : 'shuttle'} size={40} className="empty__icon" />
+            {query && posts && posts.length > 0 ? (
+              <p>
+                Không có kèo nào khớp “{query}”.{' '}
+                <button type="button" className="btn btn--link" onClick={() => setQuery('')}>
+                  Xóa ô tìm
+                </button>
+              </p>
+            ) : (
+              <p>
+                Chưa có kèo nào phù hợp. <Link to="/keo/moi">Đăng kèo đầu tiên</Link>
+              </p>
+            )}
           </div>
         )}
-        {posts && posts.length > 0 && (
+        {shown && shown.length > 0 && (
           <ul className="post-grid">
-            {posts.map((p) => (
+            {shown.map((p) => (
               <li key={p.id}>
                 <PostCard post={p} />
               </li>

@@ -3887,7 +3887,7 @@ a.mini-stat:hover {
   }
 }
 
-/* ── Hàng chip lọc nhanh, dùng chung điện thoại và máy tính (WBS 4.15) ── */
+/* ── Chip chọn (ngày, khu vực trong bảng lọc của trang Tìm kèo, WBS 4.15, 4.17) ── */
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -3935,6 +3935,239 @@ a.mini-stat:hover {
 .chip--clear {
   color: var(--danger);
   border-style: dashed;
+}
+
+/* ── Trang Tìm kèo: ô tìm tên sân, nút "Bộ lọc", nhãn bộ lọc đang bật, bảng lọc (WBS 4.17) ── */
+.filter-bar {
+  margin-bottom: 18px;
+}
+
+.filter-bar__row {
+  position: relative;
+  display: flex;
+  gap: 10px;
+}
+
+.search-box {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--muted);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.search-box:focus-within {
+  border-color: var(--green-600);
+  box-shadow: 0 0 0 3px var(--green-100);
+}
+
+.search-box__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  /* 16px: iPhone không tự phóng to khi chạm vào ô */
+  font-size: 16px;
+}
+
+.filter-bar__toggle {
+  flex-shrink: 0;
+  gap: 6px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.filter-bar__toggle--on {
+  border-color: var(--green-600);
+  color: var(--green-700);
+  background: var(--green-50);
+}
+
+.filter-bar__count {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--green-600);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 3px 8px 3px 12px;
+  border: 1px solid var(--green-100);
+  border-radius: 999px;
+  background: var(--green-50);
+  color: var(--green-700);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-tag:hover {
+  border-color: var(--green-600);
+}
+
+.filter-tags__clear {
+  font-size: 13px;
+}
+
+.filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: rgba(8, 20, 14, 0.45);
+}
+
+.filter-panel {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 96;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  border-radius: 18px 18px 0 0;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  outline: none;
+  animation: filter-up 0.2s ease-out;
+}
+
+@keyframes filter-up {
+  from {
+    transform: translateY(40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-panel {
+    animation: none;
+  }
+}
+
+.filter-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 6px;
+}
+
+.filter-panel__title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.filter-panel__body {
+  overflow-y: auto;
+  padding: 4px 16px 8px;
+}
+
+.filter-panel__group {
+  min-width: 0;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+}
+
+.filter-panel__legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chips--flat {
+  margin-bottom: 0;
+}
+
+.chips--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+}
+
+.chips--grid .chip {
+  justify-content: center;
+}
+
+.filter-panel .chip--picker {
+  gap: 6px;
+}
+
+.filter-panel__foot {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+
+.filter-panel__foot .btn {
+  flex: 1;
+}
+
+/* Máy tính: bảng xổ xuống ngay dưới nút "Bộ lọc", nền phía sau trong suốt */
+@media (min-width: 1024px) {
+  .filter-backdrop {
+    background: transparent;
+  }
+
+  .filter-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    bottom: auto;
+    left: auto;
+    width: 520px;
+    max-height: 70vh;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    animation: none;
+  }
+
+  .filter-panel__foot {
+    padding-bottom: 12px;
+  }
+
+  .filter-panel__foot .btn {
+    flex: 0 0 auto;
+  }
+
+  .filter-panel__foot .btn--primary {
+    margin-left: auto;
+  }
 }
 
 /* ── Mã OTP quên mật khẩu (WBS 4.14) ── */

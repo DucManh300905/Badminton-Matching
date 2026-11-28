@@ -3,7 +3,7 @@
 **Sinh viên thực hiện:** An Đức Mạnh – MSSV 23110310 · Đồ án cá nhân
 Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Phương pháp: phân rã theo **giai đoạn → gói công việc**. Mỗi gói công việc có sản phẩm đầu ra, ước lượng công và mức ưu tiên rõ ràng.
 
-**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 321 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
+**Lộ trình 2 giai đoạn:** giai đoạn 1 là **ứng dụng web** (phạm vi đồ án, mục 1–4 của tài liệu này, 324 giờ công, **hạn hoàn thành 15/12/2026** ở mốc M5). Giai đoạn 2 là **app di động**, làm sau khi bảo vệ (mục 5), không tính vào khối lượng đồ án.
 
 **Ưu tiên (MoSCoW):** M = Must · S = Should · C = Could (chỉ làm nếu còn thời gian)
 **Trạng thái:** Xong · Đang làm · Chưa (chưa bắt đầu)
@@ -66,6 +66,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 4.14 | **Email, hóa đơn, chuyển khoản, quên mật khẩu**: gửi thư Gmail SMTP; sửa xuất PDF không phản hồi trên điện thoại (tạo PDF trong trình duyệt); QR trên hóa đơn; người chơi gửi ảnh chuyển khoản (tối đa 3), chủ kèo nhận email, thấy "Chờ xác nhận"; quên mật khẩu qua email | `utils/mailer.js`, `utils/pdf.ts`, API `/auth/forgot-password`, `/auth/reset-password`, `/posts/:id/proofs` (US-41, US-42) | S | 12 | 4.11, 4.13 | Xong |
 | 4.15 | **Số điện thoại** trong hồ sơ / đăng ký, chỉ người cùng kèo thấy (gọi, Zalo); **"Hôm nay" thành bộ lọc** dùng chung điện thoại và máy tính, bỏ khỏi tiện ích | `utils/phone.js`, `PhoneLinks`, hàng chip lọc (US-43) | S | 3 | 4.12 | Xong |
 | 4.16 | **Số liên hệ của từng kèo**: ô số khi đăng kèo (điền sẵn từ hồ sơ, đổi được), sửa ở trang chi tiết; mời thêm số khi tham gia; nút gọi trong chat riêng, Lịch sử; số trên hóa đơn | Trường `contactPhone`, `PATCH /posts/:id/contact-phone`, `ContactPhone.tsx` (US-43) | S | 3 | 4.15 | Xong |
+| 4.17 | **Trang Tìm kèo gọn hơn**: ô tìm tên sân / địa chỉ; mọi bộ lọc (ngày, khu vực, hợp trình độ) gom vào nút "Bộ lọc" (bảng trượt từ đáy trên điện thoại, xổ xuống trên máy tính, bấm "Áp dụng" mới lọc); nhãn bộ lọc đang bật có dấu × | `FilterPanel.tsx`, `utils/postFilter.ts` (US-07) | S | 3 | 4.15 | Xong |
 | **5** | **KIỂM THỬ & ĐÁNH GIÁ** | | | **28** | | |
 | 5.1 | Unit test (liên tục, coverage ≥ 80%) | `backend/tests/` (Jest), test frontend (Vitest) | M | 12 | 4.1.2 | Đang làm |
 | 5.2 | Integration / API test | Jest + Supertest + MongoDB trong RAM | M | 6 | 4.4.2 | Xong |
@@ -79,7 +80,7 @@ Bản vẽ gốc chỉnh sửa được: [diagrams/wbs-tong-quan.drawio](diagram
 | 7.1 | Viết báo cáo đồ án | Báo cáo (D8) | M | 20 | 5.5, 6.3 | Chưa |
 | 7.2 | Slide + video demo | Slide, video (D8) | M | 6 | 6.1 | Chưa |
 | 7.3 | Bảo vệ | – | M | 3 | 7.1, 7.2 | Chưa |
-| | **TỔNG GIAI ĐOẠN 1** | | | **321** | | |
+| | **TỔNG GIAI ĐOẠN 1** | | | **324** | | |
 
 ## 3. Tổng hợp khối lượng
 
@@ -87,7 +88,7 @@ Kế hoạch điều chỉnh ngày 17/11/2026 theo **hạn hoàn thành dự án
 
 | | Giờ công |
 |---|---:|
-| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 321 |
+| Tổng giai đoạn 1 (gồm cả 4.7 Uy tín) | 324 |
 | Còn lại tính từ 24/11 (không tính 7.3 Bảo vệ) | ~106 |
 | Số tuần còn lại (24/11/2026 → 15/12/2026) | 3 |
 | **Trung bình cần làm** | **~35 giờ/tuần** |
@@ -111,6 +112,8 @@ Cỡ mẫu đã giảm so với kế hoạch ban đầu: khảo sát ≥ 30 ph�
 **Bổ sung 27/11/2026:** thêm 4.14 Email, hóa đơn PDF, ảnh chuyển khoản, quên mật khẩu (12h) và 4.15 Số điện thoại, "Hôm nay" thành bộ lọc (3h) theo yêu cầu; đã làm xong. Tổng **318 giờ**.
 
 **Bổ sung 29/11/2026:** thêm 4.16 Số liên hệ của từng kèo (3h) theo yêu cầu: chủ kèo hay bỏ qua ô số điện thoại trong Cài đặt, nên đưa ô số vào đúng lúc đăng kèo và lúc tham gia; đã làm xong. Tổng **321 giờ**.
+
+**Bổ sung 29/11/2026 (lần 2):** thêm 4.17 Trang Tìm kèo gọn hơn (3h) theo yêu cầu: hàng 7 chip lọc dài, trên điện thoại phải vuốt ngang; đã làm xong. Tổng **324 giờ**.
 
 Nếu trễ so với lịch, cắt theo thứ tự: 4.7 Uy tín → 4.8.5 Lịch sử chi tiêu → 4.6 Thông báo email → 5.3 E2E test → 3.4 Wireframe (dùng ảnh chụp giao diện). Xem [Gantt](03-gantt.md) mục 5.
 

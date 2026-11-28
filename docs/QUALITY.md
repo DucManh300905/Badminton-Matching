@@ -10,7 +10,7 @@
 
 | ID | Hạng mục | Ngưỡng đạt | Hiện trạng (13/11/2026) |
 |---|---|---|---|
-| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 286 test backend + 70 test frontend; 18/18 BR; coverage dòng 97,3% (29/11/2026); smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
+| Q1 | Đúng nghiệp vụ | 0 test lỗi trên CI ở mọi PR; 18/18 quy tắc BR có test; coverage dòng backend ≥ 80% | **Đạt**: 286 test backend + 80 test frontend; 18/18 BR; coverage dòng 97,3% (29/11/2026); smoke test 17/17 trên máy chủ chạy thật (23/11/2026) |
 | Q2 | Bảo mật | 0 bí mật trong repo; 0 lỗ hổng mức cao trong thư viện chạy thật; các ca tấn công ở mục Q2 đều bị chặn | **Đạt**, xem mục Q2 |
 | Q3 | Hiệu năng | `GET /api/posts` ≤ 300 ms (trung vị 20 lần) với ≥ 100 kèo; gói JS ≤ 150 KB (gzip) | **Một phần**: 7,7 ms với 5 kèo (chưa đo với 100 kèo); gói JS 128,3 KB (thêm thư viện vẽ mã QR) |
 | Q4 | Dễ dùng | Luồng chính chạy được trên màn hình máy tính 1366 px và điện thoại 390 px; 0 thông báo lỗi tiếng Anh ở luồng chính; usability test luồng chia tiền ≥ 8 người (WBS 5.5) | **Một phần**: 2 kịch bản E2E đạt; RQ2 chưa đo |
