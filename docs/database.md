@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu — Badminton Matching
 
-> Cập nhật: 27/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
+> Cập nhật: 28/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
 > Tài liệu liên quan: [API.md](API.md) · [project.md](project.md) (quy tắc BR-xx)
 
 ## 1. Nguyên tắc thiết kế
@@ -183,6 +183,20 @@ Model: `backend/src/modules/chat/chat.model.js`. Quyền **không lưu** mà tí
 | `chatreads` | `user`, `key`, `at` | Lần cuối mở cuộc trò chuyện → tính "chưa đọc" |
 | `blocks` | `blocker`, `blocked`, `createdAt` | Chặn nhắn riêng |
 
+### 3.7 `postevents` — nhật ký sự kiện của kèo (US-22, WBS 6.3)
+
+Model: `backend/src/modules/post/postEvent.model.js`. Mỗi dòng là **một sự kiện**, ghi **trong cùng transaction** với thao tác chính (thao tác bị từ chối thì không ghi). Có từ 28/11/2026; kèo cũ hơn không có nhật ký.
+
+| Trường | Kiểu | Ghi chú |
+|---|---|---|
+| `post` | ObjectId → `posts` | |
+| `user` | ObjectId → `users` \| null | Người liên quan; `null` với `full`, `reopen` |
+| `type` | String | `created`, `join`, `leave`, `full`, `reopen`, `cancel`, `costs_saved`, `paid`, `unpaid`, `proof`, `attendance` |
+| `at` | Date | Thời điểm |
+| `meta` | Object | Theo loại: `slots` (created), `slot` (join / leave), `amount` (paid), `total` / `expenses` / `notAll` / `guests` (costs_saved), `attended` (attendance) |
+
+**Chỉ có mã và số**: không tên, email, số điện thoại, tên sân, nội dung tin nhắn. Dùng cho lệnh xuất số liệu ẩn danh (mã giả thay cho id). `npm run seed:demo` xóa luôn nhật ký của kèo mẫu cũ.
+
 ## 4. Index
 
 | Collection | Index | Phục vụ |
@@ -196,6 +210,7 @@ Model: `backend/src/modules/chat/chat.model.js`. Quyền **không lưu** mà tí
 | `conversations` | `{ key: 1 }` unique · `{ members: 1 }` · `{ post: 1 }` | Mở một cuộc trò chuyện; danh sách nhắn riêng / nhóm của tôi |
 | `messages` | `{ key: 1, createdAt: -1 }` | Tin mới nhất của một cuộc trò chuyện, phân trang |
 | `chatreads` | `{ user: 1, key: 1 }` unique | Tin chưa đọc |
+| `postevents` | `{ post: 1, at: 1 }` · `{ at: 1 }` | Nhật ký của một kèo theo thời gian; lọc theo khoảng thời gian khi xuất số liệu |
 | `blocks` | `{ blocker: 1, blocked: 1 }` unique | Kiểm tra chặn |
 
 Index được tạo bằng `mongoose.syncIndexes()` mỗi lần server khởi động (`config/database.js`).
