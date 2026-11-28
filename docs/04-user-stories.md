@@ -74,7 +74,7 @@ Phiên bản 2.0 – 24/11/2026 (theo Charter 2.0) · Mã WBS: **2.4.1** (produc
 
 | Mã | User story | AC | Mức | Liên kết | Trạng thái |
 |---|---|---|:-:|---|---|
-| US-22 | Là **người nghiên cứu**, tôi muốn xuất số liệu kèo trong thời gian thử nghiệm để kiểm định H3 (≥ 60% kèo đủ người trước giờ chơi). | Mỗi kèo có thời điểm đăng, giờ chơi, trạng thái, số chỗ, thời điểm từng người tham gia; xuất ra CSV không chứa email hay tên; loại tài khoản thử (`@smoke.local`). | M | RQ3, WBS 6.3 | Đang làm (28/11: đã ghi nhật ký sự kiện của kèo; chưa có lệnh xuất) |
+| US-22 | Là **người nghiên cứu**, tôi muốn xuất số liệu kèo trong thời gian thử nghiệm để kiểm định H3 (≥ 60% kèo đủ người trước giờ chơi). | Mỗi kèo có thời điểm đăng, giờ chơi, trạng thái, số chỗ, thời điểm từng người tham gia; xuất ra CSV không chứa email hay tên; loại tài khoản thử (`@smoke.local`). | M | RQ3, WBS 6.3 | Xong (28/11: nhật ký sự kiện của kèo; 29/11: lệnh `npm run export:research` xuất CSV ẩn danh + `summary.txt` H1–H3, xem [DEPLOY.md](DEPLOY.md) mục 9) |
 
 ### E8 — Chống spam và kèo giả
 
@@ -125,12 +125,12 @@ Theo [Charter](01-project-charter.md) mục 5.2: tự động thu thập bài t�
 
 | Mức | Số story | Xong | Đang làm | Chưa |
 |---|:-:|:-:|:-:|:-:|
-| Must | 12 | 11 | 1 (US-22) | 0 |
+| Must | 12 | 12 | 0 | 0 |
 | Should | 16 | 10 | 2 (US-24, US-28) | 4 (US-19, US-20, US-25, US-26) |
 | Could | 7 | 0 | 0 | 7 (US-10, US-21, US-27, US-29, US-30, US-31, US-36) |
-| **Tổng** | **35** | **21** | **3** | **11** |
+| **Tổng** | **35** | **22** | **2** | **11** |
 
-Story **Must** còn lại nằm trên đường găng: **US-22** (xuất số liệu thử nghiệm cho RQ1–RQ3, trước 6.3).
+Mọi story **Must** đã xong (US-22 xong 29/11/2026). Việc còn lại trên đường găng là thử nghiệm với người dùng thật và phân tích số liệu (6.2, 6.3).
 
 Nhóm **E10 (thu tiền và chi phí kèo)** là **trọng tâm nghiên cứu** từ Charter 2.0 (24/11/2026), thay cho bộ trích xuất bài đăng đã bỏ.
 
