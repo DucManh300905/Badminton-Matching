@@ -214,6 +214,7 @@ Chi tiết từng rủi ro (dấu hiệu nhận biết sớm, kế hoạch dự 
 
 - **Không** tự động thu thập dữ liệu từ Facebook.
 - Khảo sát và usability test có phiếu đồng ý tham gia, ẩn danh khi phân tích.
+- Hệ thống ghi **nhật ký sự kiện** của kèo (tham gia, rời, đủ người, hủy, lưu chi phí, đã trả, điểm danh) chỉ gồm mã và số, không có tên, email, số điện thoại hay nội dung tin nhắn (từ 28/11/2026).
 - Số liệu chi phí và thanh toán dùng cho RQ1, RQ2 chỉ xuất ở dạng **ẩn danh** (không tên, không email, không số tài khoản) và chỉ dùng để thống kê.
 - Hệ thống thu thập tối thiểu dữ liệu cá nhân; số tài khoản nhận tiền do người dùng tự nhập, tự xóa được, chỉ người cùng kèo mới thấy; hệ thống không giữ tiền và không lưu giao dịch ngân hàng.
 

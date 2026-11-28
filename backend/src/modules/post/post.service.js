@@ -13,8 +13,23 @@ const User = require('../user/user.model');
 const { sendMail, appUrl } = require('../../utils/mailer');
 const Shuttle = require('../shuttle/shuttle.model');
 const shuttleService = require('../shuttle/shuttle.service');
+const { logEvents } = require('./postEvent.model');
 
 const LIST_LIMIT = 100;
+
+/** Chạy `work(session)` trong một transaction (thao tác + nhật ký ghi cùng nhau hoặc cùng không ghi) */
+const inTransaction = async (work) => {
+    const session = await mongoose.startSession();
+    try {
+        let result;
+        await session.withTransaction(async () => {
+            result = await work(session);
+        });
+        return result;
+    } finally {
+        await session.endSession();
+    }
+};
 
 const notFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy kèo');
 
@@ -94,18 +109,31 @@ const createPost = async (authorId, input, now) => {
     // BR-01 → BR-05
     rules.assertValidPostInput({ ...input, authorId }, now);
 
-    const post = await Post.create({
-        author: authorId,
-        courtName: input.courtName,
-        district: input.district,
-        address: input.address,
-        startsAt: input.startsAt,
-        endsAt: input.endsAt,
-        levelMin: input.levelMin,
-        levelMax: input.levelMax,
-        pricePerPerson: input.pricePerPerson,
-        slots: input.slots,
-        note: input.note
+    const post = await inTransaction(async (session) => {
+        const [created] = await Post.create(
+            [
+                {
+                    author: authorId,
+                    courtName: input.courtName,
+                    district: input.district,
+                    address: input.address,
+                    startsAt: input.startsAt,
+                    endsAt: input.endsAt,
+                    levelMin: input.levelMin,
+                    levelMax: input.levelMax,
+                    pricePerPerson: input.pricePerPerson,
+                    slots: input.slots,
+                    note: input.note
+                }
+            ],
+            { session }
+        );
+        const s = created.slots;
+        await logEvents(
+            [{ post: created._id, user: authorId, type: 'created', at: created.createdAt ?? now, meta: { slots: s.male + s.female + s.any } }],
+            session
+        );
+        return created;
     });
 
     return getPost(post._id);
@@ -119,41 +147,55 @@ const createPost = async (authorId, input, now) => {
  * @param {string} postId
  * @param {(post: import('./post.rules').Post) => import('./post.rules').Post} change
  */
-const updateParticipants = async (postId, change) => {
-    const session = await mongoose.startSession();
-    try {
-        await session.withTransaction(async () => {
-            const post = await Post.findById(postId).session(session);
-            if (!post) {
-                throw notFound();
-            }
+const updateParticipants = async (postId, change, actorId) => {
+    await inTransaction(async (session) => {
+        const post = await Post.findById(postId).session(session);
+        if (!post) {
+            throw notFound();
+        }
 
-            const next = change(post.toRules());
+        const next = change(post.toRules());
+        const at = new Date();
 
-            // Ghi lại đúng danh sách người tham gia mới, giữ nguyên joinedAt của người cũ
-            const before = new Map(post.participants.map((p) => [String(p.user), p]));
-            post.participants = next.participants.map(
-                (p) => before.get(p.playerId) ?? { user: p.playerId, slot: p.slot, joinedAt: new Date() }
-            );
-            post.status = next.status;
-            await post.save({ session });
-        });
-    } finally {
-        await session.endSession();
-    }
+        // Ghi lại đúng danh sách người tham gia mới, giữ nguyên joinedAt của người cũ
+        const before = new Map(post.participants.map((p) => [String(p.user), p]));
+        const after = new Set(next.participants.map((p) => p.playerId));
+        const prevStatus = post.status;
+        post.participants = next.participants.map(
+            (p) => before.get(p.playerId) ?? { user: p.playerId, slot: p.slot, joinedAt: at }
+        );
+        post.status = next.status;
+        await post.save({ session });
+
+        // Nhật ký: ai vào / ra, kèo vừa đủ / mở lại / bị hủy
+        const events = [
+            ...next.participants
+                .filter((p) => !before.has(p.playerId))
+                .map((p) => ({ post: post._id, user: p.playerId, type: 'join', at, meta: { slot: p.slot } })),
+            ...[...before.values()]
+                .filter((p) => !after.has(String(p.user)))
+                .map((p) => ({ post: post._id, user: p.user, type: 'leave', at, meta: { slot: p.slot } }))
+        ];
+        if (prevStatus !== next.status) {
+            if (next.status === 'closed') events.push({ post: post._id, user: actorId, type: 'cancel', at });
+            else if (next.status === 'full') events.push({ post: post._id, user: null, type: 'full', at });
+            else if (prevStatus === 'full' && next.status === 'open') events.push({ post: post._id, user: null, type: 'reopen', at });
+        }
+        await logEvents(events, session);
+    });
 
     return getPost(postId);
 };
 
 /** @param {string} postId @param {{ userId: string, gender: string, level: string }} user @param {Date} now */
 const joinPost = (postId, user, now) =>
-    updateParticipants(postId, (post) => rules.joinPost(post, { id: user.userId, gender: user.gender, level: user.level }, now));
+    updateParticipants(postId, (post) => rules.joinPost(post, { id: user.userId, gender: user.gender, level: user.level }, now), user.userId);
 
 /** @param {string} postId @param {string} userId @param {Date} now */
-const leavePost = (postId, userId, now) => updateParticipants(postId, (post) => rules.leavePost(post, userId, now));
+const leavePost = (postId, userId, now) => updateParticipants(postId, (post) => rules.leavePost(post, userId, now), userId);
 
 /** @param {string} postId @param {string} userId @param {Date} now */
-const cancelPost = (postId, userId, now) => updateParticipants(postId, (post) => rules.cancelPost(post, userId, now));
+const cancelPost = (postId, userId, now) => updateParticipants(postId, (post) => rules.cancelPost(post, userId, now), userId);
 
 /**
  * Chủ kèo đánh dấu một người đã / chưa chuyển tiền (BR-14).
@@ -183,15 +225,22 @@ const setPaid = async (postId, authorId, playerId, paid, now) => {
     const dues = costs.computeDues(costs.toCostPost(post));
     const paidAmount = dues?.get(costs.userRef(playerId)) ?? 0;
 
-    await Post.updateOne(
-        { _id: postId, 'participants.user': playerId },
-        {
-            $set: {
-                'participants.$.paidAt': paid ? now : null,
-                'participants.$.paidAmount': paid ? paidAmount : null
-            }
-        }
-    );
+    await inTransaction(async (session) => {
+        await Post.updateOne(
+            { _id: postId, 'participants.user': playerId },
+            {
+                $set: {
+                    'participants.$.paidAt': paid ? now : null,
+                    'participants.$.paidAmount': paid ? paidAmount : null
+                }
+            },
+            { session }
+        );
+        await logEvents(
+            [{ post: postId, user: playerId, type: paid ? 'paid' : 'unpaid', at: now, meta: paid ? { amount: paidAmount } : undefined }],
+            session
+        );
+    });
     return getPost(postId);
 };
 
@@ -263,6 +312,24 @@ const updateCosts = async (postId, actorId, input, now) => {
                 deltas.set(id, (after.get(id) ?? 0) - (before.get(id) ?? 0));
             }
             await shuttleService.applyStockChanges(actorId, deltas, session);
+
+            await logEvents(
+                [
+                    {
+                        post: post._id,
+                        user: actorId,
+                        type: 'costs_saved',
+                        at: now,
+                        meta: {
+                            total: costs.totalOf(expenses),
+                            expenses: expenses.length,
+                            notAll: expenses.filter((e) => !e.everyone).length,
+                            guests: guests.length
+                        }
+                    }
+                ],
+                session
+            );
         });
     } finally {
         await session.endSession();
@@ -295,12 +362,19 @@ const setAttendance = async (postId, actorId, input, now) => {
         now
     );
 
-    for (const [userId, attended] of attendance) {
-        await Post.updateOne(
-            { _id: postId, 'participants.user': userId },
-            { $set: { 'participants.$.attended': attended } }
+    await inTransaction(async (session) => {
+        for (const [userId, attended] of attendance) {
+            await Post.updateOne(
+                { _id: postId, 'participants.user': userId },
+                { $set: { 'participants.$.attended': attended } },
+                { session }
+            );
+        }
+        await logEvents(
+            [...attendance].map(([userId, attended]) => ({ post: postId, user: userId, type: 'attendance', at: now, meta: { attended } })),
+            session
         );
-    }
+    });
     return getPost(postId);
 };
 
@@ -396,10 +470,15 @@ const addProof = async (postId, userId, buffer, now) => {
     }
 
     const fileName = await saveImage('proofs', buffer);
-    const res = await Post.updateOne(
-        { _id: postId, participants: { $elemMatch: { user: userId, [`proofs.${costs.MAX_PROOFS - 1}`]: { $exists: false } } } },
-        { $push: { 'participants.$.proofs': fileName }, $set: { 'participants.$.proofAt': now } }
-    );
+    const res = await inTransaction(async (session) => {
+        const r = await Post.updateOne(
+            { _id: postId, participants: { $elemMatch: { user: userId, [`proofs.${costs.MAX_PROOFS - 1}`]: { $exists: false } } } },
+            { $push: { 'participants.$.proofs': fileName }, $set: { 'participants.$.proofAt': now } },
+            { session }
+        );
+        if (r.modifiedCount > 0) await logEvents([{ post: postId, user: userId, type: 'proof', at: now }], session);
+        return r;
+    });
     if (res.modifiedCount === 0) {
         await removeImage('proofs', fileName);
         throw new AppError(409, 'PROOF_LIMIT', `Tối đa ${costs.MAX_PROOFS} ảnh chuyển khoản`);
