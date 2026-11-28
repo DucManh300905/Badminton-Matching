@@ -15,6 +15,7 @@ Nền tảng web ghép kèo cầu lông vãng lai, có cơ chế chia chi phí t
 | [docs/01-project-charter.md](docs/01-project-charter.md) | Đề tài, mục tiêu, câu hỏi nghiên cứu, phạm vi, rủi ro |
 | [docs/02-wbs.md](docs/02-wbs.md) | Cấu trúc phân rã công việc |
 | [docs/03-gantt.md](docs/03-gantt.md) | Mốc, đường găng, quy tắc cắt phạm vi, lộ trình 2 giai đoạn (lịch chi tiết: [docs/diagrams/gantt.xlsx](docs/diagrams/gantt.xlsx)) |
+| [docs/PLAN.md](docs/PLAN.md) | Kế hoạch 4 tuần: kế hoạch và thực tế từng tuần, mốc trên Git, nhật ký điều chỉnh phạm vi |
 | [docs/04-user-stories.md](docs/04-user-stories.md) | User stories (MoSCoW, tiêu chí chấp nhận) và use case |
 | [docs/project.md](docs/project.md) | Tổng quan kỹ thuật: kiến trúc, chức năng, **quy tắc nghiệp vụ BR-01…BR-18**, chi phí theo từng khoản |
 | [docs/API.md](docs/API.md) | Đặc tả API: endpoint, định dạng phản hồi, mã lỗi |
@@ -119,6 +120,54 @@ Cần chạy **cả hai** (backend ở một terminal, frontend ở terminal kh�
 ```
 
 Frontend hiển thị thông báo dựa theo `code`.
+
+## Phần tự thực hiện và công cụ hỗ trợ
+
+### Công cụ AI
+
+Dự án dùng **Claude Code** (trợ lý lập trình AI của Anthropic) trong suốt quá trình phát triển:
+
+| Việc | AI hỗ trợ | Sinh viên thực hiện |
+|---|---|---|
+| Ý tưởng, phạm vi | Gợi ý phương án, so sánh ưu nhược điểm | Chọn đề tài; quyết định đổi trọng tâm (Charter 2.0), bỏ bộ trích xuất, thêm / bỏ từng tính năng |
+| Yêu cầu, thiết kế | Soạn nháp user story, đặc tả API, CSDL, phương án giao diện | Duyệt và chốt từng thiết kế trước khi làm; điều chỉnh theo nhu cầu thực tế |
+| Lập trình | Viết phần lớn mã nguồn backend, frontend và test theo thiết kế đã chốt | Đọc, chạy thử, yêu cầu sửa; phát hiện lỗi khi dùng thật (xuất PDF trên điện thoại, chip "Chọn ngày", link email) |
+| Kiểm thử | Viết test tự động, chạy e2e trên trình duyệt, tìm và sửa lỗi | Thử trên điện thoại và máy tính thật; nghiệm thu từng đợt |
+| Triển khai, vận hành | Soạn script triển khai, cấu hình Nginx / PM2, hướng dẫn từng lệnh | Tự chạy mọi lệnh trên máy chủ; xử lý sự cố triển khai; cấu hình tên miền, Gmail gửi thư |
+| Quản lý dự án | Soạn nháp WBS, Gantt, sổ rủi ro, kế hoạch chất lượng; cập nhật tài liệu sau mỗi thay đổi | Lập lịch, ước lượng, quyết định thay đổi phạm vi; quản lý nhánh, commit, PR, merge trên GitHub |
+
+Mọi thay đổi đều đi qua PR do sinh viên tạo và merge. Lịch sử Git (cùng một tác giả) phản ánh đúng thời điểm từng thay đổi được đưa vào.
+
+**Cách phân công thực tế.** Claude Code viết phần lớn mã nguồn, test và bản nháp tài liệu, từ lúc khởi tạo dự án (13/11/2026) tới nay. Sinh viên giữ vai trò **chủ dự án**:
+
+- **Quyết định toàn bộ "làm gì":** chọn đề tài; đổi trọng tâm nghiên cứu (Charter 2.0); quyết định thêm các gói tính năng ngoài kế hoạch (4.8–4.15) và bỏ bộ trích xuất bài đăng. Mỗi thiết kế được trình bày dưới dạng phương án; sinh viên chọn và chốt trước khi viết code (ví dụ: chia tiền theo khoản, lưu thanh dưới theo tài khoản, quên mật khẩu bằng mã 4 số).
+- **Nghiệm thu bằng sử dụng thật:** tự thử trên điện thoại và máy tính, phát hiện các lỗi mà test tự động không bắt được (xuất PDF không phản hồi trên điện thoại, chip "Chọn ngày" trên máy tính, link trong email, hiển thị số tin chưa đọc), rồi yêu cầu sửa.
+- **Vận hành máy chủ:** tự chạy mọi lệnh triển khai trên máy ảo; gỡ ứng dụng cũ; xử lý lỗi 500 do quyền thư mục; cấu hình Nginx, PM2, Gmail gửi thư.
+- **Quản lý dự án:** chia nhánh theo WBS, commit, tạo và merge PR; duy trì kế hoạch, rủi ro, thay đổi phạm vi.
+
+Sinh viên chịu trách nhiệm hiểu và giải thích được kiến trúc cùng các luồng chính của mã nguồn.
+
+### Thư viện mã nguồn mở
+
+| Phần | Thư viện | Dùng cho |
+|---|---|---|
+| Backend | express, mongoose, jsonwebtoken, bcryptjs, express-validator, express-rate-limit, helmet, cors, dotenv | Máy chủ API, CSDL, đăng nhập, kiểm tra dữ liệu, bảo mật |
+| | multer, sharp | Nhận và xử lý ảnh (cắt, đổi WebP, xóa EXIF / GPS) |
+| | nodemailer, ws | Gửi email (Gmail SMTP), nhắn tin thời gian thực |
+| Frontend | react, react-dom, react-router, axios | Giao diện, điều hướng, gọi API |
+| | qrcode, html-to-image, jspdf | Vẽ mã QR, xuất hóa đơn PDF |
+| Kiểm thử, công cụ | jest, supertest, mongodb-memory-server, vitest, @testing-library, jsdom, oxlint, typescript, vite, nodemon | Test, kiểm tra mã, build |
+
+Toàn bộ dùng giấy phép mã nguồn mở (MIT, Apache 2.0…), cài qua npm, không chỉnh sửa mã thư viện.
+
+### Template, tài nguyên và nguồn tham khảo
+
+- **Khung dự án frontend:** template React + TypeScript của Vite (`npm create vite`).
+- **Font:** Be Vietnam Pro (Google Fonts, giấy phép OFL).
+- **Icon, logo ứng dụng:** tự vẽ bằng SVG trong dự án, không dùng bộ icon có sẵn.
+- **Chuẩn mã QR chuyển khoản:** VietQR của NAPAS (dựa trên EMVCo); danh sách mã BIN ngân hàng theo công bố của Ngân hàng Nhà nước (31/12/2023).
+- **Ý tưởng chia tiền theo khoản:** tham khảo một ứng dụng chia tiền cầu lông trên thị trường, tự thiết kế lại cho kèo vãng lai; không dùng mã nguồn hay giao diện của ứng dụng đó.
+- **Hạ tầng:** máy ảo của phòng lab (Ubuntu), Nginx, PM2, MongoDB, Cloudflare (HTTPS, đường hầm), GitHub Actions (CI).
 
 ## Quy ước làm việc
 
