@@ -1,6 +1,6 @@
 const asyncHandler = require('../../utils/asyncHandler');
 const postService = require('./post.service');
-const { toPostSummary, toPostDetail } = require('./post.serializer');
+const { toPostSummary, toPostDetail, contactPhoneOf } = require('./post.serializer');
 
 // GET /api/posts?district=&date=YYYY-MM-DD&level= — kèo sắp diễn ra, không cần đăng nhập
 const listPosts = asyncHandler(async (req, res) => {
@@ -16,7 +16,14 @@ const listMyPosts = asyncHandler(async (req, res) => {
 
     res.json({
         success: true,
-        data: { authored: authored.map(toPostSummary), joined: joined.map(toPostSummary) }
+        data: {
+            authored: authored.map(toPostSummary),
+            // Kèo sắp diễn ra, chưa hủy: kèm số liên hệ của chủ kèo để gọi nhanh (WBS 4.16)
+            joined: joined.map((p) => ({
+                ...toPostSummary(p),
+                ...(p.status !== 'closed' && p.endsAt > new Date() && { hostPhone: contactPhoneOf(p) })
+            }))
+        }
     });
 });
 
@@ -32,6 +39,13 @@ const createPost = asyncHandler(async (req, res) => {
     const post = await postService.createPost(req.user.userId, req.body, new Date());
 
     res.status(201).json({ success: true, message: 'Đăng kèo thành công', data: toPostDetail(post, req.user.userId) });
+});
+
+// PATCH /api/posts/:id/contact-phone — chủ kèo đổi / xóa số liên hệ (WBS 4.16)
+const setContactPhone = asyncHandler(async (req, res) => {
+    const post = await postService.setContactPhone(req.params.id, req.user.userId, req.body.contactPhone);
+
+    res.json({ success: true, message: 'Đã lưu số liên hệ', data: toPostDetail(post, req.user.userId) });
 });
 
 // POST /api/posts/:id/join
@@ -138,6 +152,7 @@ module.exports = {
     listMyPosts,
     getPost,
     createPost,
+    setContactPhone,
     joinPost,
     leavePost,
     cancelPost

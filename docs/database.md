@@ -1,6 +1,6 @@
 # Thiết kế cơ sở dữ liệu — Badminton Matching
 
-> Cập nhật: 28/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
+> Cập nhật: 29/11/2026. MongoDB 8 + Mongoose 9. Database khi chạy trên máy: `badminton_matching`.
 > Tài liệu liên quan: [API.md](API.md) · [project.md](project.md) (quy tắc BR-xx)
 
 ## 1. Nguyên tắc thiết kế
@@ -116,6 +116,7 @@ Model: `backend/src/modules/post/post.model.js`
 | `participants[]` | mảng nhúng | xem 3.3 | |
 | `status` | String | `open` / `full` / `closed`, mặc định `open` | Vòng đời: [project.md](project.md) mục 6 |
 | `note` | String | ≤ 1000 | |
+| `contactPhone` | String \| null | không có, `null`, hoặc số di động VN | WBS 4.16: số liên hệ của kèo. Không có trường (kèo cũ) = dùng số hồ sơ chủ kèo; `null` = không để số; chỉ người trong kèo thấy |
 | `guests[]` | `{ _id, name }` | tối đa 20, tên 1 – 30 ký tự | Bạn của chủ kèo **không dùng app** (WBS 4.8.2), chỉ có tên, vẫn được tính khi chia tiền |
 | `expenses[]` | xem 3.4 | tối đa 30 | Các khoản chi; chỉ chủ kèo sửa (BR-16) |
 | `costsUpdatedAt` | Date | | Lần sửa chi phí gần nhất (số liệu RQ1, RQ2) |

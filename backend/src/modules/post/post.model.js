@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { HANOI_AREAS, POST_STATUSES, SLOT_KINDS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
+const { VN_MOBILE } = require('../../utils/phone');
 const { EXPENSE_KINDS, MAX_EXPENSE, MAX_SHUTTLES, MAX_UNIT_PRICE, MAX_BILLS } = require('./post.costs');
 
 const slotCount = {
@@ -157,6 +158,13 @@ const postSchema = new mongoose.Schema(
             type: String,
             trim: true,
             maxlength: 1000
+        },
+        // Số liên hệ của kèo (WBS 4.16): chỉ người trong kèo thấy. Không có trường (kèo cũ) = dùng số trong hồ sơ
+        // chủ kèo; null = chủ kèo chọn không để số
+        contactPhone: {
+            type: String,
+            default: undefined,
+            validate: { validator: (v) => v === null || VN_MOBILE.test(v), message: 'Số điện thoại không hợp lệ' }
         },
         // Chi phí theo từng khoản (WBS 4.8.2); chỉ chủ kèo sửa (BR-16)
         guests: { type: [guestSchema], default: [] },

@@ -4,6 +4,7 @@ import { chatsApi, type ChatMessage, type ChatThread } from '../api/chats';
 import { toApiError } from '../api/client';
 import Icon from '../components/Icon';
 import PageHeader from '../components/PageHeader';
+import PhoneLinks from '../components/PhoneLinks';
 import { Alert, Avatar, Spinner } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
@@ -179,6 +180,13 @@ export default function ChatPage() {
       />
 
       <div className="card chat">
+        {/* Chat riêng, còn chung kèo (WBS 4.16): gọi / Zalo khi cần gấp */}
+        {c.other?.phone && (
+          <div className="chat__call">
+            <span>Gọi nhanh:</span>
+            <PhoneLinks phone={c.other.phone} name={c.other.displayName} />
+          </div>
+        )}
         {thread.members && (
           <div className="chat__members" aria-label="Thành viên">
             {thread.members.map((m) => (

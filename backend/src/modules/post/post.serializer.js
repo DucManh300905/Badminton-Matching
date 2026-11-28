@@ -16,6 +16,12 @@ const toPublicUser = (user) => ({
 
 const userIdOf = (participant) => String(participant.user?._id ?? participant.user);
 
+/**
+ * Số liên hệ của kèo (WBS 4.16): số riêng của kèo nếu chủ kèo đã đặt (null = không để số),
+ * kèo cũ chưa có trường này thì dùng số trong hồ sơ chủ kèo. Chỉ đưa cho người trong kèo.
+ */
+const contactPhoneOf = (post) => (post.contactPhone !== undefined ? post.contactPhone : post.author?.phone ?? null);
+
 /** Dạng rút gọn cho danh sách kèo */
 const toPostSummary = (post) => ({
     id: String(post._id),
@@ -181,7 +187,7 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
     return {
         ...summary,
         // Số điện thoại chỉ cho người trong kèo (WBS 4.15)
-        ...(insider && { author: { ...summary.author, phone: post.author?.phone ?? null } }),
+        ...(insider && { author: { ...summary.author, phone: contactPhoneOf(post) } }),
         participants: post.participants.map((p) => ({
             ...toPublicUser(p.user),
             ...(insider && { phone: p.user?.phone ?? null }),
@@ -210,6 +216,7 @@ const toPostDetail = (post, viewerId, now = new Date()) => {
 };
 
 module.exports = {
+    contactPhoneOf,
     toPostSummary,
     toPostDetail
 };

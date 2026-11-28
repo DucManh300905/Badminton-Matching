@@ -81,12 +81,13 @@ const MY_POSTS_LIMIT = 50;
  * @param {string} userId
  */
 const listMyPosts = async (userId) => {
-    const recentFirst = (query) =>
-        Post.find(query).sort({ startsAt: -1, _id: -1 }).limit(MY_POSTS_LIMIT).populate('author', AUTHOR_FIELDS);
+    const recentFirst = (query, authorFields) =>
+        Post.find(query).sort({ startsAt: -1, _id: -1 }).limit(MY_POSTS_LIMIT).populate('author', authorFields);
 
+    // Kèo đã tham gia cần số của chủ kèo (nút gọi nhanh, WBS 4.16)
     const [authored, joined] = await Promise.all([
-        recentFirst({ author: userId }),
-        recentFirst({ 'participants.user': userId })
+        recentFirst({ author: userId }, AUTHOR_FIELDS),
+        recentFirst({ 'participants.user': userId }, `${AUTHOR_FIELDS} phone`)
     ]);
     return { authored, joined };
 };
@@ -123,11 +124,17 @@ const createPost = async (authorId, input, now) => {
                     levelMax: input.levelMax,
                     pricePerPerson: input.pricePerPerson,
                     slots: input.slots,
-                    note: input.note
+                    note: input.note,
+                    // "" (để trống) lưu là null; không gửi thì để trống trường = dùng số trong hồ sơ
+                    ...(input.contactPhone !== undefined && { contactPhone: input.contactPhone || null })
                 }
             ],
             { session }
         );
+        // "Lưu số này vào hồ sơ": chỉ khi hồ sơ chưa có số, không ghi đè số cũ
+        if (input.savePhone === true && input.contactPhone) {
+            await User.updateOne({ _id: authorId, phone: { $exists: false } }, { $set: { phone: input.contactPhone } }, { session });
+        }
         const s = created.slots;
         await logEvents(
             [{ post: created._id, user: authorId, type: 'created', at: created.createdAt ?? now, meta: { slots: s.male + s.female + s.any } }],
@@ -402,6 +409,18 @@ const setCover = async (postId, actorId, buffer) => {
     return getPost(postId);
 };
 
+/**
+ * Đổi / xóa số liên hệ của kèo (WBS 4.16): chủ kèo, kèo chưa hủy. "" = không để số.
+ * @param {string} postId
+ * @param {string} actorId
+ * @param {string} phone  Đã chuẩn hóa ("" hoặc số di động VN)
+ */
+const setContactPhone = async (postId, actorId, phone) => {
+    await findOwnOpenPost(postId, actorId, '', 'sửa được số liên hệ');
+    await Post.updateOne({ _id: postId }, { $set: { contactPhone: phone || null } });
+    return getPost(postId);
+};
+
 /** Chủ kèo, kèo chưa hủy */
 const findOwnOpenPost = async (postId, actorId, fields, action) => {
     const post = await Post.findById(postId).select(`author status ${fields}`);
@@ -524,6 +543,7 @@ module.exports = {
     addBill,
     removeBill,
     setCover,
+    setContactPhone,
     updateCosts,
     setAttendance,
     setPaid,

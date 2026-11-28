@@ -17,9 +17,13 @@ export interface PostFormValues {
   slotsFemale: string;
   slotsAny: string;
   note: string;
+  /** Số liên hệ của kèo (WBS 4.16), điền sẵn từ hồ sơ */
+  contactPhone: string;
+  /** Lưu số vào hồ sơ: chỉ hiện khi hồ sơ chưa có số */
+  savePhone: boolean;
 }
 
-export const emptyPostForm = (today: Date): PostFormValues => ({
+export const emptyPostForm = (today: Date, profilePhone?: string): PostFormValues => ({
   courtName: '',
   district: '',
   address: '',
@@ -33,6 +37,8 @@ export const emptyPostForm = (today: Date): PostFormValues => ({
   slotsFemale: '0',
   slotsAny: '1',
   note: '',
+  contactPhone: profilePhone ?? '',
+  savePhone: !profilePhone,
 });
 
 /** Chuyển giá trị form thành dữ liệu gửi lên API. */
@@ -57,5 +63,7 @@ export function formToInput(v: PostFormValues): CreatePostInput {
       any: Number(v.slotsAny) || 0,
     },
     note: v.note.trim() || undefined,
+    contactPhone: v.contactPhone.trim(),
+    ...(v.savePhone && v.contactPhone.trim() && { savePhone: true }),
   };
 }
