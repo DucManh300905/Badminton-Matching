@@ -18,6 +18,12 @@ export const postsApi = {
     return res.data.data;
   },
 
+  /** Chỉ chủ kèo, kèo chưa hủy: đổi / xóa ("") số liên hệ của kèo (WBS 4.16) */
+  async setContactPhone(id: string, contactPhone: string) {
+    const res = await client.patch<ApiResponse<PostDetail>>(`/posts/${id}/contact-phone`, { contactPhone });
+    return res.data.data;
+  },
+
   async join(id: string) {
     const res = await client.post<ApiResponse<PostDetail>>(`/posts/${id}/join`);
     return res.data.data;

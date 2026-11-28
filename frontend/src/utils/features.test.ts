@@ -11,7 +11,7 @@ describe('searchFeatures (ô tìm kiếm ở Tổng quan)', () => {
   const keys = (q: string) => searchFeatures(q).map((f) => f.key);
 
   it('trống → mọi tiện ích', () => {
-    expect(keys('')).toEqual(['search', 'new', 'mine', 'shuttles']);
+    expect(keys('')).toEqual(['search', 'new', 'mine', 'shuttles', 'profile']);
   });
 
   it('gõ có dấu hoặc không dấu đều ra', () => {
@@ -24,6 +24,9 @@ describe('searchFeatures (ô tìm kiếm ở Tổng quan)', () => {
   it('tìm theo mô tả / từ khóa; không khớp → rỗng', () => {
     expect(keys('thong ke')).toEqual(['shuttles']);
     expect(keys('tao keo')).toEqual(['new']);
+    // Số điện thoại nằm trong Hồ sơ cá nhân (WBS 4.16)
+    expect(keys('số điện thoại')).toEqual(['profile']);
+    expect(keys('sdt')).toEqual(['profile']);
     expect(keys('xyz')).toEqual([]);
   });
 });

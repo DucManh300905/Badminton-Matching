@@ -888,6 +888,11 @@ textarea.input {
 
 .post-grid > li {
   display: flex;
+  flex-direction: column;
+}
+
+.post-grid > li > .post-card {
+  flex: 1;
 }
 
 .post-card {
@@ -3701,6 +3706,76 @@ a.mini-stat:hover {
   gap: 4px;
   font-weight: 600;
   color: var(--green-700);
+}
+
+/* ── Số liên hệ của kèo (WBS 4.16) ── */
+.hint--warn {
+  color: var(--warn-ink);
+}
+
+.input--sm {
+  min-height: 34px;
+  padding: 4px 10px;
+  font-size: 14px;
+}
+
+.contact-phone {
+  display: inline-flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.contact-phone--edit .input {
+  flex: 1 1 150px;
+  max-width: 220px;
+}
+
+.contact-phone--edit .field-error {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.phone-prompt {
+  margin-bottom: 16px;
+}
+
+.phone-prompt__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.phone-prompt__form .input {
+  flex: 1 1 180px;
+}
+
+.chat__call {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.chat__call .phone-links {
+  margin-top: 0;
+}
+
+.post-card__call {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 6px 4px 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .phone-links__zalo {

@@ -70,7 +70,7 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 ```
 - `bankAccount` (tài khoản nhận tiền) chỉ có khi người dùng đã nhập; chỉ trả cho chính chủ.
 - `tabBar` (WBS 4.12): 3 tiện ích của thanh dưới trên điện thoại, theo thứ tự, ví dụ `["search", "shuttles", "mine"]`; không có trường này = mặc định (`search`, `mine`, `shuttles`). Chỉ trả cho chính chủ.
-- `phone` (WBS 4.15): số di động `0xxxxxxxxx`, không bắt buộc. Người khác chỉ thấy khi **cùng kèo** (`author.phone`, `participants[].phone` trong PostDetail).
+- `phone` (WBS 4.15): số di động `0xxxxxxxxx`, không bắt buộc. Người khác chỉ thấy khi **cùng kèo** (`author.phone`, `participants[].phone` trong PostDetail). Từ WBS 4.16, `author.phone` là **số liên hệ của kèo** (số riêng của kèo nếu chủ kèo đã đặt, kèo cũ thì là số trong hồ sơ).
 - Đăng ký và `PUT /users/me` nhận thêm `phone` (không bắt buộc): bỏ khoảng trắng / dấu chấm / gạch, `+84` → `0`, phải là số di động Việt Nam 10 chữ số; `""` = xóa số.
 - `avatarUrl`: đường dẫn ảnh đại diện **cùng tên miền với web** (`null` = chưa có ảnh, giao diện dùng chữ cái đầu của tên). Mọi chỗ trả thông tin người khác (`author`, `participants[]`) cũng có `avatarUrl`.
 
@@ -193,6 +193,7 @@ Phản hồi của các endpoint có giới hạn kèm header chuẩn `RateLimit
 | GET | `/posts` | | Danh sách kèo sắp diễn ra, có lọc |
 | GET | `/posts/:id` | Tùy chọn | Chi tiết kèo; có token thì người trong kèo thấy thêm phần thanh toán |
 | POST | `/posts` | Có | Đăng kèo |
+| PATCH | `/posts/:id/contact-phone` | Có | Đổi / xóa số liên hệ của kèo (chỉ chủ kèo) |
 | POST | `/posts/:id/join` | Có | Tham gia kèo |
 | DELETE | `/posts/:id/join` | Có | Rời kèo |
 | POST | `/posts/:id/cancel` | Có | Hủy kèo (chỉ chủ kèo) |
@@ -270,6 +271,7 @@ Body (đều không bắt buộc): `{ displayName?, gender?, level? }`. Các tr�
 #### `GET /users/me/posts`
 `200` → `data: { authored: PostSummary[], joined: PostSummary[] }`
 - Mỗi danh sách tối đa 50 kèo, mới nhất trước, **gồm cả kèo đã qua và đã hủy**.
+- `joined[]` của kèo chưa kết thúc, chưa hủy có thêm `hostPhone` (WBS 4.16): số liên hệ của chủ kèo, `null` nếu chủ kèo không để số.
 
 #### `PUT /users/me/bank-account`
 | Trường | Bắt buộc | Ràng buộc |
@@ -324,10 +326,17 @@ Body: `{ "items": ["search", "shuttles", "mine"] }` hoặc `{ "items": null }` (
 | `pricePerPerson` | Có | Số nguyên 0 – 1.000.000; BR-04. Là **chi phí dự kiến** mỗi người (để tham khảo) |
 | `slots.male`, `slots.female`, `slots.any` | | Số nguyên 0 – 20, mặc định 0; tổng 1 – 20 (BR-05) |
 | `note` | | ≤ 1000 ký tự |
+| `contactPhone` | | Số liên hệ của kèo (WBS 4.16), chuẩn hóa như `phone`; `""` = không để số; không gửi = dùng số trong hồ sơ |
+| `savePhone` | | `true`: lưu `contactPhone` vào hồ sơ, **chỉ khi hồ sơ chưa có số** |
 
 - `201` → `data: PostDetail` (`status: "open"`, `participants: []`)
 - `400 VALIDATION_ERROR` · `401`
 - Chủ kèo, trạng thái, người tham gia luôn do server đặt; client gửi lên sẽ bị bỏ qua.
+
+#### `PATCH /posts/:id/contact-phone`
+Body: `{ "contactPhone": "0912345678" }` hoặc `{ "contactPhone": "" }` (xóa số).
+- Chủ kèo đổi số liên hệ của kèo (WBS 4.16); chỉ đổi số của kèo này, không đổi hồ sơ.
+- `200` → `data: PostDetail` (`author.phone` là số mới) · `400 VALIDATION_ERROR` · `403 NOT_AUTHOR` · `409 POST_NOT_OPEN` (kèo đã hủy) · `401` · `404 NOT_FOUND`
 
 #### `POST /posts/:id/join`
 - `200` → `data: PostDetail` (đã thêm mình)
@@ -475,6 +484,7 @@ Body (đều không bắt buộc): `{ name?, quantity? }` — kiểm kê lại s
 #### `GET /chats/:key?before=<ISO>`
 `200` → `data: { conversation: { key, kind, title, subtitle, postId?, other?, blockedByMe?, canSend, openUntil, reason }, members?: [{ id, displayName, avatarUrl, isHost }], messages: ChatMessage[], hasMore }`
 - `messages`: tối đa 50 tin, cũ → mới; `before` để tải các tin cũ hơn.
+- Chat riêng: `other.phone` (WBS 4.16) là số của người kia khi hai người còn chung một kèo chưa hủy, chưa quá 2 giờ sau giờ kết thúc, và không ai chặn ai (người kia là chủ kèo của kèo đó thì là số liên hệ của kèo); còn lại `null`.
 
 #### `POST /chats/:key/messages`
 Body: `{ "text": "…" }` (1 – 1.000 ký tự sau khi bỏ khoảng trắng hai đầu).

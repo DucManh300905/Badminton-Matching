@@ -5,6 +5,7 @@ import { postsApi } from '../api/posts';
 import Icon, { type IconName } from '../components/Icon';
 import PageHeader from '../components/PageHeader';
 import { CoverPicker } from '../components/PostCover';
+import { useAuth } from '../context/AuthContext';
 import { Alert, FieldError, IconText } from '../components/ui';
 import { HANOI_AREAS, LEVEL_LABELS, SKILL_LEVELS, type SkillLevel } from '../utils/constants';
 import { emptyPostForm, formToInput, type PostFormValues } from '../utils/postForm';
@@ -27,7 +28,8 @@ function SectionTitle({ icon, children, as: Tag = 'h2' }: { icon: IconName; chil
 
 export default function PostNewPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState<PostFormValues>(() => emptyPostForm(new Date()));
+  const { user, setUser } = useAuth();
+  const [form, setForm] = useState<PostFormValues>(() => emptyPostForm(new Date(), user?.phone));
 
   const [cover, setCover] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +46,10 @@ export default function PostNewPage() {
     setError(null);
     setFields({});
     try {
-      const post = await postsApi.create(formToInput(form));
+      const input = formToInput(form);
+      const post = await postsApi.create(input);
+      // Số vừa lưu vào hồ sơ: cập nhật luôn ở máy để lần sau tự điền
+      if (input.savePhone && user && !user.phone) setUser({ ...user, phone: post.author.phone ?? undefined });
       // Kèo đã tạo; ảnh bìa lỗi (mạng, ảnh hỏng…) thì vẫn vào trang kèo, chủ kèo thêm lại ở đó
       if (cover) await postsApi.uploadCover(post.id, cover).catch(() => undefined);
       navigate(`/keo/${post.id}`);
@@ -245,6 +250,40 @@ export default function PostNewPage() {
             </div>
             <FieldError message={fields.slots} />
           </fieldset>
+        </section>
+
+        <section className="form-section">
+          <SectionTitle icon="phone">Liên hệ</SectionTitle>
+          <div className="field">
+            <label htmlFor="contactPhone" className="label">
+              Số điện thoại liên hệ <span className="label__note">(không bắt buộc)</span>
+            </label>
+            <input
+              id="contactPhone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              className="input"
+              placeholder="Ví dụ: 0912 345 678"
+              value={form.contactPhone}
+              onChange={(e) => set('contactPhone', e.target.value)}
+            />
+            <FieldError message={fields.contactPhone} />
+            {form.contactPhone.trim() ? (
+              <p className="hint">
+                Chỉ người đã tham gia kèo mới thấy, để gọi hoặc nhắn Zalo khi cần.
+                {user?.phone && form.contactPhone.trim() !== user.phone && ' Số này chỉ dùng cho kèo này, hồ sơ giữ nguyên.'}
+              </p>
+            ) : (
+              <p className="hint hint--warn">Người tham gia sẽ không gọi được cho bạn.</p>
+            )}
+            {!user?.phone && form.contactPhone.trim() && (
+              <label className="checkbox">
+                <input type="checkbox" checked={form.savePhone} onChange={(e) => set('savePhone', e.target.checked)} />
+                <span>Lưu số này vào hồ sơ, lần sau tự điền</span>
+              </label>
+            )}
+          </div>
         </section>
 
         <section className="form-section">

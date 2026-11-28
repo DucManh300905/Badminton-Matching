@@ -74,6 +74,8 @@ export interface PostSummary {
   /** Ảnh bìa (null = dải màu mặc định) */
   coverUrl?: string | null;
   author: PublicUser;
+  /** Lịch sử → Đã tham gia, kèo sắp diễn ra (WBS 4.16): số liên hệ của chủ kèo; null = chủ kèo không để số */
+  hostPhone?: string | null;
 }
 
 export interface Participant extends PublicUser {
@@ -241,6 +243,10 @@ export interface CreatePostInput {
   pricePerPerson: number;
   slots: SlotNeed;
   note?: string;
+  /** Số liên hệ của kèo (WBS 4.16): "" = không để số */
+  contactPhone?: string;
+  /** Lưu số này vào hồ sơ (chỉ khi hồ sơ chưa có số) */
+  savePhone?: boolean;
 }
 
 export interface RegisterInput {

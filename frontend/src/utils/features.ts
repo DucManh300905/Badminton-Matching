@@ -3,9 +3,9 @@
 import type { IconName } from '../components/Icon';
 
 // "Hôm nay" đã thành bộ lọc của Tìm kèo (WBS 4.15)
-export type FeatureKey = 'search' | 'new' | 'mine' | 'shuttles';
+export type FeatureKey = 'search' | 'new' | 'mine' | 'shuttles' | 'profile';
 /** Tiện ích chọn được cho 3 ô của thanh dưới (khớp backend TAB_BAR_ITEMS) */
-export type TabItemKey = Exclude<FeatureKey, 'new'>;
+export type TabItemKey = Exclude<FeatureKey, 'new' | 'profile'>;
 
 export interface Feature {
   key: FeatureKey;
@@ -14,7 +14,7 @@ export interface Feature {
   short: string;
   description: string;
   icon: IconName;
-  group: 'match' | 'money';
+  group: 'match' | 'money' | 'account';
   /** Từ khóa phụ cho ô tìm kiếm */
   keywords: string;
   needsAuth: boolean;
@@ -24,6 +24,7 @@ export interface Feature {
 export const FEATURE_GROUPS: { key: Feature['group']; label: string }[] = [
   { key: 'match', label: 'Kèo' },
   { key: 'money', label: 'Chi phí và cầu' },
+  { key: 'account', label: 'Tài khoản' },
 ];
 
 export const FEATURES: Feature[] = [
@@ -70,6 +71,17 @@ export const FEATURES: Feature[] = [
     keywords: 'qua cau ong cau thong ke tuan thang',
     needsAuth: true,
     to: () => '/kho-cau',
+  },
+  {
+    key: 'profile',
+    label: 'Hồ sơ cá nhân',
+    short: 'Hồ sơ',
+    description: 'Tên, ảnh đại diện, số điện thoại, tài khoản nhận tiền',
+    icon: 'user',
+    group: 'account',
+    keywords: 'ho so ca nhan so dien thoai sdt zalo lien he ngan hang so tai khoan',
+    needsAuth: true,
+    to: () => '/tai-khoan/ho-so',
   },
 ];
 

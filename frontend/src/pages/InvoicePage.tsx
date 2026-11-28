@@ -8,7 +8,7 @@ import PageHeader from '../components/PageHeader';
 import { Alert, Spinner } from '../components/ui';
 import type { CostMember, PostDetail } from '../types';
 import { expenseName } from '../utils/costs';
-import { formatMoney, formatTimeRange } from '../utils/format';
+import { formatMoney, formatPhone, formatTimeRange } from '../utils/format';
 import { buildPdf, deliverPdf } from '../utils/pdf';
 
 const STATUS: Record<string, (diff: number) => string> = {
@@ -190,7 +190,10 @@ export default function InvoicePage() {
             </div>
             <div>
               <dt>Chủ kèo</dt>
-              <dd>{post.author.displayName}</dd>
+              <dd>
+                {post.author.displayName}
+                {post.author.phone && ` · ${formatPhone(post.author.phone)}`}
+              </dd>
             </div>
           </dl>
         </section>

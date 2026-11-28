@@ -74,8 +74,8 @@ const tabBarRules = () => [
 ];
 
 /** Số điện thoại (không bắt buộc): "" hoặc null = xóa; còn lại phải là số di động Việt Nam */
-const phoneRule = () =>
-    body('phone')
+const phoneRule = (field = 'phone') =>
+    body(field)
         .optional()
         .custom((value) => normalizePhone(value) !== null)
         .withMessage('Số điện thoại di động Việt Nam gồm 10 chữ số, ví dụ 0912345678')

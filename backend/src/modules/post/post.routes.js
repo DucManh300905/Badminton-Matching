@@ -6,8 +6,9 @@ const { validate } = require('../../middlewares/validate.middleware');
 const { HANOI_AREAS } = require('../../utils/constants');
 const { SKILL_LEVELS } = require('../../utils/skillLevel');
 const { MAX_PRICE_PER_PERSON, MAX_TOTAL_SLOTS } = require('./post.rules');
-const { listPosts, getPost, createPost, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover, addBill, removeBill, addProof, removeProof } = require('./post.controller');
+const { listPosts, getPost, createPost, setContactPhone, joinPost, leavePost, cancelPost, setPaid, updateCosts, setAttendance, setCover, deleteCover, addBill, removeBill, addProof, removeProof } = require('./post.controller');
 const { receiveImage } = require('../../utils/images');
+const { phoneRule } = require('../user/user.rules');
 
 const router = express.Router();
 
@@ -55,7 +56,10 @@ const createRules = [
     slotRule('male'),
     slotRule('female'),
     slotRule('any'),
-    body('note').optional({ values: 'falsy' }).isString().trim().isLength({ max: 1000 }).withMessage('Ghi chú tối đa 1000 ký tự')
+    body('note').optional({ values: 'falsy' }).isString().trim().isLength({ max: 1000 }).withMessage('Ghi chú tối đa 1000 ký tự'),
+    // Số liên hệ của kèo (WBS 4.16): không gửi = dùng số trong hồ sơ; "" = không để số
+    phoneRule('contactPhone'),
+    body('savePhone').optional().isBoolean({ strict: true }).withMessage('savePhone phải là true hoặc false')
 ];
 
 // :id sai định dạng ObjectId → Mongoose báo CastError → errorHandler trả 404 NOT_FOUND
@@ -67,6 +71,14 @@ router.post('/', authenticate, createRules, validate, createPost);
 router.post('/:id/join', authenticate, joinPost);
 router.delete('/:id/join', authenticate, leavePost);
 router.post('/:id/cancel', authenticate, cancelPost);
+// Chủ kèo đổi / xóa số liên hệ của kèo (WBS 4.16)
+router.patch(
+    '/:id/contact-phone',
+    authenticate,
+    [body('contactPhone').exists().withMessage('Thiếu số điện thoại'), phoneRule('contactPhone')],
+    validate,
+    setContactPhone
+);
 router.patch(
     '/:id/participants/:userId/payment',
     authenticate,

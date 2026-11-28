@@ -29,3 +29,22 @@ describe('formToInput', () => {
     expect(new Date(input.endsAt)).toEqual(new Date(2026, 10, 13, 0, 30));
   });
 });
+
+describe('số liên hệ (WBS 4.16)', () => {
+  it('hồ sơ có số: điền sẵn, không gửi savePhone', () => {
+    const form = emptyPostForm(NOW, '0912345678');
+    expect(form).toMatchObject({ contactPhone: '0912345678', savePhone: false });
+    const input = formToInput(form);
+    expect(input.contactPhone).toBe('0912345678');
+    expect(input).not.toHaveProperty('savePhone');
+  });
+
+  it('hồ sơ chưa có số: ô trống, lưu vào hồ sơ bật sẵn; chỉ gửi savePhone khi có số', () => {
+    const form = emptyPostForm(NOW);
+    expect(form).toMatchObject({ contactPhone: '', savePhone: true });
+    expect(formToInput(form)).toMatchObject({ contactPhone: '' });
+    expect(formToInput(form)).not.toHaveProperty('savePhone');
+    expect(formToInput({ ...form, contactPhone: ' 0987 654 321 ' })).toMatchObject({ contactPhone: '0987 654 321', savePhone: true });
+    expect(formToInput({ ...form, contactPhone: '0987654321', savePhone: false })).not.toHaveProperty('savePhone');
+  });
+});

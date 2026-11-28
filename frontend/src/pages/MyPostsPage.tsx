@@ -5,6 +5,7 @@ import { usersApi, type MyPosts } from '../api/users';
 import Icon from '../components/Icon';
 import PageHeader from '../components/PageHeader';
 import ChatList from '../components/ChatList';
+import PhoneLinks from '../components/PhoneLinks';
 import PostCard from '../components/PostCard';
 import { Alert, CountBadge, Spinner } from '../components/ui';
 import { useChat } from '../context/ChatContext';
@@ -91,6 +92,13 @@ export default function MyPostsPage() {
           {posts.map((p) => (
             <li key={p.id}>
               <PostCard post={p} now={now} />
+              {/* Kèo đã tham gia, sắp diễn ra: gọi nhanh chủ kèo (WBS 4.16). Nằm ngoài thẻ vì thẻ là một link */}
+              {tab === 'joined' && p.hostPhone && (
+                <p className="post-card__call">
+                  <span>Chủ kèo:</span>
+                  <PhoneLinks phone={p.hostPhone} name={p.author.displayName} />
+                </p>
+              )}
             </li>
           ))}
         </ul>

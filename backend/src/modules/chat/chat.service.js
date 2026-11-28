@@ -54,7 +54,20 @@ const sharedPosts = (a, b) =>
             { author: b, 'participants.user': a },
             { 'participants.user': { $all: [a, b] } }
         ]
-    }).select('endsAt');
+    }).select('endsAt author status contactPhone');
+
+/**
+ * Số điện thoại của người kia trong chat riêng (WBS 4.16): chỉ khi hai người còn chung một kèo chưa hủy,
+ * chưa quá 2 giờ sau giờ kết thúc. Người kia là chủ kèo của kèo đó và đã đặt số liên hệ riêng → dùng số đó.
+ */
+const phoneInChat = (posts, other, otherId, now) => {
+    const active = posts
+        .filter((p) => p.status !== 'closed' && now <= openUntilOf(p.endsAt))
+        .sort((x, y) => x.endsAt - y.endsAt);
+    if (active.length === 0) return null;
+    const hosted = active.find((p) => String(p.author) === otherId && p.contactPhone !== undefined);
+    return hosted ? hosted.contactPhone : other?.phone ?? null;
+};
 
 const isBlocked = async (a, b) =>
     !!(await Block.exists({
@@ -95,7 +108,7 @@ const access = async (key, userId, now) => {
     const otherId = userId === a ? b : a;
     const posts = await sharedPosts(a, b);
     if (posts.length === 0) throw new AppError(403, 'NOT_CONNECTED', 'Chỉ nhắn được cho người đã cùng chơi một kèo');
-    const other = await User.findById(otherId).select('displayName avatar');
+    const other = await User.findById(otherId).select('displayName avatar phone');
     const openUntil = openUntilOf(new Date(Math.max(...posts.map((p) => p.endsAt.getTime()))));
     const blockedByMe = !!(await Block.exists({ blocker: userId, blocked: otherId }));
     const blocked = blockedByMe || (await isBlocked(userId, otherId));
@@ -104,7 +117,7 @@ const access = async (key, userId, now) => {
         key,
         kind: 'direct',
         members: [a, b],
-        other: publicUser(other ?? otherId),
+        other: { ...publicUser(other ?? otherId), phone: blocked ? null : phoneInChat(posts, other, otherId, now) },
         canSend: open && !blocked,
         openUntil,
         blockedByMe,

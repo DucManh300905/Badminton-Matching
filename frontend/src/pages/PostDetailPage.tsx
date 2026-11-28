@@ -7,6 +7,7 @@ import PageHeader from '../components/PageHeader';
 import Lightbox from '../components/Lightbox';
 import PaymentCard from '../components/PaymentCard';
 import PhoneLinks from '../components/PhoneLinks';
+import { ContactPhoneEditor, PhonePrompt } from '../components/ContactPhone';
 import BillsCard from '../components/BillsCard';
 import CostsCard, { AttendanceCard } from '../components/CostsCard';
 import Icon, { type IconName } from '../components/Icon';
@@ -51,6 +52,8 @@ export default function PostDetailPage() {
   const navigate = useNavigate();
   // Chủ kèo xem ảnh chuyển khoản của một người (WBS 4.14)
   const [proofView, setProofView] = useState<{ name: string; urls: string[] } | null>(null);
+  // Vừa tham gia mà hồ sơ chưa có số điện thoại → mời thêm số (WBS 4.16)
+  const [askPhone, setAskPhone] = useState(false);
 
   /** Nhắn riêng với một người cùng kèo (WBS 4.13) */
   async function messageTo(userId: string) {
@@ -75,6 +78,8 @@ export default function PostDetailPage() {
     setActionError(null);
     try {
       setPost(await postsApi[action](id));
+      if (action === 'join' && user && !user.phone) setAskPhone(true);
+      if (action === 'leave') setAskPhone(false);
     } catch (e) {
       setActionError(toApiError(e).message);
     } finally {
@@ -150,6 +155,8 @@ export default function PostDetailPage() {
 
       <PostCoverBanner post={post} canEdit={isAuthor && post.status !== 'closed'} onSaved={setPost} />
 
+      {askPhone && hasJoined && !user?.phone && <PhonePrompt onClose={() => setAskPhone(false)} />}
+
       <div className="detail-layout">
         <div className="stack">
           <article className="card stack">
@@ -169,6 +176,7 @@ export default function PostDetailPage() {
                   <Avatar name={post.author.displayName} url={post.author.avatarUrl} size="xs" />
                   {post.author.displayName}
                   {hasJoined && <PhoneLinks phone={post.author.phone} name={post.author.displayName} />}
+                  {isAuthor && post.status !== 'closed' && <ContactPhoneEditor post={post} onSaved={setPost} />}
                   {hasJoined && (
                     <button
                       type="button"
